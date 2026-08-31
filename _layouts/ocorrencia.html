@@ -2,31 +2,42 @@
 layout: default
 ---
 
-<div class="ficha-animal-container" style="max-width: 800px; margin: auto; font-family: sans-serif;">
-  <header style="border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 10px;">
-    <h1>{{ page.id }} - {{ page.especie }}</h1>
-    <span class="badge" style="background: #e0f2fe; padding: 5px 10px; border-radius: 4px; font-weight: bold;">
-      Situação: {{ page.situacao }}
-    </span>
-    <span class="badge" style="background: #fef08a; padding: 5px 10px; border-radius: 4px; font-weight: bold;">
-      Estado: {{ page.estado_caso }}
-    </span>
+<div class="ficha-animal-container" style="max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  <header style="border-bottom: 2px solid #e2e8f0; margin-bottom: 24px; padding-bottom: 16px; display: flex; flex-direction: column; gap: 10px;">
+    <h1 style="font-size: 26px; font-weight: 900; color: #0f172a; margin: 0;">
+      {{ page.id }} — {{ page.especie }}
+    </h1>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <span class="badge" style="background: #dcfce7; color: #14532d; border: 1px solid #86efac; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; text-transform: uppercase;">
+        Situação: {{ page.situacao }}
+      </span>
+      <span class="badge" style="background: #fef9c3; color: #713f12; border: 1px solid #fde047; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; text-transform: uppercase;">
+        Estado: {{ page.estado_caso }}
+      </span>
+      {% if page.estado_fisico and page.estado_fisico != "Desconhecido" %}
+      <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; text-transform: uppercase;">
+        Condição: {{ page.estado_fisico }}
+      </span>
+      {% endif %}
+    </div>
   </header>
 
   {% if page.imagem %}
-    <div class="foto-animal" style="text-align: center; margin-bottom: 20px;">
-      <img src="{{ page.imagem }}" alt="Foto da Ocorrência {{ page.id }}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <div class="foto-animal" style="text-align: center; margin-bottom: 24px;">
+      <img src="{{ page.imagem }}" alt="Foto da Ocorrência {{ page.id }}" style="max-width: 100%; max-height: 450px; object-fit: cover; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
     </div>
   {% endif %}
 
-  <div class="detalhes-tecnicos" style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-    <p><strong>📍 Localização:</strong> {{ page.localizacao }} ({{ page.distrito }})</p>
-    <p><strong>🏷️ Nome:</strong> {{ page.nome }}</p>
-    <p><strong>🚻 Sexo:</strong> {{ page.sexo }}</p>
-    <p><strong>🩺 Triagem Clínica:</strong> {{ page.triagem }}</p>
+  <div class="detalhes-tecnicos" style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 20px; border-radius: 10px; margin-bottom: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+    <p style="margin: 0;"><strong>📍 Localização:</strong> {{ page.localizacao }} ({{ page.distrito }})</p>
+    <p style="margin: 0;"><strong>🏷️ Nome:</strong> {{ page.nome }}</p>
+    <p style="margin: 0;"><strong>🚻 Sexo:</strong> {{ page.sexo }}</p>
+    <p style="margin: 0;"><strong>🩺 Triagem:</strong> {{ page.triagem }}</p>
+    <p style="margin: 0;"><strong>📞 Contacto:</strong> {{ page.contacto | default: "Não indicado" }}</p>
+    <p style="margin: 0;"><strong>📅 Registado a:</strong> {{ page.date | date: "%d/%m/%Y %H:%M" }}</p>
   </div>
 
-  <article class="conteudo-markdown">
+  <article class="conteudo-markdown" style="line-height: 1.7; font-size: 15px;">
     {{ content }}
   </article>
 </div>

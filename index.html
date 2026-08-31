@@ -2,7 +2,23 @@
 layout: default
 title: Socorro Animal - Alerta Animal
 ---
-<!--- Apresentação Principal -->
+
+
+<h1>Últimas Ocorrências</h1>
+
+<ul>
+  {% for post in site.ocorrencias %}
+    <li>
+      <a href="{{ post.url | relative_url }}">{{ post.id }} - {{ post.especie }} ({{ post.situacao }})</a>
+    </li>
+  {% endfor %}
+</ul>
+
+
+
+
+
+<!--- Apresentação Principal
 <section style="text-align: center; padding: 40px 20px; background-color: #f4f7f6; border-radius: 8px; margin-bottom: 30px;">
   <h1 style="color: #2e7d32; font-size: 2.2em;">Juntos pelos animais que precisam de nós 🐾</h1>
   <p style="font-size: 1.1em; color: #555; max-width: 600px; margin: 15px auto;">
@@ -14,7 +30,7 @@ title: Socorro Animal - Alerta Animal
   </div>
 </section>
 
-<!-- Lista Dinâmica de Ocorrências (Jekyll Liquid Loop) -->
+<!-- Lista Dinâmica de Ocorrências (Jekyll Liquid Loop)
 <section id="ocorrencias" style="margin-bottom: 40px;">
   <h2 style="border-bottom: 2px solid #2e7d32; padding-bottom: 10px; color: #333;">📢 Últimas Ocorrências Registadas</h2>
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px;">
@@ -40,7 +56,7 @@ title: Socorro Animal - Alerta Animal
 
 
 
-<!-- Pilares de Ação -->
+<!-- Pilares de Ação 
 <section style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 40px;">
   <div style="flex: 1; min-width: 250px; background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
     <h3>🤝 Apoio Mútuo</h3>
@@ -56,7 +72,7 @@ title: Socorro Animal - Alerta Animal
   </div>
 </section>
 
-<!-- Redes Sociais e Contacto da Comunidade -->
+<!-- Redes Sociais e Contacto da Comunidade 
 <footer style="text-align: center; padding: 30px 10px; border-top: 1px solid #e0e0e0; color: #666;">
   <p><strong>Rede de Voluntários Socorro Animal</strong> — Proteção e Amor pelos Animais</p>
   <div style="margin: 15px 0;">
@@ -65,3 +81,4 @@ title: Socorro Animal - Alerta Animal
     <a href="#" style="margin: 0 10px; color: #2e7d32; text-decoration: none;">💬 Comunidade WhatsApp</a>
   </div>
 </footer>
+-->

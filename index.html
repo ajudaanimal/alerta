@@ -1,114 +1,115 @@
 ---
 layout: default
-title: Socorro Animal - Alerta Animal
+title: Homebase - Socorro Animal
 ---
 
 <style>
-  .home-container {
-    max-width: 750px;
-    margin: 40px auto;
-    padding: 0 20px;
+  .homebase-container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 15px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #1e293b;
+    color: #0f172a;
   }
   
-  .home-header {
-    margin-bottom: 30px;
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 15px;
-    text-align: center;
-  }
-  
-  .home-header h1 {
-    font-size: 24px;
-    font-weight: 900;
-    color: #2563eb;
-    margin: 0 0 6px 0;
-  }
-  
-  .home-header p {
-    color: #64748b;
-    font-size: 14px;
-    margin: 0;
-  }
-
-  .ocorrencias-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  /* Cabeçalho Operacional Compacto */
+  .HB-header {
     display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .ocorrencia-item {
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    border-radius: 10px;
-    transition: all 0.2s ease;
-  }
-
-  /* Destaque especial e imediato para alertas vermelhos */
-  .ocorrencia-item.destaque-vermelho {
-    border: 2px solid #ef4444;
-    background: #fff5f5;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
-  }
-
-  .ocorrencia-item:hover {
-    box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-  }
-
-  .ocorrencia-link {
-    display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    text-align: center;
-    padding: 20px;
-    text-decoration: none;
-    color: inherit;
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 16px 24px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .HB-header h1 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .HB-stats {
+    font-size: 13px;
+    color: #94a3b8;
+  }
+
+  .HB-stats strong {
+    color: #ffffff;
+  }
+
+  /* Grelha de Alta Densidade (Estilo Dispatch Dashboard) */
+  .HB-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 12px;
   }
 
-  .ocorrencia-title {
-    font-size: 17px;
-    font-weight: 900;
-    color: #0f172a;
-    margin-bottom: 4px;
-  }
-
-  .ocorrencia-details {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px 16px;
-    font-size: 13px;
-    color: #475569;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 10px 14px;
-    border-radius: 8px;
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid #e2e8f0;
-  }
-
-  .ocorrencia-details span {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .badge-status {
-    padding: 6px 14px;
+  .HB-card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
     border-radius: 6px;
-    font-size: 11px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  .HB-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #94a3b8;
+  }
+
+  /* Linha indicadora de prioridade lateral */
+  .HB-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+
+  .card-vermelho::before { background: #ef4444; }
+  .card-laranja::before  { background: #f97316; }
+  .card-amarelo::before  { background: #eab308; }
+  .card-verde::before    { background: #22c55e; }
+
+  .card-vermelho { background: #fff5f5; border-color: #fca5a5; }
+
+  .HB-card-body {
+    padding: 14px 16px 10px 20px;
+  }
+
+  .HB-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .HB-id {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    font-family: monospace;
+  }
+
+  .HB-badge {
+    font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
     letter-spacing: 0.5px;
-    background: #f1f5f9;
-    color: #334155;
-    border: 1px solid #cbd5e1;
+    border: 1px solid transparent;
   }
 
   .badge-vermelho { background: #fee2e2; color: #7f1d1d; border-color: #fca5a5; }
@@ -116,9 +117,56 @@ title: Socorro Animal - Alerta Animal
   .badge-amarelo  { background: #fef9c3; color: #713f12; border-color: #fde047; }
   .badge-verde    { background: #dcfce7; color: #14532d; border-color: #86efac; }
 
-  .empty-state {
+  .HB-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+  }
+
+  .HB-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    font-size: 12px;
+    color: #334155;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .HB-meta div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .HB-footer-link {
+    display: block;
     text-align: center;
-    padding: 40px;
+    background: #f1f5f9;
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    text-decoration: none;
+    padding: 8px;
+    border-top: 1px solid #e2e8f0;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .HB-card:hover .HB-footer-link {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
     background: #f8fafc;
     border-radius: 8px;
     color: #64748b;
@@ -126,53 +174,63 @@ title: Socorro Animal - Alerta Animal
   }
 </style>
 
-<div class="home-container">
-  <div class="home-header">
-    <h1>Últimas Ocorrências 🐾</h1>
-    <p>Lista de registos ativos da nossa rede de solidariedade animal.</p>
+<div class="homebase-container">
+  
+  <div class="HB-header">
+    <h1>🚨 Homebase — Operações de Resgate</h1>
+    <div class="HB-stats">
+      Total Ativo: <strong>{{ site.ocorrencias | size }}</strong> ocorrências
+    </div>
   </div>
 
-  <ul class="ocorrencias-list">
+  <div class="HB-grid">
     {% for post in site.ocorrencias reversed %}
       {% assign triagem_str = post.triagem | upcase %}
-      {% assign is_vermelho = false %}
+      {% assign card_class = "" %}
+      {% assign badge_class = "" %}
       
       {% if triagem_str contains 'VERMELHO' %} 
-        {% assign b_badge = 'badge-vermelho' %}
-        {% assign is_vermelho = true %}
+        {% assign card_class = "card-vermelho" %}
+        {% assign badge_class = "badge-vermelho" %}
       {% elsif triagem_str contains 'LARANJA' %} 
-        {% assign b_badge = 'badge-laranja' %}
+        {% assign card_class = "card-laranja" %}
+        {% assign badge_class = "badge-laranja" %}
       {% elsif triagem_str contains 'AMARELO' %} 
-        {% assign b_badge = 'badge-amarelo' %}
+        {% assign card_class = "card-amarelo" %}
+        {% assign badge_class = "badge-amarelo" %}
       {% elsif triagem_str contains 'VERDE' %} 
-        {% assign b_badge = 'badge-verde' %}
-      {% else %} 
-        {% assign b_badge = '' %}
+        {% assign card_class = "card-verde" %}
+        {% assign badge_class = "badge-verde" %}
       {% endif %}
 
-      <li class="ocorrencia-item {% if is_vermelho %}destaque-vermelho{% endif %}">
-        <a href="{{ post.url | relative_url }}" class="ocorrencia-link">
-          
-          <div class="ocorrencia-info">
-            <span class="ocorrencia-title">
-              {{ post.id }} — {{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}
-            </span>
+      <div class="HB-card {{ card_class }}">
+        <div class="HB-card-body">
+          <div class="HB-card-header">
+            <span class="HB-id">{{ post.id }}</span>
+            <span class="HB-badge {{ badge_class }}">{{ post.triagem | default: "N/A" }}</span>
           </div>
 
-          <!-- Caixa interna com todos os detalhes pedidos em formato centralizado -->
-          <div class="ocorrencia-details">
-            <span><strong>🩺 Estado Físico:</strong> {{ post.estado_fisico | default: "Não indicado" }}</span>
-            <span><strong>⚡ Alerta:</strong> <span class="badge-status {{ b_badge }}">{{ post.triagem | default: "SEM TRIAGEM" }}</span></span>
-            <span><strong>📌 Estado:</strong> {{ post.situacao }} ({{ post.estado_caso }})</span>
-            <span><strong>📍 Localização:</strong> {{ post.localizacao }}, {{ post.distrito }}</span>
-          </div>
+          <h2 class="HB-title">
+            {{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}
+          </h2>
 
+          <div class="HB-meta">
+            <div><strong>Físico:</strong> {{ post.estado_fisico | default: "N/D" }}</div>
+            <div><strong>Estado:</strong> {{ post.situacao }}</div>
+            <div style="grid-column: span 2;"><strong>Local:</strong> {{ post.localizacao }}</div>
+          </div>
+        </div>
+
+        <a href="{{ post.url | relative_url }}" class="HB-footer-link">
+          Abrir Ficha Tática ➔
         </a>
-      </li>
+      </div>
+
     {% else %}
       <div class="empty-state">
-        <p>Nenhuma ocorrência registada de momento! 🐾</p>
+        <p>Nenhuma ocorrência operacional registada de momento. 🐾</p>
       </div>
     {% endfor %}
-  </ul>
+  </div>
+
 </div>

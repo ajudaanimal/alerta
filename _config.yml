@@ -6,7 +6,7 @@ collections:
   ocorrencias:
     output: true
     permalink: /ocorrencias/:path/
-    
+
 defaults:
   - scope:
       path: ""

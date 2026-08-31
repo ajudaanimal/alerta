@@ -16,6 +16,7 @@ title: Socorro Animal - Alerta Animal
     margin-bottom: 30px;
     border-bottom: 2px solid #e2e8f0;
     padding-bottom: 15px;
+    text-align: center;
   }
   
   .home-header h1 {
@@ -37,50 +38,69 @@ title: Socorro Animal - Alerta Animal
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
   }
 
   .ocorrencia-item {
     background: #ffffff;
     border: 1px solid #cbd5e1;
-    border-radius: 8px;
+    border-radius: 10px;
     transition: all 0.2s ease;
   }
 
+  /* Destaque especial para alertas vermelhos */
+  .ocorrencia-item.destaque-vermelho {
+    border: 2px solid #ef4444;
+    background: #fff5f5;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+  }
+
   .ocorrencia-item:hover {
-    border-color: #2563eb;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    transform: translateY(-1px);
+    box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
   }
 
   .ocorrencia-link {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    padding: 16px 20px;
+    text-align: center;
+    padding: 20px;
     text-decoration: none;
     color: inherit;
-  }
-
-  .ocorrencia-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    gap: 12px;
   }
 
   .ocorrencia-title {
-    font-size: 15px;
-    font-weight: 800;
+    font-size: 17px;
+    font-weight: 900;
     color: #0f172a;
+    margin-bottom: 4px;
   }
 
-  .ocorrencia-meta {
+  .ocorrencia-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 16px;
     font-size: 13px;
-    color: #64748b;
+    color: #475569;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 10px 14px;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #e2e8f0;
+  }
+
+  .ocorrencia-details span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .badge-status {
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 6px;
     font-size: 11px;
     font-weight: 800;
@@ -91,9 +111,10 @@ title: Socorro Animal - Alerta Animal
     border: 1px solid #cbd5e1;
   }
 
-  .badge-ENCONTRADO { background: #dcfce7; color: #14532d; border-color: #86efac; }
-  .badge-DESAPARECIDO { background: #fee2e2; color: #7f1d1d; border-color: #fca5a5; }
-  .badge-AVISTADO { background: #ffedd5; color: #7c2d12; border-color: #fdba74; }
+  .badge-vermelho { background: #fee2e2; color: #7f1d1d; border-color: #fca5a5; }
+  .badge-laranja  { background: #ffedd5; color: #7c2d12; border-color: #fdba74; }
+  .badge-amarelo  { background: #fef9c3; color: #713f12; border-color: #fde047; }
+  .badge-verde    { background: #dcfce7; color: #14532d; border-color: #86efac; }
 
   .empty-state {
     text-align: center;
@@ -113,27 +134,39 @@ title: Socorro Animal - Alerta Animal
 
   <ul class="ocorrencias-list">
     {% for post in site.ocorrencias reversed %}
-      {% assign sit = post.situacao | upcase %}
-      {% if sit contains 'ENCONTRADO' %} {% assign b_badge = 'badge-ENCONTRADO' %}
-      {% elsif sit contains 'DESAPARECIDO' %} {% assign b_badge = 'badge-DESAPARECIDO' %}
-      {% elsif sit contains 'AVISTADO' %} {% assign b_badge = 'badge-AVISTADO' %}
-      {% else %} {% assign b_badge = '' %}
+      {% assign triagem_str = post.triagem | upcase %}
+      {% assign is_vermelho = false %}
+      
+      {% if triagem_str contains 'VERMELHO' %} 
+        {% assign b_badge = 'badge-vermelho' %}
+        {% assign is_vermelho = true %}
+      {% elsif triagem_str contains 'LARANJA' %} 
+        {% assign b_badge = 'badge-laranja' %}
+      {% elsif triagem_str contains 'AMARELO' %} 
+        {% assign b_badge = 'badge-amarelo' %}
+      {% elsif triagem_str contains 'VERDE' %} 
+        {% assign b_badge = 'badge-verde' %}
+      {% else %} 
+        {% assign b_badge = '' %}
       {% endif %}
 
-      <li class="ocorrencia-item">
+      <li class="ocorrencia-item {% if is_vermelho %}destaque-vermelho{% endif %}">
         <a href="{{ post.url | relative_url }}" class="ocorrencia-link">
+          
           <div class="ocorrencia-info">
-            <!-- Título Formatado: ID - Espécie (Estado Físico) - Data -->
             <span class="ocorrencia-title">
-              {{ post.id }} — {{ post.especie }} 
-              {% if post.estado_fisico and post.estado_fisico != "Desconhecido" %}({{ post.estado_fisico }}){% endif %}
-            </span>
-            <span class="ocorrencia-meta">
-              📍 {{ post.localizacao | default: "Localização não indicada" }} 
-              • 📅 {{ post.date | date: "%d/%m/%Y %H:%M" }}
+              {{ post.id }} — {{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}
             </span>
           </div>
-          <span class="badge-status {{ b_badge }}">{{ post.situacao | default: "ALERTA" }}</span>
+
+          <!-- Caixa interna com todos os detalhes pedidos -->
+          <div class="ocorrencia-details">
+            <span><strong>🩺 Estado Físico:</strong> {{ post.estado_fisico | default: "Não indicado" }}</span>
+            <span><strong>⚡ Alerta:</strong> <span class="badge-status {{ b_badge }}">{{ post.triagem | default: "SEM TRIAGEM" }}</span></span>
+            <span><strong>📌 Estado:</strong> {{ post.situacao }} ({{ post.estado_caso }})</span>
+            <span><strong>📍 Localização:</strong> {{ post.localizacao }}, {{ post.distrito }}</span>
+          </div>
+
         </a>
       </li>
     {% else %}

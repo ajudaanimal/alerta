@@ -1,6 +1,8 @@
 title: "Socorro Animal"
 description: "Portal de resgate de animais"
 markdown: kramdown
+url: "https://ajudaanimal.github.io"
+baseurl: "/alerta"
 
 collections:
   ocorrencias:

@@ -48,7 +48,7 @@ title: Socorro Animal - Alerta Animal
     transition: all 0.2s ease;
   }
 
-  /* Destaque especial para alertas vermelhos */
+  /* Destaque especial e imediato para alertas vermelhos */
   .ocorrencia-item.destaque-vermelho {
     border: 2px solid #ef4444;
     background: #fff5f5;
@@ -159,7 +159,7 @@ title: Socorro Animal - Alerta Animal
             </span>
           </div>
 
-          <!-- Caixa interna com todos os detalhes pedidos -->
+          <!-- Caixa interna com todos os detalhes pedidos em formato centralizado -->
           <div class="ocorrencia-details">
             <span><strong>🩺 Estado Físico:</strong> {{ post.estado_fisico | default: "Não indicado" }}</span>
             <span><strong>⚡ Alerta:</strong> <span class="badge-status {{ b_badge }}">{{ post.triagem | default: "SEM TRIAGEM" }}</span></span>

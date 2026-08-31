@@ -69,7 +69,7 @@ title: Socorro Animal - Alerta Animal
   }
 
   .ocorrencia-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 800;
     color: #0f172a;
   }
@@ -91,7 +91,6 @@ title: Socorro Animal - Alerta Animal
     border: 1px solid #cbd5e1;
   }
 
-  /* Cores dinâmicas simples para as badges */
   .badge-ENCONTRADO { background: #dcfce7; color: #14532d; border-color: #86efac; }
   .badge-DESAPARECIDO { background: #fee2e2; color: #7f1d1d; border-color: #fca5a5; }
   .badge-AVISTADO { background: #ffedd5; color: #7c2d12; border-color: #fdba74; }
@@ -124,8 +123,15 @@ title: Socorro Animal - Alerta Animal
       <li class="ocorrencia-item">
         <a href="{{ post.url | relative_url }}" class="ocorrencia-link">
           <div class="ocorrencia-info">
-            <span class="ocorrencia-title">{{ post.id }} — {{ post.especie }} {% if post.nome and post.nome != "" and post.nome != "Não indicado" %}({{ post.nome }}){% endif %}</span>
-            <span class="ocorrencia-meta">📍 {{ post.localizacao | default: "Localização não indicada" }}</span>
+            <!-- Título Formatado: ID - Espécie (Estado Físico) - Data -->
+            <span class="ocorrencia-title">
+              {{ post.id }} — {{ post.especie }} 
+              {% if post.estado_fisico and post.estado_fisico != "Desconhecido" %}({{ post.estado_fisico }}){% endif %}
+            </span>
+            <span class="ocorrencia-meta">
+              📍 {{ post.localizacao | default: "Localização não indicada" }} 
+              • 📅 {{ post.date | date: "%d/%m/%Y %H:%M" }}
+            </span>
           </div>
           <span class="badge-status {{ b_badge }}">{{ post.situacao | default: "ALERTA" }}</span>
         </a>

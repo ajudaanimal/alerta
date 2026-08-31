@@ -6,3 +6,10 @@ collections:
   ocorrencias:
     output: true
     permalink: /ocorrencias/:path/
+    
+defaults:
+  - scope:
+      path: ""
+      type: "ocorrencias"
+    values:
+      layout: "ocorrencia"

@@ -393,6 +393,10 @@ layout: default
     var animalIdJs = {{ page.id | jsonify }};
     var realContact = {{ page.contacto | jsonify }};
     var sheetQrLink = {{ page.qr_link | jsonify }};
+    var animalEspecie = {{ page.especie | jsonify }};
+    var animalSituacao = {{ page.situacao | jsonify }};
+    var animalLocalizacao = {{ page.localizacao | jsonify }};
+    var animalEstadoFisico = {{ page.estado_fisico | jsonify }};
     var targetUrl = sheetQrLink && sheetQrLink.trim() !== "" ? sheetQrLink.trim() : window.location.href;
 
     window.addEventListener('DOMContentLoaded', function() {
@@ -428,7 +432,16 @@ layout: default
         }
 
         if (emailBtn) {
-            emailBtn.href = "mailto:?subject=" + encodeURIComponent("Ficha Ocorrência Animal ID: " + cleanId) + "&body=" + encodeURIComponent("Consulte a ficha em:\n" + targetUrl);
+            var emailSubject = "Ficha de Ocorrência Animal — ID: " + cleanId;
+            var emailBody = "📋 RESUMO DA OCORRÊNCIA\n\n" +
+                            "• ID: " + cleanId + "\n" +
+                            "• Espécie: " + (animalEspecie || "N/D") + "\n" +
+                            "• Situação: " + (animalSituacao || "N/D") + "\n" +
+                            "• Estado Físico: " + (animalEstadoFisico || "N/D") + "\n" +
+                            "• Localização: " + (animalLocalizacao || "N/D") + "\n\n" +
+                            "🔗 Consulte a ficha digital completa em:\n" + targetUrl;
+            
+            emailBtn.href = "mailto:?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
         }
 
         if (removeBtn) {

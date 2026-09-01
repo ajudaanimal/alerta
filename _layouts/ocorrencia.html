@@ -480,6 +480,7 @@ layout: default
     var themeColorJs = {{ theme_color | jsonify }};
 
     document.addEventListener("DOMContentLoaded", function() {
+        // Modal de Imagem Ampliada
         var imgElement = document.getElementById('clickable-animal-img');
         var modal = document.getElementById('imageModal');
         var modalImg = document.getElementById('modalImage');
@@ -491,23 +492,17 @@ layout: default
                 modalImg.src = this.src;
             });
 
-            var closeModal = function() {
-                modal.style.display = 'none';
-            };
-
+            var closeModal = function() { modal.style.display = 'none'; };
             closeBtn.addEventListener('click', closeModal);
             modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeModal();
-                }
+                if (e.target === modal) closeModal();
             });
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeModal();
-                }
+                if (e.key === 'Escape') closeModal();
             });
         }
 
+        // Inicialização do Mapa Leaflet
         var map = L.map('single-case-map', {
             attributionControl: false
         }).setView([39.5572, -7.8537], 6);
@@ -520,7 +515,7 @@ layout: default
             maxZoom: 19
         }).addTo(map);
 
-        // Geocodificação a partir da localidade, concelho e distrito
+        // Lógica de Geocodificação Prioritária
         var geoLocalidade = {{ page.localidade | default: page.freguesia | default: "" | jsonify }};
         var geoConcelho   = {{ page.concelho | default: "" | jsonify }};
         var geoDistrito   = {{ page.distrito | default: "" | jsonify }};
@@ -528,30 +523,40 @@ layout: default
 
         var searchQueries = [];
         
-        if (geoLocalidade && geoConcelho && geoDistrito) {
-            searchQueries.push(geoLocalidade + ", " + geoConcelho + ", " + geoDistrito + ", Portugal");
-        } else if (geoLocalidade && geoConcelho) {
-            searchQueries.push(geoLocalidade + ", " + geoConcelho + ", Portugal");
+        // 1. Prioridade Máxima: Localidade
+        if (geoLocalidade) {
+            if (geoConcelho && geoDistrito) {
+                searchQueries.push(geoLocalidade + ", " + geoConcelho + ", " + geoDistrito + ", Portugal");
+            } else if (geoConcelho) {
+                searchQueries.push(geoLocalidade + ", " + geoConcelho + ", Portugal");
+            }
+            searchQueries.push(geoLocalidade + ", Portugal");
         }
 
-        if (geoConcelho && geoDistrito) {
-            searchQueries.push(geoConcelho + ", " + geoDistrito + ", Portugal");
-        } else if (geoConcelho) {
+        // 2. Segunda Prioridade: Concelho
+        if (geoConcelho) {
+            if (geoDistrito) {
+                searchQueries.push(geoConcelho + ", " + geoDistrito + ", Portugal");
+            }
             searchQueries.push(geoConcelho + ", Portugal");
         }
 
+        // 3. Terceira Prioridade: Distrito
         if (geoDistrito) {
             searchQueries.push(geoDistrito + ", Portugal");
         }
 
-        if (geoLocal) {
+        // 4. Fallback: Se nenhum dos três acima tiver dados, tenta o campo Localização
+        if (searchQueries.length === 0 && geoLocal) {
             searchQueries.push(geoLocal + ", Portugal");
         }
+
+        // Último recurso
         searchQueries.push("Portugal");
 
         function geocodeSequentially(queries, index) {
             if (index >= queries.length) {
-                console.warn("Nenhuma das queries de localização devolveu resultados.");
+                console.warn("Nenhuma das tentativas de geocodificação obteve resposta.");
                 return;
             }
 
@@ -565,9 +570,10 @@ layout: default
                         var lat = parseFloat(data[0].lat);
                         var lon = parseFloat(data[0].lon);
                         
+                        // Ajusta o zoom consoante a precisão do resultado
                         var zoomLevel = 14; 
-                        if (index === 1) zoomLevel = 12; 
-                        if (index >= 2) zoomLevel = 10;  
+                        if (currentQuery.includes(geoConcelho) && !currentQuery.includes(geoLocalidade)) zoomLevel = 12; 
+                        if (currentQuery.includes(geoDistrito) && !currentQuery.includes(geoConcelho)) zoomLevel = 10;  
 
                         map.setView([lat, lon], zoomLevel);
 
@@ -589,26 +595,27 @@ layout: default
                         });
 
                         L.marker([lat, lon], { icon: circleIcon }).addTo(map)
-                            .bindPopup("<b>{{ page.especie }}</b><br>" + (geoLocalidade || geoLocal || currentQuery))
+                            .bindPopup("<b>{{ page.especie }}</b><br>" + (geoLocalidade || geoConcelho || geoDistrito || geoLocal || "Localização aproximada"))
                             .openPopup();
                     } else {
                         geocodeSequentially(queries, index + 1);
                     }
                 })
                 .catch(err => {
-                    console.error("Erro na geocodificação para a query: " + currentQuery, err);
+                    console.error("Erro no Nominatim ao procurar por: " + currentQuery, err);
                     geocodeSequentially(queries, index + 1);
                 });
         }
 
         geocodeSequentially(searchQueries, 0);
 
+        // Ações dos Botões de Partilha
         var whatsappBtn = document.getElementById('btn-whatsapp-share');
         if (whatsappBtn) {
             whatsappBtn.addEventListener('click', function() {
                 var especie = {{ page.especie | default: "Animal" | jsonify }};
                 var estado = {{ page.estado_fisico | default: "Desconhecido" | jsonify }};
-                var local = {{ page.localizacao | default: "Portugal" | jsonify }};
+                var local = geoLocal || geoLocalidade || geoConcelho || "Portugal";
 
                 var mensagem = "🚨 *ALERTA ANIMAL* 🚨\n\n" +
                                "🐾 *Espécie:* " + especie + " (" + estado + ")\n" +
@@ -625,7 +632,7 @@ layout: default
             emailShareBtn.addEventListener('click', function() {
                 var especie = {{ page.especie | default: "Animal" | jsonify }};
                 var idCaso = {{ page.id | default: "N/D" | jsonify }};
-                var local = {{ page.localizacao | default: "Portugal" | jsonify }};
+                var local = geoLocal || geoLocalidade || geoConcelho || "Portugal";
                 var estadoFisico = {{ page.estado_fisico | default: "N/D" | jsonify }};
                 
                 var obsEl = document.getElementById('obs-content');

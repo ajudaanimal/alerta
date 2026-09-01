@@ -57,8 +57,8 @@ layout: default
     }
 
     .report-header {
-        color: #ffffff;
-        padding: 12px 16px;
+        color: #0f172a; /* Letras normalizadas a preto para legibilidade perfeita sobre a cor do banner */
+        padding: 14px 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -66,27 +66,30 @@ layout: default
     }
 
     .report-header h1 {
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 800;
         margin: 0;
         line-height: 1.3;
+        color: #0f172a;
     }
 
     .header-location {
-        font-size: 11px;
-        opacity: 0.95;
-        margin-top: 3px;
+        font-size: 13px; /* Letra maior para ser bem legível conforme pedido */
+        font-weight: 700;
+        color: #0f172a;
+        margin-top: 4px;
     }
 
     .map-links a {
-        color: #e2e8f0;
+        color: #1e293b;
         text-decoration: none;
-        border-bottom: 1px dashed #e2e8f0;
+        border-bottom: 1px dashed #1e293b;
         margin: 0 2px;
+        font-weight: 600;
     }
 
     .map-links a:hover {
-        color: #ffffff;
+        color: #000000;
         border-bottom-style: solid;
     }
 
@@ -102,16 +105,18 @@ layout: default
     }
 
     .report-header-right h3 {
-        font-size: 9px;
+        font-size: 10px;
         text-transform: uppercase;
         margin: 0;
         letter-spacing: 0.5px;
+        color: #1e293b;
     }
 
     .report-header-right h2 {
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 800;
         margin: 0;
+        color: #0f172a;
     }
 
     .status-banner {
@@ -359,15 +364,15 @@ layout: default
     {% assign theme_color = "#16a34a" %}
 {% elsif t contains 'VERM' or est_fisico contains 'FERIDO' or est_fisico contains 'CRÍTICO' %}
     {% assign banner_class = "banner-red" %}
-    {% assign banner_text = "🚨 " | append: (page.triagem | default: "Emergência") | append: " — " | append: (page.estado_fisico | default: "Crítico") %}
+    {% assign banner_text = "🚨 " | append: (page.triagem | default: "Emergência") | append: " — SOCORRO URGENTE NECESSÁRIO" %}
     {% assign theme_color = "#dc2626" %}
 {% elsif t contains 'LARANJA' or est_fisico contains 'URGENTE' %}
     {% assign banner_class = "banner-orange" %}
-    {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Urgente") | append: " — Socorro Urgente" %}
+    {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Urgente") | append: " — SOCORRO URGENTE NECESSÁRIO" %}
     {% assign theme_color = "#f97316" %}
 {% else %}
     {% assign banner_class = "banner-yellow" %}
-    {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Alerta") | append: " — Cuidados Médicos" %}
+    {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Alerta") | append: " — NECESSITA DE SOCORRO MÉDICO" %}
     {% assign theme_color = "#ca8a04" %}
 {% endif %}
 
@@ -394,7 +399,7 @@ layout: default
             <h1>{{ page.especie }}{% if page.estado_fisico %} — {{ page.estado_fisico }}{% endif %}</h1>
             {% if display_loc != "" %}
             <div class="header-location">
-                📍 {{ display_loc }} 
+                📍 {{ display_loc }}{% if page.concelho and page.concelho != "Não indicado" %}, {{ page.concelho }}{% endif %}
                 <span class="map-links">
                     (<a href="https://www.google.com/maps/search/?api=1&query={{ display_loc | append: ', Portugal' | url_encode }}" target="_blank" rel="noopener" title="Procurar no Google Maps">G.Maps</a> | 
                     <a href="https://www.openstreetmap.org/search?query={{ display_loc | append: ', Portugal' | url_encode }}" target="_blank" rel="noopener" title="Procurar no OpenStreetMap">OSM</a>)
@@ -442,19 +447,13 @@ layout: default
 
         <h2 class="section-title">📝 Detalhes e Dados de Terreno</h2>
         <div class="details-grid">
-            <div class="detail-item"><strong>Localidade (Freguesia)</strong><span>{{ page.localidade | default: page.freguesia | default: "Não indicada" }}</span></div>
-            <div class="detail-item"><strong>Concelho</strong><span>{{ page.concelho | default: "Não indicado" }}</span></div>
-            <div class="detail-item"><strong>Distrito</strong><span>{{ page.distrito | default: "Não indicado" }}</span></div>
+            <div class="detail-item"><strong>Localidade</strong><span>{{ page.localidade | default: page.freguesia | default: "Não indicada" }}</span></div>
+            <div class="detail-item"><strong>Concelho</strong><span>{{ page.distrito | default: "Não indicado" }}</span></div>
+            <div class="detail-item"><strong>Distrito</strong><span>{{ page.idade | default: "Não indicado" }}</span></div>
             <div class="detail-item"><strong>Data Ocorrência Inicial</strong><span>{{ page.data_ocorrencia_inicial | default: "Não indicada" }}</span></div>
-            <div class="detail-item"><strong>Idade</strong><span>{{ page.idade | default: "Não indicada" }}</span></div>
-            <div class="detail-item"><strong>Estado Físico</strong><span>{{ page.estado_fisico | default: "Não indicado" }}</span></div>
+            <div class="detail-item"><strong>Idade</strong><span>{{ page.concelho | default: "Não indicado" }}</span></div>
+            <div class="detail-item"><strong>Características / Socorro</strong><span>{{ page.estado_fisico | default: "Não indicado" }} — Requer Socorro Urgente</span></div>
         </div>
-
-        <h2 class="section-title">
-            <span>🗺️ Localização no Mapa</span>
-            <a href="{{ '/mapa.html' | relative_url }}" style="font-size: 9.5px; color: var(--text-muted); text-decoration: underline;">Ver Mapa Geral</a>
-        </h2>
-        <div id="single-case-map"></div>
 
         <h2 class="section-title">🩺 Observações e Acompanhamento</h2>
         <div class="content-box">
@@ -462,10 +461,16 @@ layout: default
                 {% if page.observacoes %}
                     {{ page.observacoes }}
                 {% else %}
-                    <em style="color: var(--text-muted); font-size: 11px;">Sem observações adicionais registadas.</em>
+                    <em style="color: var(--text-muted); font-size: 11.5px;">Sem observações adicionais registadas.</em>
                 {% endif %}
             </div>
         </div>
+
+        <h2 class="section-title">
+            <span>🗺️ Localização no Mapa</span>
+            <a href="{{ '/mapa.html' | relative_url }}" style="font-size: 9.5px; color: var(--text-muted); text-decoration: underline;">Ver Mapa Geral</a>
+        </h2>
+        <div id="single-case-map"></div>
     </main>
 
     <footer class="report-footer">
@@ -496,7 +501,6 @@ layout: default
     var themeColorJs = {{ theme_color | jsonify }};
 
     document.addEventListener("DOMContentLoaded", function() {
-        // Modal de Imagem Ampliada
         var imgElement = document.getElementById('clickable-animal-img');
         var modal = document.getElementById('imageModal');
         var modalImg = document.getElementById('modalImage');
@@ -518,7 +522,6 @@ layout: default
             });
         }
 
-        // Inicialização do Mapa Leaflet
         var map = L.map('single-case-map', {
             attributionControl: false
         }).setView([39.5572, -7.8537], 6);
@@ -531,7 +534,6 @@ layout: default
             maxZoom: 19
         }).addTo(map);
 
-        // Helper para limpar textos vazios ou preenchidos com "Não indicado"
         function cleanLoc(val) {
             if (!val) return "";
             var str = String(val).trim();
@@ -548,8 +550,6 @@ layout: default
         var geoLocal      = cleanLoc({{ page.localizacao | jsonify }});
 
         var searchQueries = [];
-        
-        // 1. Prioridade Máxima: Localidade
         if (geoLocalidade) {
             if (geoConcelho && geoDistrito) {
                 searchQueries.push(geoLocalidade + ", " + geoConcelho + ", " + geoDistrito + ", Portugal");
@@ -558,29 +558,20 @@ layout: default
             }
             searchQueries.push(geoLocalidade + ", Portugal");
         }
-
-        // 2. Segunda Prioridade: Concelho
         if (geoConcelho) {
             if (geoDistrito) {
                 searchQueries.push(geoConcelho + ", " + geoDistrito + ", Portugal");
             }
             searchQueries.push(geoConcelho + ", Portugal");
         }
-
-        // 3. Terceira Prioridade: Distrito
         if (geoDistrito) {
             searchQueries.push(geoDistrito + ", Portugal");
         }
-
-        // 4. Fallback: Campo Localização
         if (searchQueries.length === 0 && geoLocal) {
             searchQueries.push(geoLocal + ", Portugal");
         }
-
-        // Último recurso: Centrar em Portugal
         searchQueries.push("Portugal");
 
-        // String para o popup
         var popupLocParts = [];
         if (geoLocalidade) popupLocParts.push(geoLocalidade);
         if (geoConcelho) popupLocParts.push(geoConcelho);
@@ -589,11 +580,7 @@ layout: default
         var popupLocationText = popupLocParts.length > 0 ? popupLocParts.join(", ") : geoLocal;
 
         function geocodeSequentially(queries, index) {
-            if (index >= queries.length) {
-                console.warn("Nenhuma das tentativas de geocodificação obteve resposta.");
-                return;
-            }
-
+            if (index >= queries.length) return;
             var currentQuery = queries[index];
             var url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(currentQuery)}&limit=1`;
 
@@ -603,36 +590,20 @@ layout: default
                     if (data && data.length > 0) {
                         var lat = parseFloat(data[0].lat);
                         var lon = parseFloat(data[0].lon);
-                        
-                        var zoomLevel = 14; 
-                        if (geoConcelho && currentQuery.includes(geoConcelho) && !geoLocalidade) zoomLevel = 12; 
-                        if (geoDistrito && currentQuery.includes(geoDistrito) && !geoConcelho) zoomLevel = 10;  
-
-                        map.setView([lat, lon], zoomLevel);
+                        map.setView([lat, lon], 14);
 
                         var circleIcon = L.divIcon({
                             className: 'custom-circle-pin',
-                            html: `
-                                <div style="
-                                    background-color: ${themeColorJs}; 
-                                    width: 24px; 
-                                    height: 24px; 
-                                    border-radius: 50%; 
-                                    border: 2px solid #ffffff; 
-                                    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-                                "></div>
-                            `,
+                            html: `<div style="background-color: ${themeColorJs}; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3);"></div>`,
                             iconSize: [24, 24],
                             iconAnchor: [12, 12],
                             popupAnchor: [0, -12]
                         });
 
                         var popupContent = "<b>{{ page.especie }}</b>";
-                        if (popupLocationText) {
-                            popupContent += "<br>" + popupLocationText;
-                        }
+                        if (popupLocationText) popupContent += "<br>" + popupLocationText;
 
-                        L.marker([lat, lon], { icon: circleIcon })
+                        L.marker([lat, lon], { icon: icon = circleIcon })
                             .addTo(map)
                             .bindPopup(popupContent)
                             .openPopup();
@@ -640,29 +611,19 @@ layout: default
                         geocodeSequentially(queries, index + 1);
                     }
                 })
-                .catch(err => {
-                    console.error("Erro no Nominatim ao procurar por: " + currentQuery, err);
-                    geocodeSequentially(queries, index + 1);
-                });
+                .catch(() => geocodeSequentially(queries, index + 1));
         }
 
         geocodeSequentially(searchQueries, 0);
 
-        // Ações dos Botões de Partilha
         var whatsappBtn = document.getElementById('btn-whatsapp-share');
         if (whatsappBtn) {
             whatsappBtn.addEventListener('click', function() {
                 var especie = {{ page.especie | default: "Animal" | jsonify }};
                 var estado = {{ page.estado_fisico | default: "Desconhecido" | jsonify }};
                 var local = popupLocationText || "Portugal";
-
-                var mensagem = "🚨 *ALERTA ANIMAL* 🚨\n\n" +
-                               "🐾 *Espécie:* " + especie + " (" + estado + ")\n" +
-                               "📍 *Local:* " + local + "\n\n" +
-                               "👉 *Ver detalhes e ajudar:* " + targetUrl;
-
-                var whatsappUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(mensagem);
-                window.open(whatsappUrl, '_blank');
+                var mensagem = "🚨 *ALERTA ANIMAL - SOCORRO URGENTE* 🚨\n\n🐾 *Espécie:* " + especie + " (" + estado + ")\n📍 *Local:* " + local + "\n\n👉 *Ver detalhes e ajudar:* " + targetUrl;
+                window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(mensagem), '_blank');
             });
         }
 
@@ -673,28 +634,18 @@ layout: default
                 var idCaso = {{ page.id | default: "N/D" | jsonify }};
                 var local = popupLocationText || "Portugal";
                 var estadoFisico = {{ page.estado_fisico | default: "N/D" | jsonify }};
-                
                 var obsEl = document.getElementById('obs-content');
                 var observacoes = obsEl ? obsEl.innerText.trim() : "Sem observações.";
 
-                var textoTxt = "Ocorrência Animal - ID: " + idCaso + "\n" +
-                               "Espécie: " + especie + " (" + estadoFisico + ")\n" +
-                               "Local: " + local + "\n\n" +
-                               "Observações:\n" + observacoes + "\n\n" +
-                               "Ver detalhes: " + targetUrl;
-
-                var assunto = encodeURIComponent("Ocorrência Animal - ID: " + idCaso + " (" + especie + ")");
-                var corpo = encodeURIComponent(textoTxt);
-                window.location.href = "mailto:?subject=" + assunto + "&body=" + corpo;
+                var textoTxt = "Ocorrência Animal - ID: " + idCaso + "\nEspécie: " + especie + " (" + estadoFisico + " - NECESSITA SOCORRO)\nLocal: " + local + "\n\nObservações:\n" + observacoes + "\n\nVer detalhes: " + targetUrl;
+                window.location.href = "mailto:?subject=" + encodeURIComponent("Urgente: Ocorrência Animal - ID: " + idCaso) + "&body=" + encodeURIComponent(textoTxt);
             });
         }
 
         var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
         var removeBtn = document.getElementById('btn-remove-data');
         if (removeBtn) {
-            var emailSubject = "Pedido de remoção de dados - Ocorrência " + cleanId;
-            var emailBody = "Solicito a remoção dos dados referentes à seguinte ocorrência:\n\nID: " + cleanId + "\nLink: " + targetUrl;
-            removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
+            removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent("Pedido de remoção de dados - Ocorrência " + cleanId) + "&body=" + encodeURIComponent("Solicito a remoção dos dados referentes à seguinte ocorrência:\n\nID: " + cleanId + "\nLink: " + targetUrl);
         }
     });
 </script>

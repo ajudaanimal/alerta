@@ -5,8 +5,14 @@ title: "Mapa de Ocorrências — Alerta Animal"
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<!-- Leaflet MarkerCluster CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
 <!-- Leaflet JavaScript -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- Leaflet MarkerCluster JavaScript -->
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <style>
   .map-page-container {
@@ -67,6 +73,18 @@ title: "Mapa de Ocorrências — Alerta Animal"
     border: none !important;
     box-shadow: none !important;
   }
+
+  /* Estilo personalizado para os círculos de agrupamento (Clusters) */
+  .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+    background-color: rgba(37, 99, 235, 0.6) !important;
+  }
+  .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    font-family: sans-serif;
+    border-radius: 50%;
+  }
 </style>
 
 <div class="map-page-container">
@@ -85,7 +103,7 @@ title: "Mapa de Ocorrências — Alerta Animal"
   document.addEventListener("DOMContentLoaded", function() {
     // 1. Inicializar o mapa centrado em Portugal Continental
     var map = L.map('full-map', {
-      attributionControl: false // Desativa o controlo padrão para personalizarmos
+      attributionControl: false
     }).setView([39.5572, -7.8537], 7);
 
     // Adiciona os créditos personalizados com a bandeira da Palestina 🇵🇸
@@ -97,6 +115,14 @@ title: "Mapa de Ocorrências — Alerta Animal"
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19
     }).addTo(map);
+
+    // Criar o grupo de clusters para gerir sobreposições automaticamente
+    var markersClusterGroup = L.markerClusterGroup({
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true
+    });
+    map.addLayer(markersClusterGroup);
 
     // 2. Recolher as ocorrências do Jekyll com os dados de triagem/estado
     var ocorrencias = [
@@ -127,7 +153,7 @@ title: "Mapa de Ocorrências — Alerta Animal"
       {% endfor %}
     ];
 
-    // 3. Função para procurar coordenadas de cada local através da API pública do OpenStreetMap
+    // 3. Função para procurar coordenadas de cada local e adicioná-las ao Cluster Group
     ocorrencias.forEach(function(item, index) {
       if (!item.local || item.local === "Não indicada") return;
 
@@ -141,7 +167,7 @@ title: "Mapa de Ocorrências — Alerta Animal"
               var lat = parseFloat(data[0].lat);
               var lon = parseFloat(data[0].lon);
 
-              // Criar um marcador personalizado baseado na cor da triagem do caso
+              // Criar marcador personalizado
               var customPinIcon = L.divIcon({
                 className: 'custom-map-pin',
                 html: `<div style="background-color: ${item.color}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 6px rgba(0,0,0,0.4);"></div>`,
@@ -150,7 +176,7 @@ title: "Mapa de Ocorrências — Alerta Animal"
                 popupAnchor: [0, -10]
               });
 
-              var marker = L.marker([lat, lon], { icon: customPinIcon }).addTo(map);
+              var marker = L.marker([lat, lon], { icon: customPinIcon });
               marker.bindPopup(`
                 <div style="font-family: sans-serif; font-size: 11px; line-height: 1.4; min-width: 150px;">
                   <strong style="color: ${item.color};">${item.id}</strong><br>
@@ -159,6 +185,9 @@ title: "Mapa de Ocorrências — Alerta Animal"
                   <a href="${item.url}" style="font-weight: bold; color: inherit; text-decoration: underline;">Ver detalhes completos →</a>
                 </div>
               `);
+
+              // Adicionar ao grupo de clusters em vez de diretamente ao mapa
+              markersClusterGroup.addLayer(marker);
             }
           })
           .catch(err => console.error("Erro ao geocodificar:", err));

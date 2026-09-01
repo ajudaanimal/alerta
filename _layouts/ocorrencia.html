@@ -340,43 +340,33 @@ layout: default
     }
 
     @media print {
-  /* 1. Esconder elementos desnecessários para o PDF */
-  nav, header, footer, .btn, .no-print, #map-controls {
-    display: none !important;
-  }
-
-  /* 2. Formatação da Página (A4 e margens limpas) */
-  @page {
-    size: A4;
-    margin: 1.5cm;
-  }
-
-  body {
-    background: #fff !important;
-    color: #000 !important;
-    font-size: 12pt;
-    line-height: 1.4;
-  }
-
-  /* 3. Ajuste de Imagens e Cartões */
-  img {
-    max-width: 100% !important;
-    height: auto !important;
-    page-break-inside: avoid;
-  }
-
-  /* 4. Evitar quebras de página a meio de tabelas ou blocos de informação */
-  .ocorrencia-card, table, blockquote {
-    page-break-inside: avoid;
-  }
-
-  /* 5. Garantir que o mapa do Leaflet é impresso visivelmente */
-  #map {
-    height: 300px !important;
-    width: 100% !important;
-    page-break-inside: avoid;
-  }
-}
+        nav, header, footer, .btn, .no-print, #map-controls {
+            display: none !important;
+        }
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+        body {
+            background: #fff !important;
+            color: #000 !important;
+            font-size: 12pt;
+            line-height: 1.4;
+        }
+        img {
+            max-width: 100% !important;
+            height: auto !important;
+            page-break-inside: avoid;
+        }
+        .ocorrencia-card, table, blockquote {
+            page-break-inside: avoid;
+        }
+        #map {
+            height: 300px !important;
+            width: 100% !important;
+            page-break-inside: avoid;
+        }
+    }
 </style>
 
 {% assign t = page.triagem | upcase %}
@@ -404,41 +394,22 @@ layout: default
     {% assign theme_color = "#ca8a04" %}
 {% endif %}
 
-{% comment %} Tratamento e Limpeza de Localização no Liquid {% endcomment %}
-{% assign raw_localidade = page.localidade | default: page.freguesia %}
-{% assign raw_concelho = page.concelho %}
-{% assign raw_distrito = page.distrito %}
-{% assign raw_localizacao = page.localizacao %}
-
-{% assign display_loc = "" %}
-{% if raw_localidade and raw_localidade != "" and raw_localidade != "Não indicada" and raw_localidade != "Não indicado" and raw_localidade != "N/D" %}
-    {% assign display_loc = raw_localidade %}
-{% elsif raw_concelho and raw_concelho != "" and raw_concelho != "Não indicado" and raw_concelho != "Não indicada" and raw_concelho != "N/D" %}
-    {% assign display_loc = raw_concelho %}
-{% elsif raw_distrito and raw_distrito != "" and raw_distrito != "Não indicado" and raw_distrito != "Não indicada" and raw_distrito != "N/D" %}
-    {% assign display_loc = raw_distrito %}
-{% elsif raw_localizacao and raw_localizacao != "" and raw_localizacao != "Não indicado" and raw_localizacao != "Não indicada" and raw_localizacao != "N/D" %}
-    {% assign display_loc = raw_localizacao %}
-{% endif %}
-
 <div class="page-wrapper" style="--theme-color: {{ theme_color }};">
     <header class="report-header" style="background-color: {{ theme_color }};">
         <div>
             <h1>{{ page.especie }}{% if page.estado_fisico %} — {{ page.estado_fisico }}{% endif %}</h1>
-            {% if display_loc != "" %}
-            <div class="header-location">
-                📍 {{ display_loc }} 
+            <div class="header-location" id="header-loc-line" style="display: none;">
+                📍 <span id="header-loc-text"></span> 
                 <span class="map-links">
-                    (<a href="https://www.google.com/maps/search/?api=1&query={{ display_loc | append: ', Portugal' | url_encode }}" target="_blank" rel="noopener" title="Procurar no Google Maps">G.Maps</a> | 
-                    <a href="https://www.openstreetmap.org/search?query={{ display_loc | append: ', Portugal' | url_encode }}" target="_blank" rel="noopener" title="Procurar no OpenStreetMap">OSM</a>)
+                    (<a id="dynamic-gmaps" href="#" target="_blank" rel="noopener" title="Procurar no Google Maps">G.Maps</a> | 
+                    <a id="dynamic-osm" href="#" target="_blank" rel="noopener" title="Ver ponto no OpenStreetMap">OSM</a>)
                 </span>
             </div>
-            {% endif %}
         </div>
         <div class="report-header-right">
             <div>
                 <h3>{{ page.date | date: "%d/%m/%Y" }}</h3>
-                <h2>ID: {{ page.id }}</h2>
+                <h2>{{ page.situacao | default: "REGISTO" | upcase }}</h2>
             </div>
         </div>
     </header>
@@ -613,7 +584,7 @@ layout: default
         // Último recurso: Centrar em Portugal
         searchQueries.push("Portugal");
 
-        // Garante uma única string limpa e sem duplicados para a localização
+        // Função limpa e sem duplicados para a localização única
         function formatarPopupLimpo(loc, conc, dist, fallback) {
             const ignorar = ["não indicado", "não indicada", "n/d", "null", "undefined", ""];
             const limpar = (str) => {
@@ -627,7 +598,6 @@ layout: default
             const c = limpar(conc);
             const d = limpar(dist);
 
-            // O Set remove automaticamente elementos repetidos (ex: Viana do Castelo repetido)
             const partesUnicas = [...new Set([l, c, d].filter(Boolean))];
 
             if (partesUnicas.length > 0) {
@@ -654,6 +624,19 @@ layout: default
                         var lat = parseFloat(data[0].lat);
                         var lon = parseFloat(data[0].lon);
                         
+                        // Atualiza o cabeçalho dinamicamente com as coordenadas reais
+                        var headerLocLine = document.getElementById('header-loc-line');
+                        var headerLocText = document.getElementById('header-loc-text');
+                        var dynGmaps = document.getElementById('dynamic-gmaps');
+                        var dynOsm = document.getElementById('dynamic-osm');
+
+                        if (headerLocLine && headerLocText) {
+                            headerLocText.innerText = popupLocationText;
+                            dynGmaps.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+                            dynOsm.href = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=16/${lat}/${lon}`;
+                            headerLocLine.style.display = 'block';
+                        }
+
                         var zoomLevel = 14; 
                         if (geoConcelho && currentQuery.includes(geoConcelho) && !geoLocalidade) zoomLevel = 12; 
                         if (geoDistrito && currentQuery.includes(geoDistrito) && !geoConcelho) zoomLevel = 10;  

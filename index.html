@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Sistema de Alerta Animal
+title: "Sistema de Alerta Animal"
 ---
 
 <style>
@@ -190,8 +190,6 @@ title: Sistema de Alerta Animal
     <h1>🐾 Alerta Animal</h1>
     
     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-      <button type="button" onclick="toggleGlobalDarkMode()" title="Alternar Modo Escuro" style="background: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #bae6fd); color: var(--text-main, #0f172a); border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 14px;">🌓</button>
-      
       <div class="HB-nav-links" style="margin: 0; border: none; background: transparent; padding: 0;">
         <span>Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
         <span>•</span>
@@ -214,11 +212,6 @@ title: Sistema de Alerta Animal
       let text = card.innerText.toLowerCase();
       card.style.display = text.includes(input) ? "flex" : "none";
     });
-  }
-  
-  function toggleGlobalDarkMode() {
-    let isDark = document.documentElement.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', isDark ? 'true' : 'false');
   }
 </script>
 

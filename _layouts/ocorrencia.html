@@ -418,20 +418,20 @@ layout: default
                     <span>{{ page.triagem | default: "N/D" }}</span>
                 </div>
                 <div class="box-row">
-                    <label style="color: {{ theme_color }};">Estado</label>
-                    <span>{{ page.estado_fisico | default: "N/D" }}</span>
+                    <label style="color: {{ theme_color }};">Estado Caso</label>
+                    <span>{{ page.estado_caso | default: "N/D" }}</span>
                 </div>
             </div>
         </div>
 
         <h2 class="section-title">📝 Detalhes e Dados de Terreno</h2>
         <div class="details-grid">
+            <div class="detail-item"><strong>Localidade (Freguesia)</strong><span>{{ page.localidade | default: page.freguesia | default: "Não indicada" }}</span></div>
             <div class="detail-item"><strong>Concelho</strong><span>{{ page.concelho | default: "Não indicado" }}</span></div>
-            <div class="detail-item"><strong>Data Ocorrência</strong><span>{{ page.data_ocorrencia_inicial | default: "Não indicada" }}</span></div>
-            <div class="detail-item"><strong>Sexo/Nome</strong><span>{{ page.sexo | default: "N/D" }}{% if page.nome %} / {{ page.nome }}{% endif %}</span></div>
-            <div class="detail-item"><strong>Esterilizado</strong><span>{{ page.esterilizado | default: "Desconhecido" }}</span></div>
-            <div class="detail-item"><strong>Identificação</strong><span>{{ page.identificacao | default: "Não indicado" }}</span></div>
-            <div class="detail-item" style="grid-column: span 2;"><strong>Características</strong><span>{{ page.caracteristicas | default: "Sem características específicas" }}</span></div>
+            <div class="detail-item"><strong>Distrito</strong><span>{{ page.distrito | default: "Não indicado" }}</span></div>
+            <div class="detail-item"><strong>Data Ocorrência Inicial</strong><span>{{ page.data_ocorrencia_inicial | default: "Não indicada" }}</span></div>
+            <div class="detail-item"><strong>Idade</strong><span>{{ page.idade | default: "Não indicada" }}</span></div>
+            <div class="detail-item"><strong>Estado Físico</strong><span>{{ page.estado_fisico | default: "Não indicado" }}</span></div>
         </div>
 
         <h2 class="section-title">
@@ -512,7 +512,6 @@ layout: default
             attributionControl: false
         }).setView([39.5572, -7.8537], 6);
 
-        // Atribuição com bandeira da Palestina
         L.control.attribution({
             prefix: false
         }).addAttribution('🇵🇸 &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors').addTo(map);
@@ -521,19 +520,18 @@ layout: default
             maxZoom: 19
         }).addTo(map);
 
-        // Recolha de dados geográficos da página (Frontmatter do Jekyll)
-        var geoFreguesia = {{ page.freguesia | default: "" | jsonify }};
-        var geoConcelho  = {{ page.concelho | default: "" | jsonify }};
-        var geoDistrito  = {{ page.distrito | default: "" | jsonify }};
-        var geoLocal     = {{ page.localizacao | default: "" | jsonify }};
+        // Geocodificação a partir da localidade, concelho e distrito
+        var geoLocalidade = {{ page.localidade | default: page.freguesia | default: "" | jsonify }};
+        var geoConcelho   = {{ page.concelho | default: "" | jsonify }};
+        var geoDistrito   = {{ page.distrito | default: "" | jsonify }};
+        var geoLocal      = {{ page.localizacao | default: "" | jsonify }};
 
-        // Construção da lista de tentativas por ordem de prioridade estrita
         var searchQueries = [];
         
-        if (geoFreguesia && geoConcelho && geoDistrito) {
-            searchQueries.push(geoFreguesia + ", " + geoConcelho + ", " + geoDistrito + ", Portugal");
-        } else if (geoFreguesia && geoConcelho) {
-            searchQueries.push(geoFreguesia + ", " + geoConcelho + ", Portugal");
+        if (geoLocalidade && geoConcelho && geoDistrito) {
+            searchQueries.push(geoLocalidade + ", " + geoConcelho + ", " + geoDistrito + ", Portugal");
+        } else if (geoLocalidade && geoConcelho) {
+            searchQueries.push(geoLocalidade + ", " + geoConcelho + ", Portugal");
         }
 
         if (geoConcelho && geoDistrito) {
@@ -551,7 +549,6 @@ layout: default
         }
         searchQueries.push("Portugal");
 
-        // Função recursiva de geocodificação em cascata
         function geocodeSequentially(queries, index) {
             if (index >= queries.length) {
                 console.warn("Nenhuma das queries de localização devolveu resultados.");
@@ -574,7 +571,6 @@ layout: default
 
                         map.setView([lat, lon], zoomLevel);
 
-                        // Ícone personalizado com círculo colorido simples
                         var circleIcon = L.divIcon({
                             className: 'custom-circle-pin',
                             html: `
@@ -593,7 +589,7 @@ layout: default
                         });
 
                         L.marker([lat, lon], { icon: circleIcon }).addTo(map)
-                            .bindPopup("<b>{{ page.especie }}</b><br>" + (geoLocal || currentQuery))
+                            .bindPopup("<b>{{ page.especie }}</b><br>" + (geoLocalidade || geoLocal || currentQuery))
                             .openPopup();
                     } else {
                         geocodeSequentially(queries, index + 1);

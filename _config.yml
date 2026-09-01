@@ -10,7 +10,7 @@ plugins:
 future: true 
 
 collections:
-  ocorrencias:
+  ocorrencia:
     output: true
     # 2. ALTERAR ISTO: Mudar de :path para :name garante um link limpo e fiável
     permalink: /ocorrencia/:name/ 

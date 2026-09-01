@@ -5,10 +5,10 @@ title: "{{ page.id }} — {{ page.especie }}"
 
 <div style="max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
   
-  <!-- CABEÇALHO -->
+  <!-- CABEÇALHO CORRIGIDO -->
   <header style="margin-bottom: 24px;">
     <h1 style="font-size: 22px; font-weight: 800; color: #0f172a; margin: 0 0 16px 0;">
-      /ocorrencias/{{ page.id }} — {{ page.especie }}{% if page.nome and page.nome != "Não indicado" and page.nome != "" %} ({{ page.nome }}){% endif %}
+      {{ page.id }} — {{ page.especie }}{% if page.nome and page.nome != "Não indicado" and page.nome != "" %} ({{ page.nome }}){% endif %}
     </h1>
     
     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -45,7 +45,7 @@ title: "{{ page.id }} — {{ page.especie }}"
     <div style="margin: 0; color: #334155;"><strong>📅 Registado a:</strong> {{ page.date | date: "%d/%m/%Y %H:%M" }}</div>
   </div>
 
-  <!-- CONTEÚDO (DESCRIÇÃO E OBSERVAÇÕES GERADAS PELO SCRIPT) -->
+  <!-- CONTEÚDO -->
   <article style="line-height: 1.7; font-size: 14px; color: #334155;">
     {{ content }}
   </article>
@@ -53,7 +53,6 @@ title: "{{ page.id }} — {{ page.especie }}"
 </div>
 
 <style>
-  /* Pequenos ajustes para os títulos que vêm do Markdown (##) para ficarem iguais à imagem */
   article h2 {
     font-size: 18px;
     font-weight: 800;

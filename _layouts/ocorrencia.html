@@ -180,7 +180,6 @@ layout: default
         transform: scale(1.03);
     }
 
-    /* Modal / Janela Flutuante para Ampliar Imagem */
     .image-modal {
         display: none;
         position: fixed;
@@ -347,8 +346,6 @@ layout: default
     }
 </style>
 
-</style>
-
 {% assign t = page.triagem | upcase %}
 {% assign est_caso = page.estado_caso | upcase %}
 {% assign est_fisico = page.estado_fisico | upcase %}
@@ -374,23 +371,28 @@ layout: default
     {% assign theme_color = "#ca8a04" %}
 {% endif %}
 
-{% comment %} Prioridade de localização: Localidade > Concelho > Distrito > Localização {% endcomment %}
-{% assign display_loc = page.localidade | default: page.freguesia %}
-{% if display_loc == blank or display_loc == nil %}
-    {% assign display_loc = page.concelho %}
-{% endif %}
-{% if display_loc == blank or display_loc == nil %}
-    {% assign display_loc = page.distrito %}
-{% endif %}
-{% if display_loc == blank or display_loc == nil %}
-    {% assign display_loc = page.localizacao %}
+{% comment %} Tratamento e Limpeza de Localização no Liquid {% endcomment %}
+{% assign raw_localidade = page.localidade | default: page.freguesia %}
+{% assign raw_concelho = page.concelho %}
+{% assign raw_distrito = page.distrito %}
+{% assign raw_localizacao = page.localizacao %}
+
+{% assign display_loc = "" %}
+{% if raw_localidade and raw_localidade != "" and raw_localidade != "Não indicada" and raw_localidade != "Não indicado" and raw_localidade != "N/D" %}
+    {% assign display_loc = raw_localidade %}
+{% elsif raw_concelho and raw_concelho != "" and raw_concelho != "Não indicado" and raw_concelho != "Não indicada" and raw_concelho != "N/D" %}
+    {% assign display_loc = raw_concelho %}
+{% elsif raw_distrito and raw_distrito != "" and raw_distrito != "Não indicado" and raw_distrito != "Não indicada" and raw_distrito != "N/D" %}
+    {% assign display_loc = raw_distrito %}
+{% elsif raw_localizacao and raw_localizacao != "" and raw_localizacao != "Não indicado" and raw_localizacao != "Não indicada" and raw_localizacao != "N/D" %}
+    {% assign display_loc = raw_localizacao %}
 {% endif %}
 
 <div class="page-wrapper" style="--theme-color: {{ theme_color }};">
     <header class="report-header" style="background-color: {{ theme_color }};">
         <div>
             <h1>{{ page.especie }}{% if page.estado_fisico %} — {{ page.estado_fisico }}{% endif %}</h1>
-            {% if display_loc %}
+            {% if display_loc != "" %}
             <div class="header-location">
                 📍 {{ display_loc }} 
                 <span class="map-links">
@@ -516,34 +518,6 @@ layout: default
             });
         }
 
-        <script>
-    var animalIdJs = {{ page.id | jsonify }};
-    var targetUrl = window.location.href;
-    var themeColorJs = {{ theme_color | jsonify }};
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // Modal de Imagem Ampliada
-        var imgElement = document.getElementById('clickable-animal-img');
-        var modal = document.getElementById('imageModal');
-        var modalImg = document.getElementById('modalImage');
-        var closeBtn = document.getElementById('modalCloseBtn');
-
-        if (imgElement && modal) {
-            imgElement.addEventListener('click', function() {
-                modal.style.display = 'flex';
-                modalImg.src = this.src;
-            });
-
-            var closeModal = function() { modal.style.display = 'none'; };
-            closeBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) closeModal();
-            });
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') closeModal();
-            });
-        }
-
         // Inicialização do Mapa Leaflet
         var map = L.map('single-case-map', {
             attributionControl: false
@@ -557,11 +531,21 @@ layout: default
             maxZoom: 19
         }).addTo(map);
 
-        // Lógica de Geocodificação Prioritária
-        var geoLocalidade = {{ page.localidade | default: page.freguesia | default: "" | jsonify }};
-        var geoConcelho   = {{ page.concelho | default: "" | jsonify }};
-        var geoDistrito   = {{ page.distrito | default: "" | jsonify }};
-        var geoLocal      = {{ page.localizacao | default: "" | jsonify }};
+        // Helper para limpar textos vazios ou preenchidos com "Não indicado"
+        function cleanLoc(val) {
+            if (!val) return "";
+            var str = String(val).trim();
+            var invalidValues = ["não indicado", "não indicada", "n/d", "null", "undefined"];
+            if (invalidValues.includes(str.toLowerCase())) {
+                return "";
+            }
+            return str;
+        }
+
+        var geoLocalidade = cleanLoc({{ page.localidade | default: page.freguesia | jsonify }});
+        var geoConcelho   = cleanLoc({{ page.concelho | jsonify }});
+        var geoDistrito   = cleanLoc({{ page.distrito | jsonify }});
+        var geoLocal      = cleanLoc({{ page.localizacao | jsonify }});
 
         var searchQueries = [];
         
@@ -588,15 +572,15 @@ layout: default
             searchQueries.push(geoDistrito + ", Portugal");
         }
 
-        // 4. Fallback: Se nenhum dos três acima tiver dados, tenta o campo Localização
+        // 4. Fallback: Campo Localização
         if (searchQueries.length === 0 && geoLocal) {
             searchQueries.push(geoLocal + ", Portugal");
         }
 
-        // Último recurso
+        // Último recurso: Centrar em Portugal
         searchQueries.push("Portugal");
 
-        // Construção da string de localização limpa para o Popup
+        // String para o popup
         var popupLocParts = [];
         if (geoLocalidade) popupLocParts.push(geoLocalidade);
         if (geoConcelho) popupLocParts.push(geoConcelho);
@@ -620,10 +604,9 @@ layout: default
                         var lat = parseFloat(data[0].lat);
                         var lon = parseFloat(data[0].lon);
                         
-                        // Ajusta o zoom consoante a precisão do resultado
                         var zoomLevel = 14; 
-                        if (currentQuery.includes(geoConcelho) && !currentQuery.includes(geoLocalidade)) zoomLevel = 12; 
-                        if (currentQuery.includes(geoDistrito) && !currentQuery.includes(geoConcelho)) zoomLevel = 10;  
+                        if (geoConcelho && currentQuery.includes(geoConcelho) && !geoLocalidade) zoomLevel = 12; 
+                        if (geoDistrito && currentQuery.includes(geoDistrito) && !geoConcelho) zoomLevel = 10;  
 
                         map.setView([lat, lon], zoomLevel);
 
@@ -644,7 +627,6 @@ layout: default
                             popupAnchor: [0, -12]
                         });
 
-                        // Popup formatado dinamicamente
                         var popupContent = "<b>{{ page.especie }}</b>";
                         if (popupLocationText) {
                             popupContent += "<br>" + popupLocationText;

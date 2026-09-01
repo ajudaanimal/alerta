@@ -234,7 +234,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     
     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
       <div class="HB-nav-links" style="margin: 0; border: none; background: transparent; padding: 0;">
-        <span>Registos: <strong>{{ site.collections.ocorrencia.docs | size }}</strong></span>
+        <span>Registos: <strong>{{ site.collections.ocorrencias.docs | size }}</strong></span>
         <span>•</span>
         <a href="{{ '/mapa.html' | relative_url }}">🗺️ Mapa</a>
         <a href="{{ '/feed.xml' | relative_url }}">📡 RSS Feed</a>
@@ -274,7 +274,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       <div class="HB-col-header" style="color: #ef4444;">
         <span>🔴 Vermelho</span>
         {% assign count_red = 0 %}
-        {% for post in site.collections.ocorrencia.docs %}
+        {% for post in site.collections.ocorrencias.docs %}
           {% assign t = post.triagem | upcase %}
           {% if t contains 'VERM' %}{% assign count_red = count_red | plus: 1 %}{% endif %}
         {% endfor %}
@@ -282,7 +282,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       </div>
 
       {% assign has_reds = false %}
-      {% for post in site.collections.ocorrencia.docs reversed %}
+      {% for post in site.collections.ocorrencias.docs reversed %}
         {% assign t = post.triagem | upcase %}
         {% if t contains 'VERM' %}
           {% assign has_reds = true %}
@@ -308,7 +308,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       <div class="HB-col-header" style="color: #f97316;">
         <span>🟠 Laranja</span>
         {% assign count_orange = 0 %}
-        {% for post in site.collections.ocorrencia.docs %}
+        {% for post in site.collections.ocorrencias.docs %}
           {% assign t = post.triagem | upcase %}
           {% if t contains 'LARANJA' %}{% assign count_orange = count_orange | plus: 1 %}{% endif %}
         {% endfor %}
@@ -316,7 +316,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       </div>
 
       {% assign has_orange = false %}
-      {% for post in site.collections.ocorrencia.docs reversed %}
+      {% for post in site.collections.ocorrencias.docs reversed %}
         {% assign t = post.triagem | upcase %}
         {% if t contains 'LARANJA' %}
           {% assign has_orange = true %}
@@ -342,7 +342,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       <div class="HB-col-header" style="color: #eab308;">
         <span>🟡 Amarelo </span>
         {% assign count_yellow = 0 %}
-        {% for post in site.collections.ocorrencia.docs %}
+        {% for post in site.collections.ocorrencias.docs %}
           {% assign t = post.triagem | upcase %}
           {% unless t contains 'VERM' or t contains 'LARANJA' %}{% assign count_yellow = count_yellow | plus: 1 %}{% endunless %}
         {% endfor %}
@@ -350,7 +350,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       </div>
 
       {% assign has_yellow = false %}
-      {% for post in site.collections.ocorrencia.docs reversed %}
+      {% for post in site.collections.ocorrencias.docs reversed %}
         {% assign t = post.triagem | upcase %}
         {% unless t contains 'VERM' or t contains 'LARANJA' %}
           {% assign has_yellow = true %}
@@ -371,4 +371,5 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       {% unless has_yellow %}<div style="text-align:center; font-size:11px; color:var(--text-muted); padding: 10px;">Sem registos.</div>{% endunless %}
     </div>
 
+</div>
 </div>

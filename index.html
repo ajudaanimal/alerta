@@ -1,18 +1,26 @@
 ---
 layout: default
-title: Alerta Animal
+title: Homebase Tática - Socorro Animal
 ---
 
 <style>
+  /* Anular limites estreitos do tema do Jekyll Pages */
+  .container, .container-lg, main {
+    max-width: 100% !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
   .homebase-container {
-    max-width: 1750px;
-    margin: 25px auto;
-    padding: 0 20px;
+    width: 100%;
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 10px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: #0f172a;
   }
   
-  /* Cabeçalho com azul claro limpo */
+  /* Cabeçalho limpo */
   .HB-header {
     display: flex;
     justify-content: space-between;
@@ -20,13 +28,13 @@ title: Alerta Animal
     background: #e0f2fe;
     color: #0369a1;
     border: 1px solid #bae6fd;
-    padding: 16px 24px;
+    padding: 12px 20px;
     border-radius: 8px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
   
   .HB-header h1 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
     margin: 0;
     display: flex;
@@ -35,7 +43,7 @@ title: Alerta Animal
   }
 
   .HB-stats {
-    font-size: 13px;
+    font-size: 12px;
     color: #0369a1;
     font-weight: 600;
   }
@@ -44,11 +52,12 @@ title: Alerta Animal
     color: #0f172a;
   }
 
-  /* Layout de 3 Colunas Otimizado para 1920x1080 */
+  /* Grelha rigorosa de 3 colunas em largura total */
   .HB-kanban {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    width: 100%;
     align-items: start;
   }
 
@@ -56,19 +65,19 @@ title: Alerta Animal
     background: #f8fafc;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
-    padding: 16px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    min-height: 500px;
+    gap: 10px;
+    box-sizing: border-box;
   }
 
   .HB-col-header {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     border-bottom: 2px solid #cbd5e1;
     display: flex;
     justify-content: space-between;
@@ -79,25 +88,30 @@ title: Alerta Animal
   .col-laranja-amarelo { border-top: 4px solid #f97316; }
   .col-verde { border-top: 4px solid #22c55e; }
 
-  /* Cards Operacionais */
+  /* Cards Operacionais Ultracompactos (Layout Horizontal) */
   .HB-card {
     background: #ffffff;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     overflow: hidden;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: stretch;
     transition: transform 0.1s ease, box-shadow 0.1s ease;
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
   }
 
   .HB-card:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #94a3b8;
+    transform: translateY(-1px);
   }
 
   .HB-card-img-wrap {
-    width: 100%;
-    height: 160px;
+    width: 75px;
+    min-width: 75px;
     background: #e2e8f0;
     position: relative;
   }
@@ -109,10 +123,13 @@ title: Alerta Animal
   }
 
   .HB-card-body {
-    padding: 14px;
+    padding: 8px 10px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 4px;
+    flex-grow: 1;
+    overflow: hidden;
   }
 
   .HB-card-top {
@@ -122,18 +139,18 @@ title: Alerta Animal
   }
 
   .HB-id {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: #64748b;
     font-family: monospace;
   }
 
   .HB-badge {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 800;
     text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: 1px 4px;
+    border-radius: 3px;
   }
 
   .badge-vermelho { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
@@ -141,58 +158,41 @@ title: Alerta Animal
   .badge-amarelo  { background: #fef9c3; color: #713f12; border: 1px solid #fde047; }
   .badge-verde    { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
 
-  .HB-title-link {
-    text-decoration: none;
-    color: inherit;
-  }
-
   .HB-title {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 800;
     color: #0f172a;
     margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .HB-meta {
-    font-size: 12px;
-    color: #334155;
-    background: #f8fafc;
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #e2e8f0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .HB-footer-link {
-    display: block;
-    text-align: center;
-    background: #f1f5f9;
     font-size: 11px;
-    font-weight: 700;
     color: #475569;
-    text-decoration: none;
-    padding: 8px;
-    border-top: 1px solid #e2e8f0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    line-height: 1.2;
   }
 
-  .HB-card:hover .HB-footer-link {
-    background: #2563eb;
-    color: #ffffff;
+  .HB-meta span {
+    background: #f8fafc;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid #f1f5f9;
   }
 
   .empty-col {
     text-align: center;
-    padding: 30px 10px;
+    padding: 20px 10px;
     color: #94a3b8;
-    font-size: 13px;
+    font-size: 12px;
     font-style: italic;
   }
 
-  @media(max-width: 1200px) {
+  @media(max-width: 900px) {
     .HB-kanban {
       grid-template-columns: 1fr;
     }
@@ -202,7 +202,7 @@ title: Alerta Animal
 <div class="homebase-container">
   
   <div class="HB-header">
-    <h1>🚨 Central de Alertas Animais</h1>
+    <h1>🚨 Homebase Tática — Central de Operações</h1>
     <div class="HB-stats">
       Total Registado: <strong>{{ site.ocorrencias | size }}</strong> ocorrências ativas
     </div>
@@ -227,7 +227,7 @@ title: Alerta Animal
         {% assign t = post.triagem | upcase %}
         {% if t contains 'VERMELHO' %}
           {% assign has_reds = true %}
-          <div class="HB-card" style="border-color: #fca5a5;">
+          <a href="{{ post.url | relative_url }}" class="HB-card">
             {% if post.imagem %}
               <div class="HB-card-img-wrap">
                 <img src="{{ post.imagem }}" alt="{{ post.id }}" class="HB-card-img">
@@ -238,17 +238,14 @@ title: Alerta Animal
                 <span class="HB-id">{{ post.id }}</span>
                 <span class="HB-badge badge-vermelho">{{ post.triagem }}</span>
               </div>
-              <a href="{{ post.url | relative_url }}" class="HB-title-link">
-                <h2 class="HB-title">{{ post.especie }} — {{ post.date | date: "%d/%m/%Y" }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              </a>
+              <h2 class="HB-title">{{ post.especie }} — {{ post.date | date: "%d/%m/%Y" }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
               <div class="HB-meta">
-                <div><strong>Físico:</strong> {{ post.estado_fisico | default: "N/D" }}</div>
-                <div><strong>Estado:</strong> {{ post.situacao }}</div>
-                <div><strong>Local:</strong> {{ post.localizacao }}</div>
+                <span><strong>Físico:</strong> {{ post.estado_fisico | default: "N/D" }}</span>
+                <span><strong>Estado:</strong> {{ post.situacao }}</span>
+                <span><strong>Local:</strong> {{ post.localizacao }}</span>
               </div>
             </div>
-            <a href="{{ post.url | relative_url }}" class="HB-footer-link">Abrir Ficha Tática ➔</a>
-          </div>
+          </a>
         {% endif %}
       {% endfor %}
       {% unless has_reds %}
@@ -275,7 +272,7 @@ title: Alerta Animal
           {% assign has_medium = true %}
           {% assign b_class = "badge-laranja" %}
           {% if t contains 'AMARELO' %}{% assign b_class = "badge-amarelo" %}{% endif %}
-          <div class="HB-card">
+          <a href="{{ post.url | relative_url }}" class="HB-card">
             {% if post.imagem %}
               <div class="HB-card-img-wrap">
                 <img src="{{ post.imagem }}" alt="{{ post.id }}" class="HB-card-img">
@@ -286,17 +283,14 @@ title: Alerta Animal
                 <span class="HB-id">{{ post.id }}</span>
                 <span class="HB-badge {{ b_class }}">{{ post.triagem }}</span>
               </div>
-              <a href="{{ post.url | relative_url }}" class="HB-title-link">
-                <h2 class="HB-title">{{ post.especie }} — {{ post.date | date: "%d/%m/%Y" }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              </a>
+              <h2 class="HB-title">{{ post.especie }} — {{ post.date | date: "%d/%m/%Y" }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
               <div class="HB-meta">
-                <div><strong>Físico:</strong> {{ post.estado_fisico | default: "N/D" }}</div>
-                <div><strong>Estado:</strong> {{ post.situacao }}</div>
-                <div><strong>Local:</strong> {{ post.localizacao }}</div>
+                <span><strong>Físico:</strong> {{ post.estado_fisico | default: "N/D" }}</span>
+                <span><strong>Estado:</strong> {{ post.situacao }}</span>
+                <span><strong>Local:</strong> {{ post.localizacao }}</span>
               </div>
             </div>
-            <a href="{{ post.url | relative_url }}" class="HB-footer-link">Abrir Ficha Tática ➔</a>
-          </div>
+          </a>
         {% endif %}
       {% endfor %}
       {% unless has_medium %}
@@ -321,7 +315,7 @@ title: Alerta Animal
         {% assign t = post.triagem | upcase %}
         {% unless t contains 'VERMELHO' or t contains 'LARANJA' or t contains 'AMARELO' %}
           {% assign has_greens = true %}
-          <div class="HB-card">
+          <a href="{{ post.url | relative_url }}" class="HB-card">
             {% if post.imagem %}
               <div class="HB-card-img-wrap">
                 <img src="{{ post.imagem }}" alt="{{ post.id }}" class="HB-card-img">
@@ -332,17 +326,14 @@ title: Alerta Animal
                 <span class="HB-id">{{ post.id }}</span>
                 <span class="HB-badge badge-verde">{{ post.triagem | default: "NORMAL" }}</span>
               </div>
-              <a href="{{ post.url | relative_url }}" class="HB-title-link">
-                <h2 class="HB-title">{{ post.especie }} — {{ post.date | date: "%d/%m/%Y" }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              </a>
+              <h2 class="HB-title">{{ post.especie }} — {{ post.date | date: "%d/%m/%Y" }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
               <div class="HB-meta">
-                <div><strong>Físico:</strong> {{ post.estado_fisico | default: "N/D" }}</div>
-                <div><strong>Estado:</strong> {{ post.situacao }}</div>
-                <div><strong>Local:</strong> {{ post.localizacao }}</div>
+                <span><strong>Físico:</strong> {{ post.estado_fisico | default: "N/D" }}</span>
+                <span><strong>Estado:</strong> {{ post.situacao }}</span>
+                <span><strong>Local:</strong> {{ post.localizacao }}</span>
               </div>
             </div>
-            <a href="{{ post.url | relative_url }}" class="HB-footer-link">Abrir Ficha Tática ➔</a>
-          </div>
+          </a>
         {% endunless %}
       {% endfor %}
       {% unless has_greens %}

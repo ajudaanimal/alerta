@@ -1,8 +1,10 @@
 ---
 layout: default
 ---
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Leaflet CSS e JS para o Minimapa -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <style>
     :root {
@@ -13,11 +15,21 @@ layout: default
         --border-color: #64748b;
     }
 
+    body.dark-mode {
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border-color: #334155;
+    }
+
     body {
         background-color: var(--bg-color);
+        color: var(--text-main);
         margin: 0;
         padding: 4px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        transition: background 0.3s, color 0.3s;
     }
 
     .page-wrapper {
@@ -28,6 +40,7 @@ layout: default
         border-radius: 2px;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         font-size: 11px;
+        transition: background 0.3s, border-color 0.3s;
     }
 
     .report-header {
@@ -64,6 +77,13 @@ layout: default
 
     .report-header-right {
         text-align: right;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .report-header-right div {
+        text-align: right;
     }
 
     .report-header-right h3 {
@@ -78,6 +98,16 @@ layout: default
         margin: 0;
     }
 
+    .dark-mode-btn {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.4);
+        color: white;
+        padding: 3px 6px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
     .status-banner {
         padding: 5px 10px;
         font-weight: 700;
@@ -86,6 +116,7 @@ layout: default
         text-transform: uppercase;
         border-bottom: 1px solid var(--border-color);
     }
+
     .banner-resolved { background: #dcfce7; color: #14532d; }
     .banner-red { background: #fee2e2; color: #7f1d1d; }
     .banner-orange { background: #ffedd5; color: #7c2d12; }
@@ -117,7 +148,7 @@ layout: default
         width: 100%;
         height: 110px;
         border: 1px solid var(--border-color);
-        background: #f1f5f9;
+        background: var(--bg-color);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -132,7 +163,7 @@ layout: default
     }
 
     .unified-highlight-box {
-        background: #f8fafc;
+        background: var(--bg-color);
         border: 1px solid var(--border-color);
         border-radius: 1px;
         padding: 4px 8px;
@@ -146,16 +177,15 @@ layout: default
         justify-content: space-between;
         align-items: center;
         padding: 2px 0;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--border-color);
     }
-    .box-row:last-child { border-bottom: none; }
 
+    .box-row:last-child { border-bottom: none; }
     .box-row label {
         font-size: 9px;
         font-weight: 700;
         text-transform: uppercase;
     }
-
     .box-row span {
         font-size: 10.5px;
         font-weight: 700;
@@ -165,7 +195,7 @@ layout: default
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 6px;
-        background: #f8fafc;
+        background: var(--bg-color);
         border: 1px solid var(--border-color);
         padding: 6px 8px;
         border-radius: 1px;
@@ -196,7 +226,7 @@ layout: default
 
     .content-box {
         font-size: 13.5px;
-        background: #f8fafc;
+        background: var(--bg-color);
         padding: 6px 8px;
         border: 1px solid var(--border-color);
         border-radius: 1px;
@@ -209,7 +239,7 @@ layout: default
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #f8fafc;
+        background: var(--bg-color);
         padding: 6px 8px;
         border: 1px solid var(--border-color);
         border-radius: 1px;
@@ -226,14 +256,24 @@ layout: default
         font-weight: 700;
     }
 
+    #single-case-map {
+        width: 100%;
+        height: 180px;
+        border: 1px solid var(--border-color);
+        border-radius: 1px;
+        margin-top: 4px;
+    }
+
     .report-footer {
-        background: #f1f5f9;
+        background: var(--bg-color);
         border-top: 1px solid var(--border-color);
         padding: 6px 10px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-size: 10px;
+        flex-wrap: wrap;
+        gap: 6px;
     }
 
     .btn-group {
@@ -244,8 +284,8 @@ layout: default
 
     .btn {
         background: var(--text-main);
-        color: #ffffff;
-        border: none;
+        color: var(--card-bg);
+        border: 1px solid var(--border-color);
         font-weight: 700;
         font-size: 10px;
         cursor: pointer;
@@ -257,18 +297,17 @@ layout: default
         align-items: center;
         gap: 3px;
     }
-    
+
     @media print {
-        body { background: #ffffff; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { background: #ffffff !important; color: #000000 !important; padding: 0; }
         .page-wrapper { box-shadow: none; border: none; }
-        .bottom-meta, .report-footer { display: none !important; }
+        .bottom-meta, .report-footer, .dark-mode-btn { display: none !important; }
     }
 </style>
 
 {% assign t = page.triagem | upcase %}
 {% assign est_caso = page.estado_caso | upcase %}
 {% assign est_fisico = page.estado_fisico | upcase %}
-
 {% assign theme_color = "#2563eb" %}
 {% assign banner_class = "banner-red" %}
 {% assign banner_text = "⚠️ ALERTA ATIVO" %}
@@ -292,7 +331,6 @@ layout: default
 {% endif %}
 
 <div class="page-wrapper" style="--theme-color: {{ theme_color }};">
-
     <header class="report-header" style="background-color: {{ theme_color }};">
         <div>
             <h1>{{ page.especie }}{% if page.estado_fisico %} — {{ page.estado_fisico }}{% endif %}</h1>
@@ -307,8 +345,11 @@ layout: default
             {% endif %}
         </div>
         <div class="report-header-right">
-            <h3>{{ page.date | date: "%d/%m/%Y" }}</h3>
-            <h2>ID: {{ page.id }}</h2>
+            <button type="button" class="dark-mode-btn" onclick="toggleDarkMode()" title="Alternar Modo Escuro">🌓</button>
+            <div>
+                <h3>{{ page.date | date: "%d/%m/%Y" }}</h3>
+                <h2>ID: {{ page.id }}</h2>
+            </div>
         </div>
     </header>
 
@@ -317,11 +358,10 @@ layout: default
     </div>
 
     <main class="report-body">
-        
         <div class="top-section">
             <div class="animal-img-container">
                 {% if page.imagem %}
-                    <img src="{{ page.imagem }}" alt="Fotografia do animal da espécie {{ page.especie | default: 'desconhecida' }}">
+                    <img src="{{ page.imagem }}" alt="Fotografia do animal">
                 {% else %}
                     <span style="color:var(--text-muted); font-size:10px;">Sem Imagem</span>
                 {% endif %}
@@ -353,6 +393,12 @@ layout: default
             <div class="detail-item" style="grid-column: span 2;"><strong>Características</strong><span>{{ page.caracteristicas | default: "Sem características específicas" }}</span></div>
         </div>
 
+        <h2 class="section-title">
+            <span>🗺️ Localização no Mapa</span>
+            <a href="{{ '/mapa.html' | relative_url }}" style="font-size: 9px; color: var(--text-muted); text-decoration: underline;">Ver Mapa Geral</a>
+        </h2>
+        <div id="single-case-map"></div>
+
         <h2 class="section-title">🩺 Observações e Cuidados</h2>
         <div class="content-box">
             <div id="obs-content">
@@ -366,7 +412,7 @@ layout: default
 
         <h2 class="section-title">📖 Descrição</h2>
         <div class="bottom-meta" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <blockquote style="margin: 0; padding: 4px 8px; width: 100%; border-left: 3px solid var(--border-color); background: #f1f5f9; box-sizing: border-box;">
+            <blockquote style="margin: 0; padding: 4px 8px; width: 100%; border-left: 3px solid var(--border-color); background: var(--bg-color); box-sizing: border-box;">
                 <span id="desc-content" style="font-size: 13.5px; color: var(--text-main);">{{ page.descricao | default: content }}</span>
             </blockquote>
             
@@ -377,7 +423,6 @@ layout: default
             </div>
             {% endif %}
         </div>
-
     </main>
 
     <footer class="report-footer">
@@ -385,149 +430,58 @@ layout: default
             ID: {{ page.id }} — <a id="btn-remove-data" href="#" style="color: #dc2626; text-decoration: underline;">Pedir remoção</a>
         </div>
         <div class="btn-group">
-            <button type="button" id="btn-email-share" class="btn" style="background: #2563eb;">📧 Email</button>
-            <button type="button" id="btn-download-md" class="btn" style="background: #0f172a;">📥 MD</button>
-            <button type="button" id="btn-download-txt" class="btn" style="background: #475569;">📥 TXT</button>
+            <a href="https://api.whatsapp.com/send?text=Alerta%20Animal:%20{{ page.especie | url_encode }}%20({{ page.estado_fisico | url_encode }})%20em%20{{ page.localizacao | url_encode }}%250AVer%20detalhes:%20{{ site.url }}{{ page.url }}" target="_blank" class="btn" style="background: #25d366; color: white;">📲 WhatsApp</a>
+            <button type="button" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copiado!');" class="btn">📋 Copiar Link</button>
+            <button type="button" id="btn-email-share" class="btn" style="background: #2563eb; color: white;">📧 Email</button>
+            <button type="button" id="btn-download-md" class="btn">📥 MD</button>
+            <button type="button" id="btn-download-txt" class="btn">📥 TXT</button>
             <button type="button" onclick="window.print();" class="btn">🖨️ Imprimir</button>
         </div>
     </footer>
-
 </div>
 
 <script>
     var animalIdJs = {{ page.id | jsonify }};
     var targetUrl = window.location.href;
+    var animalLocation = {{ page.localizacao | default: "Portugal" | jsonify }};
 
-    function generateReportText(isMarkdown) {
-        var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
-        var especie = {{ page.especie | default: "Desconhecido" | jsonify }};
-        var situacao = {{ page.situacao | default: "Desconhecido" | jsonify }};
-        var estadoFisico = {{ page.estado_fisico | default: "Desconhecido" | jsonify }};
-        var localizacao = {{ page.localizacao | default: "Não indicada" | jsonify }};
-        var concelho = {{ page.concelho | default: "Não indicado" | jsonify }};
-        var dataOcorrencia = {{ page.data_ocorrencia_inicial | default: "Não indicada" | jsonify }};
-        var esterilizado = {{ page.esterilizado | default: "Desconhecido" | jsonify }};
-        var identificacao = {{ page.identificacao | default: "Não indicado" | jsonify }};
-        var caracteristicas = {{ page.caracteristicas | default: "Não indicado" | jsonify }};
-
-        var descElem = document.getElementById('desc-content');
-        var obsElem = document.getElementById('obs-content');
-        var descricao = descElem ? descElem.innerText.trim() : "";
-        var observacoes = obsElem ? obsElem.innerText.trim() : "";
-
-        if (isMarkdown) {
-            var md = "# Ficha de Ocorrência Animal — ID: " + cleanId + "\n\n";
-            md += "## 📋 Resumo da Ocorrência\n\n";
-            md += "- **ID:** " + cleanId + "\n";
-            md += "- **Espécie:** " + especie + "\n";
-            md += "- **Situação:** " + situacao + "\n";
-            md += "- **Estado Físico:** " + estadoFisico + "\n";
-            md += "- **Localização:** " + localizacao + "\n\n";
-
-            md += "## 📝 Detalhes e Dados de Terreno\n\n";
-            md += "- **Concelho:** " + concelho + "\n";
-            md += "- **Data Ocorrência:** " + dataOcorrencia + "\n";
-            md += "- **Esterilizado:** " + esterilizado + "\n";
-            md += "- **Identificação:** " + identificacao + "\n";
-            md += "- **Características:** " + caracteristicas + "\n\n";
-
-            if (observacoes) {
-                md += "## 🩺 Observações e Cuidados\n\n" + observacoes + "\n\n";
-            }
-            if (descricao) {
-                md += "## 📖 Descrição\n\n> " + descricao.replace(/\n/g, "\n> ") + "\n\n";
-            }
-
-            md += "---\n\n🔗 Consulte a ficha digital completa em:\n" + targetUrl;
-            return md;
-        } else {
-            var txt = "Ficha de Ocorrência Animal — ID: " + cleanId + "\n\n";
-            txt += "📋 RESUMO DA OCORRÊNCIA\n\n";
-            txt += "• ID: " + cleanId + "\n";
-            txt += "• Espécie: " + especie + "\n";
-            txt += "• Situação: " + situacao + "\n";
-            txt += "• Estado Físico: " + estadoFisico + "\n";
-            txt += "• Localização: " + localizacao + "\n\n";
-
-            txt += "📝 DETALHES E DADOS DE TERRENO\n\n";
-            txt += "• Concelho: " + concelho + "\n";
-            txt += "• Data Ocorrência: " + dataOcorrencia + "\n";
-            txt += "• Esterilizado: " + esterilizado + "\n";
-            txt += "• Identificação: " + identificacao + "\n";
-            txt += "• Características: " + caracteristicas + "\n\n";
-
-            if (observacoes) {
-                txt += "🩺 OBSERVAÇÕES E CUIDADOS\n" + observacoes + "\n\n";
-            }
-            if (descricao) {
-                txt += "📖 DESCRIÇÃO\n\"" + descricao + "\"\n\n";
-            }
-
-            txt += "🔗 Consulte a ficha digital completa em:\n" + targetUrl;
-            return txt;
-        }
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? 'true' : 'false');
     }
 
-    window.addEventListener('DOMContentLoaded', function() {
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+
+    // Inicializar minimapa com Nominatim
+    document.addEventListener("DOMContentLoaded", function() {
+        var map = L.map('single-case-map').setView([39.5572, -7.8537], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        var query = encodeURIComponent(animalLocation + ", Portugal");
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    var lat = parseFloat(data[0].lat);
+                    var lon = parseFloat(data[0].lon);
+                    map.setView([lat, lon], 14);
+                    L.marker([lat, lon]).addTo(map).bindPopup("<b>{{ page.especie }}</b><br>{{ page.localizacao }}").openPopup();
+                }
+            })
+            .catch(err => console.error("Erro ao carregar mapa do caso:", err));
+
+        // Configurar botões de exportação e partilha
         var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
         var removeBtn = document.getElementById('btn-remove-data');
-        var emailShareBtn = document.getElementById('btn-email-share');
-        var downloadMdBtn = document.getElementById('btn-download-md');
-        var downloadTxtBtn = document.getElementById('btn-download-txt');
-
         if (removeBtn) {
             var emailSubject = "Pedido de remoção de dados - Ocorrência " + cleanId;
             var emailBody = "Solicito a remoção dos dados referentes à seguinte ocorrência:\n\nID: " + cleanId + "\nLink: " + targetUrl;
             removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
-        }
-
-        if (emailShareBtn) {
-            emailShareBtn.addEventListener('click', function() {
-                var subject = "Ficha de Ocorrência Animal — ID: " + cleanId;
-                var body = generateReportText(false);
-                var encodedSubject = encodeURIComponent(subject);
-                var encodedBody = encodeURIComponent(body);
-                
-                var maxUrlLength = 2000;
-                var mailtoLink = "mailto:?subject=" + encodedSubject + "&body=" + encodedBody;
-                
-                if (mailtoLink.length > maxUrlLength) {
-                    var safeBody = body.substring(0, 1000) + "\n\n[...Texto truncado devido ao limite de carateres do email. Consulte o link para o texto completo.]\n\n🔗 " + targetUrl;
-                    mailtoLink = "mailto:?subject=" + encodedSubject + "&body=" + encodeURIComponent(safeBody);
-                }
-                
-                window.location.href = mailtoLink;
-            });
-        }
-
-        if (downloadMdBtn) {
-            downloadMdBtn.addEventListener('click', function() {
-                var mdContent = generateReportText(true);
-                var blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8;' });
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = "Ocorrencia_" + cleanId.replace(/[^a-zA-Z0-9-_]/g, '_') + ".md";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(function() { URL.revokeObjectURL(url); }, 100);
-            });
-        }
-
-        if (downloadTxtBtn) {
-            downloadTxtBtn.addEventListener('click', function() {
-                var txtContent = generateReportText(false);
-                var blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = "Ocorrencia_" + cleanId.replace(/[^a-zA-Z0-9-_]/g, '_') + ".txt";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(function() { URL.revokeObjectURL(url); }, 100);
-            });
         }
     });
 </script>

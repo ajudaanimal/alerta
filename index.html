@@ -1,7 +1,29 @@
 ---
 layout: default
 title: "Sistema de Alerta Animal"
+description: "Plataforma de monitorização e alerta de ocorrências de animais. Consulte o estado dos registos em tempo real."
+image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg"
 ---
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ page.title }}</title>
+    
+    <!-- Descrição (opcional, mas recomendado) -->
+    {% if page.description %}
+    <meta name="description" content="{{ page.description }}">
+    <meta property="og:description" content="{{ page.description }}">
+    {% endif %}
+
+    <!-- Open Graph / Redes Sociais -->
+    <meta property="og:title" content="{{ page.title }}">
+    <meta property="og:type" content="website">
+    
+    {% if page.image %}
+    <meta property="og:image" content="{{ page.image }}">
+    {% endif %}
+</head>
+
 
 <style>
   /* Definição de Variáveis Globais de Cores para Suporte a Dark Mode */

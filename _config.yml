@@ -3,6 +3,7 @@ description: "Portal de resgate de animais"
 markdown: kramdown
 url: "https://ajudaanimal.github.io"
 baseurl: "/alerta"
+
 plugins:
   - jekyll-paginate
   - jekyll-seo-tag
@@ -13,7 +14,7 @@ future: true
 collections:
   ocorrencias:
     output: true
-    permalink: /ocorrencia/:name/
+    permalink: /ocorrencias/:name/
 
 defaults:
   - scope:

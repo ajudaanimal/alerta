@@ -573,32 +573,25 @@ layout: default
 
                         map.setView([lat, lon], zoomLevel);
 
-                        // Ícone personalizado com patinha de cão em SVG
-                        var pawIcon = L.divIcon({
-                            className: 'custom-paw-pin',
+                        // Ícone personalizado com círculo colorido simples
+                        var circleIcon = L.divIcon({
+                            className: 'custom-circle-pin',
                             html: `
                                 <div style="
                                     background-color: ${themeColorJs}; 
-                                    width: 32px; 
-                                    height: 32px; 
+                                    width: 24px; 
+                                    height: 24px; 
                                     border-radius: 50%; 
                                     border: 2px solid #ffffff; 
-                                    box-shadow: 0 4px 8px rgba(0,0,0,0.3); 
-                                    display: flex; 
-                                    align-items: center; 
-                                    justify-content: center;
-                                ">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#ffffff">
-                                        <path d="M12 11c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-5-3c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 9c-2.2 0-4 1.3-4 3 0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2 0-1.7-1.8-3-4-3h-4zm-4.7-6c-.9 0-1.7.5-2.1 1.3-.4.8-.3 1.8.2 2.5.5.7 1.3 1.2 2.2 1.2.3 0 .6-.1.9-.2-.5-.8-.7-1.7-.5-2.7.2-.9.8-1.7 1.6-2.1-.7-.2-1.5-.1-2.3 0z"/>
-                                    </svg>
-                                </div>
+                                    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+                                "></div>
                             `,
-                            iconSize: [32, 32],
-                            iconAnchor: [16, 16],
-                            popupAnchor: [0, -16]
+                            iconSize: [24, 24],
+                            iconAnchor: [12, 12],
+                            popupAnchor: [0, -12]
                         });
 
-                        L.marker([lat, lon], { icon: pawIcon }).addTo(map)
+                        L.marker([lat, lon], { icon: circleIcon }).addTo(map)
                             .bindPopup("<b>{{ page.especie }}</b><br>" + (geoLocal || currentQuery))
                             .openPopup();
                     } else {

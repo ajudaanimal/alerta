@@ -13,11 +13,11 @@ collections:
   ocorrencias:
     output: true
     # 2. ALTERAR ISTO: Mudar de :path para :name garante um link limpo e fiável
-    permalink: /ocorrencias/:name/ 
+    permalink: /ocorrencia/:name/ 
 
 defaults:
   - scope:
       path: ""
-      type: "ocorrencias"
+      type: "ocorrencia"
     values:
       layout: "ocorrencia"

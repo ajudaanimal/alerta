@@ -19,3 +19,5 @@ Esta plataforma oferece um canal de articulação de base comunitária e não su
 Para reportar uma situação de animal ferido ou doente, abra uma nova Ficha de Ocorrência, insira a informação necessária e submeta a mesma para análise do sistema, mais instruções e eventual emissão de novo alerta.
 
 Para outros assuntos, por favor contate-nos via email.
+
+[!animal](https://github.com/ajudaanimal/alerta/blob/main/_assets/img/animal.jpeg?raw=true)

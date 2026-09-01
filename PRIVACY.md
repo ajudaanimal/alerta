@@ -1,14 +1,25 @@
 # Privacidade e Proteção de Dados (RGPD)
 
-O tratamento de dados pessoais nesta plataforma rege-se pelo Regulamento Geral sobre a Proteção de Dados (Regulamento UE 2016/679 - RGPD).
+    Esta plataforma atua estritamente como um prestador de serviços de mero alojamento de conteúdos informativos gerados por terceiros (utilizadores), beneficiando das isenções de responsabilidade aplicáveis aos serviços de hosting ao abrigo da legislação da União Europeia e do ordenamento jurídico português.
 
-## 1. Recolha Mínima e Finalidade
-Os dados recolhidos através dos formulários de alerta (como localização aproximada e fotografias do animal) servem exclusivamente para o fim legítimo de sinalização e pedido de ajuda comunitária.
+    A administração da plataforma não exerce uma vigilância geral nem realiza um controlo prévio obrigatório de todas as publicações efetuadas, declinando responsabilidade inicial sobre os dados submetidos externamente.
 
-## 2. Boas Práticas e Proteção de Terceiros
-Para cumprir a legislação de proteção de dados e salvaguardar a privacidade em Portugal:
-* **Não envie** fotografias que contenham rostos identificáveis de pessoas, matrículas de veículos ou moradas de residências privadas exatas.
-* O utilizador é o único responsável legal pelos conteúdos que submete voluntariamente.
+2. Finalidade do Tratamento
 
-## 3. Direitos dos Titulares
-Em conformidade com o RGPD, qualquer cidadão pode solicitar a retiração, retificação ou eliminação de conteúdos que lhe digam respeito através dos canais de contacto oficiais do projeto.
+    Os dados estritamente necessários inseridos nos alertas (como localização aproximada e fotografias do animal) são processados exclusivamente para o fim legítimo de sinalização comunitária e pedido de ajuda voluntária.
+
+    O cumprimento do Regulamento Geral sobre a Proteção de Dados (RGPD) foca-se na minimização da recolha e na resposta rápida a solicitações legítimas.
+
+3. Mecanismo de Aviso e Remoção (Notice-and-Takedown)
+
+    Não tendo conhecimento prévio de ilegalidades, a plataforma compromete-se a agir com prontidão assim que for notificada.
+
+    Qualquer cidadão ou titular de dados que identifique uma publicação indevida (como dados pessoais sensíveis ou elementos privados) pode solicitar a remoção ou anonimização imediata.
+
+    Os pedidos devem ser enviados para os contactos oficiais do projeto, comprometendo-se a administração a proceder à supressão do conteúdo de forma célere após a receção da notificação.
+
+4. Direitos dos Utilizadores
+
+    Os titulares dos dados mantêm o direito de acesso, retificação, oposição e apagamento dos dados que lhes digam respeito, nos termos previstos pelo RGPD.
+
+    Para o exercício destes direitos ou resolução de questões de privacidade, utilize os canais de contacto disponibilizados no repositório oficial.

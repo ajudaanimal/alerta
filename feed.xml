@@ -11,19 +11,46 @@ layout: null
   <title type="html">{{ site.title | xml_escape }}</title>
   <subtitle>{{ site.description | xml_escape }}</subtitle>
 
-  {% for post in site.ocorrencias limit:20 %}
+  {% for post in site.ocorrencias reversed limit:20 %}
   <entry>
-    <title>{{ post.especie | default: "Ocorrência" }} - {{ post.localizacao | default: "Localização não indicada" }}</title>
+    <title>[{{ post.id | default: "ALERTA" }] {{ post.especie }} - {{ post.localizacao }}</title>
     <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}" rel="alternate" type="text/html" title="{{ post.especie | xml_escape }}"/>
     <published>{{ post.date | date_to_xmlschema }}</published>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
     <id>{{ site.url }}{{ site.baseurl }}{{ post.url }}</id>
     <content type="html" xml:base="{{ site.url }}{{ site.baseurl }}{{ post.url }}">
-      &lt;p&gt;&lt;strong&gt;Estado:&lt;/strong&gt; {{ post.estado_fisico | xml_escape }}&lt;/p&gt;
-      &lt;p&gt;&lt;strong&gt;Situação:&lt;/strong&gt; {{ post.situacao | xml_escape }}&lt;/p&gt;
-      &lt;p&gt;&lt;strong&gt;Localização:&lt;/strong&gt; {{ post.localizacao | xml_escape }}&lt;/p&gt;
-      {% if post.imagem %}&lt;p&gt;&lt;img src="{{ post.imagem }}" alt="Imagem da ocorrência" /&gt;&lt;/p&gt;{% endif %}
-      &lt;p&gt;Consulte a ficha completa em: {{ site.url }}{{ site.baseurl }}{{ post.url }}&lt;/p&gt;
+      <![CDATA[
+        {% if post.imagem %}
+          <p><img src="{{ post.imagem }}" alt="Imagem da ocorrência" style="max-width:100%; height:auto; border-radius:6px;" /></p>
+        {% endif %}
+        
+        <h3>Detalhes da Ocorrência</h3>
+        <ul>
+          <li><strong>ID:</strong> {{ post.id }}</li>
+          <li><strong>Espécie:</strong> {{ post.especie }}</li>
+          <li><strong>Estado Físico:</strong> {{ post.estado_fisico }}</li>
+          <li><strong>Situação:</strong> {{ post.situacao }}</li>
+          <li><strong>Triagem:</strong> {{ post.triagem }}</li>
+          <li><strong>Localização:</strong> {{ post.localizacao }}</li>
+          <li><strong>Contacto:</strong> {{ post.contacto }}</li>
+        </ul>
+
+        {% if post.observacoes %}
+          <h4>Observações e Cuidados</h4>
+          <p>{{ post.observacoes }}</p>
+        {% endif %}
+
+        {% if post.ficha_texto %}
+          <h4>Ficha Descritiva</h4>
+          <p>{{ post.ficha_texto | newline_to_br }}</p>
+        {% endif %}
+
+        <hr />
+        <p><a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">🔗 Ver ocorrência completa no site</a></p>
+        {% if post.link and post.link != "#" %}
+          <p><a href="{{ post.link }}">📖 Ver publicação original (Facebook/Fonte)</a></p>
+        {% endif %}
+      ]]>
     </content>
   </entry>
   {% endfor %}

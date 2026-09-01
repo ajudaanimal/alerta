@@ -173,6 +173,48 @@ layout: default
         width: 100%;
         height: 100%;
         object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .animal-img-container img:hover {
+        transform: scale(1.03);
+    }
+
+    /* Modal / Janela Flutuante para Ampliar Imagem */
+    .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.85);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .image-modal img {
+        max-width: 90%;
+        max-height: 90vh;
+        border-radius: 6px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+        object-fit: contain;
+    }
+
+    .image-modal-close {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: #ffffff;
+        font-size: 35px;
+        font-weight: bold;
+        cursor: pointer;
+        background: none;
+        border: none;
     }
 
     .unified-highlight-box {
@@ -392,7 +434,7 @@ layout: default
         <div class="top-section">
             <div class="animal-img-container">
                 {% if page.imagem %}
-                    <img src="{{ page.imagem }}" alt="Fotografia do animal">
+                    <img id="clickable-animal-img" src="{{ page.imagem }}" alt="Fotografia do animal" title="Clique para ampliar">
                 {% else %}
                     <span style="color:var(--text-muted); font-size:10px;">Sem Imagem</span>
                 {% endif %}
@@ -474,6 +516,12 @@ layout: default
     </footer>
 </div>
 
+<!-- Modal para ver imagem ampliada -->
+<div id="imageModal" class="image-modal">
+    <button class="image-modal-close" id="modalCloseBtn">&times;</button>
+    <img id="modalImage" src="" alt="Imagem Ampliada">
+</div>
+
 <script>
     var animalIdJs = {{ page.id | jsonify }};
     var targetUrl = window.location.href;
@@ -482,6 +530,35 @@ layout: default
 
     // Inicializar minimapa com Nominatim e atribuição personalizada do OSM com a bandeira da Palestina
     document.addEventListener("DOMContentLoaded", function() {
+        // Funcionalidade da Imagem Ampliada (Modal)
+        var imgElement = document.getElementById('clickable-animal-img');
+        var modal = document.getElementById('imageModal');
+        var modalImg = document.getElementById('modalImage');
+        var closeBtn = document.getElementById('modalCloseBtn');
+
+        if (imgElement && modal) {
+            imgElement.addEventListener('click', function() {
+                modal.style.display = 'flex';
+                modalImg.src = this.src;
+            });
+
+            var closeModal = function() {
+                modal.style.display = 'none';
+            };
+
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        }
+
         var map = L.map('single-case-map', {
             attributionControl: false
         }).setView([39.5572, -7.8537], 6);
@@ -581,50 +658,50 @@ layout: default
                 var assunto = encodeURIComponent("Ocorrência Animal - ID: " + idCaso + " ("  + especie + ")");
                 var corpo = encodeURIComponent(textoTxt);
                 window.location.href = "mailto:?subject=" + assunto + "&body=" + corpo;
-            });
-        }
+          });
+      }
 
-        // Funcionalidade para o botão de descarregar TXT
-        var downloadTxtBtn = document.getElementById('btn-download-txt');
-        if (downloadTxtBtn) {
-            downloadTxtBtn.addEventListener('click', function() {
-                var obsEl = document.getElementById('obs-content');
-                var descEl = document.getElementById('desc-content');
-                var conteudoTexto = "RELATÓRIO DE OCORRÊNCIA\nID: " + animalIdJs + "\nLink: " + targetUrl + "\n\n" +
+      // Funcionalidade para o botão de descarregar TXT
+      var downloadTxtBtn = document.getElementById('btn-download-txt');
+      if (downloadTxtBtn) {
+          downloadTxtBtn.addEventListener('click', function() {
+              var obsEl = document.getElementById('obs-content');
+              var descEl = document.getElementById('desc-content');
+              var conteudoTexto = "RELATÓRIO DE OCORRÊNCIA\nID: " + animalIdJs + "\nLink: " + targetUrl + "\n\n" +
                                     "Local: " + animalLocation + "\n" +
                                     "Observações: " + (obsEl ? obsEl.innerText : "") + "\n" +
                                     "Descrição: " + (descEl ? descEl.innerText : "");
-                
-                var blob = new Blob([conteudoTexto], { type: 'text/plain;charset=utf-8' });
-                var link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = "ocorrencia_" + animalIdJs + ".txt";
-                link.click();
-            });
-        }
+              
+              var blob = new Blob([conteudoTexto], { type: 'text/plain;charset=utf-8' });
+              var link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = "ocorrencia_" + animalIdJs + ".txt";
+              link.click();
+          });
+      }
 
-        // Funcionalidade para o botão de descarregar MD
-        var downloadMdBtn = document.getElementById('btn-download-md');
-        if (downloadMdBtn) {
-            downloadMdBtn.addEventListener('click', function() {
-                var conteudoMd = "---\nlayout: default\ntitle: Ocorrência " + animalIdJs + "\n---\n\n" +
+      // Funcionalidade para o botão de descarregar MD
+      var downloadMdBtn = document.getElementById('btn-download-md');
+      if (downloadMdBtn) {
+          downloadMdBtn.addEventListener('click', function() {
+              var conteudoMd = "---\nlayout: default\ntitle: Ocorrência " + animalIdJs + "\n---\n\n" +
                                    "# " + {{ page.especie | jsonify }} + "\n\n" +
                                    "- **ID:** " + animalIdJs + "\n- **Local:** " + animalLocation + "\n- **Link:** " + targetUrl;
-                
-                var blob = new Blob([conteudoMd], { type: 'text/markdown;charset=utf-8' });
-                var link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = "ocorrencia_" + animalIdJs + ".md";
-                link.click();
-            });
-        }
+              
+              var blob = new Blob([conteudoMd], { type: 'text/markdown;charset=utf-8' });
+              var link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = "ocorrencia_" + animalIdJs + ".md";
+              link.click();
+          });
+      }
 
-        var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
-        var removeBtn = document.getElementById('btn-remove-data');
-        if (removeBtn) {
-            var emailSubject = "Pedido de remoção de dados - Ocorrência " + cleanId;
-            var emailBody = "Solicito a remoção dos dados referentes à seguinte ocorrência:\n\nID: " + cleanId + "\nLink: " + targetUrl;
-            removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
-        }
-    });
+      var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
+      var removeBtn = document.getElementById('btn-remove-data');
+      if (removeBtn) {
+          var emailSubject = "Pedido de remoção de dados - Ocorrência " + cleanId;
+          var emailBody = "Solicito a remoção dos dados referentes à seguinte ocorrência:\n\nID: " + cleanId + "\nLink: " + targetUrl;
+          removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
+      }
+  });
 </script>

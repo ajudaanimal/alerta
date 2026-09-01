@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page.title | default: site.title }}</title>
     
+    <!-- SEO & Open Graph / Redes Sociais -->
+    {% if page.description %}
+    <meta name="description" content="{{ page.description }}">
+    <meta property="og:description" content="{{ page.description }}">
+    {% endif %}
+    
+    <meta property="og:title" content="{{ page.title | default: site.title }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    
+    {% if page.image %}
+    <meta property="og:image" content="{{ page.image }}">
+    {% endif %}
+
     <!-- Script para carregar o modo escuro sem piscar a página -->
     <script>
         if (localStorage.getItem('darkMode') === 'true') {
@@ -76,7 +90,7 @@
         <button type="button" class="theme-toggle-btn" onclick="toggleGlobalDarkMode()" title="Alternar Tema">🌓</button>
     </header>
 
-    <!-- O conteúdo de cada página específica (como a tua index.html) entra aqui -->
+    <!-- O conteúdo de cada página específica entra aqui -->
     <main class="site-main-content">
         {{ content }}
     </main>

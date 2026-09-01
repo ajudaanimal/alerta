@@ -244,19 +244,28 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   </div>
 
   <div style="margin-bottom: 16px;">
-    <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, estado ou ID..." onkeyup="filterCards()" style="width: 100%; padding: 10px; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+    <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho, estado ou ID..." onkeyup="filterCards()" style="width: 100%; padding: 10px; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
   </div>
 
-<script>
-  function filterCards() {
-    let input = document.getElementById('searchBox').value.toLowerCase();
-    let cards = document.querySelectorAll('.HB-card');
-    cards.forEach(card => {
-      let text = card.innerText.toLowerCase();
-      card.style.display = text.includes(input) ? "flex" : "none";
-    });
-  }
-</script>
+  <script>
+    function normalizeText(text) {
+      return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+    }
+
+    function filterCards() {
+      let rawInput = document.getElementById('searchBox').value;
+      let input = normalizeText(rawInput);
+      let cards = document.querySelectorAll('.HB-card');
+      
+      cards.forEach(card => {
+        let visibleText = normalizeText(card.innerText);
+        let searchTags = normalizeText(card.getAttribute('data-search-tags') || '');
+        
+        let matches = visibleText.includes(input) || searchTags.includes(input);
+        card.style.display = matches ? "flex" : "none";
+      });
+    }
+  </script>
 
   <div class="HB-kanban">
 
@@ -277,7 +286,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
         {% assign t = post.triagem | upcase %}
         {% if t contains 'VERM' %}
           {% assign has_reds = true %}
-          <a href="{{ post.url | relative_url }}" class="HB-card">
+          <a href="{{ post.url | relative_url }}" class="HB-card" data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localizacao }} {{ post.concelho }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }} {{ post.observacoes | strip_html }} {{ post.descricao | strip_html }}">
             {% if post.imagem %}
               <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
             {% endif %}
@@ -312,7 +321,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
         {% assign t = post.triagem | upcase %}
         {% if t contains 'LARANJA' %}
           {% assign has_orange = true %}
-          <a href="{{ post.url | relative_url }}" class="HB-card">
+          <a href="{{ post.url | relative_url }}" class="HB-card" data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localizacao }} {{ post.concelho }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }} {{ post.observacoes | strip_html }} {{ post.descricao | strip_html }}">
             {% if post.imagem %}
               <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
             {% endif %}
@@ -347,7 +356,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
         {% assign t = post.triagem | upcase %}
         {% unless t contains 'VERM' or t contains 'LARANJA' %}
           {% assign has_yellow = true %}
-          <a href="{{ post.url | relative_url }}" class="HB-card">
+          <a href="{{ post.url | relative_url }}" class="HB-card" data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localizacao }} {{ post.concelho }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }} {{ post.observacoes | strip_html }} {{ post.descricao | strip_html }}">
             {% if post.imagem %}
               <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
             {% endif %}

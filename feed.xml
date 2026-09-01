@@ -1,0 +1,30 @@
+---
+layout: null
+---
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator>
+  <link href="{{ site.url }}{{ site.baseurl }}/feed.xml" rel="self" type="application/atom+xml"/>
+  <link href="{{ site.url }}{{ site.baseurl }}/" rel="alternate" type="text/html"/>
+  <updated>{{ site.time | date_to_xmlschema }}</updated>
+  <id>{{ site.url }}{{ site.baseurl }}/feed.xml</id>
+  <title type="html">{{ site.title | xml_escape }}</title>
+  <subtitle>{{ site.description | xml_escape }}</subtitle>
+
+  {% for post in site.ocorrencias limit:20 %}
+  <entry>
+    <title>{{ post.especie | default: "Ocorrência" }} - {{ post.localizacao | default: "Localização não indicada" }}</title>
+    <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}" rel="alternate" type="text/html" title="{{ post.especie | xml_escape }}"/>
+    <published>{{ post.date | date_to_xmlschema }}</published>
+    <updated>{{ post.date | date_to_xmlschema }}</updated>
+    <id>{{ site.url }}{{ site.baseurl }}{{ post.url }}</id>
+    <content type="html" xml:base="{{ site.url }}{{ site.baseurl }}{{ post.url }}">
+      &lt;p&gt;&lt;strong&gt;Estado:&lt;/strong&gt; {{ post.estado_fisico | xml_escape }}&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;Situação:&lt;/strong&gt; {{ post.situacao | xml_escape }}&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;Localização:&lt;/strong&gt; {{ post.localizacao | xml_escape }}&lt;/p&gt;
+      {% if post.imagem %}&lt;p&gt;&lt;img src="{{ post.imagem }}" alt="Imagem da ocorrência" /&gt;&lt;/p&gt;{% endif %}
+      &lt;p&gt;Consulte a ficha completa em: {{ site.url }}{{ site.baseurl }}{{ post.url }}&lt;/p&gt;
+    </content>
+  </entry>
+  {% endfor %}
+</feed>

@@ -613,13 +613,30 @@ layout: default
         // Último recurso: Centrar em Portugal
         searchQueries.push("Portugal");
 
-        // String para o popup
-        var popupLocParts = [];
-        if (geoLocalidade) popupLocParts.push(geoLocalidade);
-        if (geoConcelho) popupLocParts.push(geoConcelho);
-        if (geoDistrito) popupLocParts.push(geoDistrito);
+        // Garante uma única string limpa e sem duplicados para a localização
+        function formatarPopupLimpo(loc, conc, dist, fallback) {
+            const ignorar = ["não indicado", "não indicada", "n/d", "null", "undefined", ""];
+            const limpar = (str) => {
+                if (!str) return "";
+                let t = String(str).trim();
+                if (ignorar.includes(t.toLowerCase())) return "";
+                return t.replace(/^distrito de\s+/i, "");
+            };
 
-        var popupLocationText = popupLocParts.length > 0 ? popupLocParts.join(", ") : geoLocal;
+            const l = limpar(loc);
+            const c = limpar(conc);
+            const d = limpar(dist);
+
+            // O Set remove automaticamente elementos repetidos (ex: Viana do Castelo repetido)
+            const partesUnicas = [...new Set([l, c, d].filter(Boolean))];
+
+            if (partesUnicas.length > 0) {
+                return partesUnicas.join(", ");
+            }
+            return limpar(fallback) || "";
+        }
+
+        var popupLocationText = formatarPopupLimpo(geoLocalidade, geoConcelho, geoDistrito, geoLocal);
 
         function geocodeSequentially(queries, index) {
             if (index >= queries.length) {

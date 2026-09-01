@@ -11,13 +11,13 @@ plugins:
 future: true 
 
 collections:
-  ocorrencia:
+  ocorrencias:
     output: true
     permalink: /ocorrencia/:name/
 
 defaults:
   - scope:
       path: ""
-      type: "ocorrencia"
+      type: "ocorrencias"
     values:
       layout: "ocorrencia"

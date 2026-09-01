@@ -1,677 +1,94 @@
 ---
 layout: default
-title: Alerta Animal
----
-
-<style>
-  .container, .container-lg, main {
-    max-width: 100% !important;
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-
-  .homebase-container {
-    width: 100%;
-    max-width: 1920px;
-    margin: 0 auto;
-    padding: 10px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: #0f172a;
-  }
-  
-  .HB-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #e0f2fe;
-    color: #0369a1;
-    border: 1px solid #bae6fd;
-    padding: 8px 16px;
-    border-radius: 6px;
-    margin-bottom: 12px;
-  }
-  
-  .HB-header h1 {
-    font-size: 16px;
-    font-weight: 800;
-    margin: 0;
-  }
-
-  .HB-stats {
-    font-size: 12px;
-    color: #0369a1;
-  }
-
-  .HB-kanban {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    align-items: start;
-  }
-
-  .HB-column {
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px; /* Espaço reduzido entre cartões */
-  }
-
-  .HB-col-header {
-    font-size: 12px;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding-bottom: 6px;
-    border-bottom: 2px solid #cbd5e1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .col-vermelho { border-top: 3px solid #ef4444; }
-  .col-laranja-amarelo { border-top: 3px solid #f97316; }
-  .col-verde { border-top: 3px solid #22c55e; }
-
-  /* CARTÕES MINIMALISTAS */
-  .HB-card {
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    text-decoration: none;
-    color: inherit;
-    height: 55px; /* Altura fixa minúscula */
-  }
-
-  .HB-card:hover {
-    border-color: #94a3b8;
-    background-color: #f1f5f9;
-  }
-
-  .HB-card-img-wrap {
-    width: 55px;
-    min-width: 55px;
-    background: #e2e8f0;
-  }
-
-  .HB-card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .HB-card-body {
-    padding: 4px 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: calc(100% - 55px);
-  }
-
-  .HB-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2px;
-  }
-
-  .HB-id {
-    font-size: 9px;
-    font-weight: 700;
-    color: #64748b;
-  }
-
-  .HB-badge {
-    font-size: 8px;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding: 1px 4px;
-    border-radius: 2px;
-  }
-
-  .badge-vermelho { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
-  .badge-laranja  { background: #ffedd5; color: #7c2d12; border: 1px solid #fdba74; }
-  .badge-amarelo  { background: #fef9c3; color: #713f12; border: 1px solid #fde047; }
-  .badge-verde    { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
-
-  .HB-title {
-    font-size: 12px;
-    font-weight: 800;
-    margin: 0 0 2px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* Corta textos longos com ... */
-  }
-
-  .HB-meta {
-    font-size: 10px;
-    color: #475569;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  @media(max-width: 900px) {
-    .HB-kanban { grid-template-columns: 1fr; }
-  }
-</style>
-
-<div class="homebase-container">
-  
-  <div class="HB-header">
-    <h1>🐾 Sistema de Alerta Animal</h1>
-    <div class="HB-stats">
-      Registos: <strong>{{ site.ocorrencias | size }}</strong> ativos
-    </div>
-  </div>
-
-  <div class="HB-kanban">
-
-    <!-- COLUNA 1: CRÍTICO / VERMELHO -->
-    <div class="HB-column col-vermelho">
-      <div class="HB-col-header" style="color: #991b1b;">
-        <span>🔴 Crítico</span>
-        {% assign count_red = 0 %}
-        {% for post in site.ocorrencias %}
-          {% assign t = post.triagem | upcase %}
-          {% if t contains 'VERMELHO' %}{% assign count_red = count_red | plus: 1 %}{% endif %}
-        {% endfor %}
-        <span class="HB-badge badge-vermelho">{{ count_red }}</span>
-      </div>
-
-      {% assign has_reds = false %}
-      {% for post in site.ocorrencias reversed %}
-        {% assign t = post.triagem | upcase %}
-        {% if t contains 'VERMELHO' %}
-          {% assign has_reds = true %}
-          <a href="{{ post.url | relative_url }}" class="HB-card">
-            {% if post.imagem %}
-              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
-            {% endif %}
-            <div class="HB-card-body">
-              <div class="HB-card-top">
-                <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-vermelho">{{ post.triagem | replace: 'CÓDIGO VERMELHO', 'VERM.' }}</span>
-              </div>
-              <h2 class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              <div class="HB-meta">Est: {{ post.situacao }} | Loc: {{ post.localizacao }}</div>
-            </div>
-          </a>
-        {% endif %}
-      {% endfor %}
-      {% unless has_reds %}<div style="text-align:center; font-size:11px; color:#94a3b8; padding: 10px;">Sem ocorrências.</div>{% endunless %}
-    </div>
-
-    <!-- COLUNA 2: URGENTE / LARANJA & AMARELO -->
-    <div class="HB-column col-laranja-amarelo">
-      <div class="HB-col-header" style="color: #9a3412;">
-        <span>🟠 Urgente / Moderado</span>
-        {% assign count_med = 0 %}
-        {% for post in site.ocorrencias %}
-          {% assign t = post.triagem | upcase %}
-          {% if t contains 'LARANJA' or t contains 'AMARELO' %}{% assign count_med = count_med | plus: 1 %}{% endif %}
-        {% endfor %}
-        <span class="HB-badge badge-laranja">{{ count_med }}</span>
-      </div>
-
-      {% assign has_medium = false %}
-      {% for post in site.ocorrencias reversed %}
-        {% assign t = post.triagem | upcase %}
-        {% if t contains 'LARANJA' or t contains 'AMARELO' %}
-          {% assign has_medium = true %}
-          {% assign b_class = "badge-laranja" %}
-          {% if t contains 'AMARELO' %}{% assign b_class = "badge-amarelo" %}{% endif %}
-          <a href="{{ post.url | relative_url }}" class="HB-card">
-            {% if post.imagem %}
-              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
-            {% endif %}
-            <div class="HB-card-body">
-              <div class="HB-card-top">
-                <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge {{ b_class }}">{{ post.triagem | replace: 'CÓDIGO LARANJA', 'LARANJA' | replace: 'CÓDIGO AMARELO', 'AMARELO' }}</span>
-              </div>
-              <h2 class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              <div class="HB-meta">Est: {{ post.situacao }} | Loc: {{ post.localizacao }}</div>
-            </div>
-          </a>
-        {% endif %}
-      {% endfor %}
-      {% unless has_medium %}<div style="text-align:center; font-size:11px; color:#94a3b8; padding: 10px;">Sem ocorrências.</div>{% endunless %}
-    </div>
-
-    <!-- COLUNA 3: ESTÁVEL / VERDE OU OUTROS -->
-    <div class="HB-column col-verde">
-      <div class="HB-col-header" style="color: #166534;">
-        <span>🟢 Estável / Outros</span>
-        {% assign count_green = 0 %}
-        {% for post in site.ocorrencias %}
-          {% assign t = post.triagem | upcase %}
-          {% unless t contains 'VERMELHO' or t contains 'LARANJA' or t contains 'AMARELO' %}{% assign count_green = count_green | plus: 1 %}{% endunless %}
-        {% endfor %}
-        <span class="HB-badge badge-verde">{{ count_green }}</span>
-      </div>
-
-      {% assign has_greens = false %}
-      {% for post in site.ocorrencias reversed %}
-        {% assign t = post.triagem | upcase %}
-        {% unless t contains 'VERMELHO' or t contains 'LARANJA' or t contains 'AMARELO' %}
-          {% assign has_greens = true %}
-          <a href="{{ post.url | relative_url }}" class="HB-card">---
-layout: default
 title: Alerta Animal — Sistema de Alerta Animal
 ---
 
 <style>
-  .container, .container-lg, main {
-    max-width: 100% !important;
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-
   .homebase-container {
     width: 100%;
-    max-width: 1920px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 10px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #0f172a;
-  }
-  
-  .HB-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #e0f2fe;
-    color: #0369a1;
-    border: 1px solid #bae6fd;
-    padding: 8px 16px;
-    border-radius: 6px;
-    margin-bottom: 12px;
-  }
-  
-  .HB-header h1 {
-    font-size: 16px;
-    font-weight: 800;
-    margin: 0;
-  }
-
-  .HB-stats {
-    font-size: 12px;
-    color: #0369a1;
-  }
-
-  .HB-kanban {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    align-items: start;
-  }
-
-  .HB-column {
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px; /* Espaço reduzido entre cartões */
-  }
-
-  .HB-col-header {
-    font-size: 12px;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding-bottom: 6px;
-    border-bottom: 2px solid #cbd5e1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .col-vermelho { border-top: 3px solid #ef4444; }
-  .col-laranja-amarelo { border-top: 3px solid #f97316; }
-  .col-verde { border-top: 3px solid #22c55e; }
-
-  /* CARTÕES MINIMALISTAS */
-  .HB-card {
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    text-decoration: none;
-    color: inherit;
-    height: 55px; /* Altura fixa minúscula */
-  }
-
-  .HB-card:hover {
-    border-color: #94a3b8;
-    background-color: #f1f5f9;
-  }
-
-  .HB-card-img-wrap {
-    width: 55px;
-    min-width: 55px;
-    background: #e2e8f0;
-  }
-
-  .HB-card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .HB-card-body {
-    padding: 4px 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: calc(100% - 55px);
-  }
-
-  .HB-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2px;
-  }
-
-  .HB-id {
-    font-size: 9px;
-    font-weight: 700;
-    color: #64748b;
-  }
-
-  .HB-badge {
-    font-size: 8px;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding: 1px 4px;
-    border-radius: 2px;
-  }
-
-  .badge-vermelho { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
-  .badge-laranja  { background: #ffedd5; color: #7c2d12; border: 1px solid #fdba74; }
-  .badge-amarelo  { background: #fef9c3; color: #713f12; border: 1px solid #fde047; }
-  .badge-verde    { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
-
-  .HB-title {
-    font-size: 12px;
-    font-weight: 800;
-    margin: 0 0 2px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* Corta textos longos com ... */
-  }
-
-  .HB-meta {
-    font-size: 10px;
-    color: #475569;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  @media(max-width: 900px) {
-    .HB-kanban { grid-template-columns: 1fr; }
-  }
-</style>
-
-<div class="homebase-container">
-  
-  <div class="HB-header">
-    <h1>🐾 Sistema de Alerta Animal</h1>
-    <div class="HB-stats">
-      Registos: <strong>{{ site.ocorrencias | size }}</strong> ativos
-    </div>
-  </div>
-
-  <div class="HB-kanban">
-
-    <!-- COLUNA 1: CRÍTICO / VERMELHO -->
-    <div class="HB-column col-vermelho">
-      <div class="HB-col-header" style="color: #991b1b;">
-        <span>🔴 Crítico</span>
-        {% assign count_red = 0 %}
-        {% for post in site.ocorrencias %}
-          {% assign t = post.triagem | upcase %}
-          {% if t contains 'VERMELHO' %}{% assign count_red = count_red | plus: 1 %}{% endif %}
-        {% endfor %}
-        <span class="HB-badge badge-vermelho">{{ count_red }}</span>
-      </div>
-
-      {% assign has_reds = false %}
-      {% for post in site.ocorrencias reversed %}
-        {% assign t = post.triagem | upcase %}
-        {% if t contains 'VERMELHO' %}
-          {% assign has_reds = true %}
-          <a href="{{ post.url | relative_url }}" class="HB-card">
-            {% if post.imagem %}
-              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
-            {% endif %}
-            <div class="HB-card-body">
-              <div class="HB-card-top">
-                <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-vermelho">{{ post.triagem | replace: 'CÓDIGO VERMELHO', 'VERM.' }}</span>
-              </div>
-              <h2 class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              <div class="HB-meta">Est: {{ post.situacao }} | Loc: {{ post.localizacao }}</div>
-            </div>
-          </a>
-        {% endif %}
-      {% endfor %}
-      {% unless has_reds %}<div style="text-align:center; font-size:11px; color:#94a3b8; padding: 10px;">Sem ocorrências.</div>{% endunless %}
-    </div>
-
-    <!-- COLUNA 2: URGENTE / LARANJA & AMARELO -->
-    <div class="HB-column col-laranja-amarelo">
-      <div class="HB-col-header" style="color: #9a3412;">
-        <span>🟠 Urgente / Moderado</span>
-        {% assign count_med = 0 %}
-        {% for post in site.ocorrencias %}
-          {% assign t = post.triagem | upcase %}
-          {% if t contains 'LARANJA' or t contains 'AMARELO' %}{% assign count_med = count_med | plus: 1 %}{% endif %}
-        {% endfor %}
-        <span class="HB-badge badge-laranja">{{ count_med }}</span>
-      </div>
-
-      {% assign has_medium = false %}
-      {% for post in site.ocorrencias reversed %}
-        {% assign t = post.triagem | upcase %}
-        {% if t contains 'LARANJA' or t contains 'AMARELO' %}
-          {% assign has_medium = true %}
-          {% assign b_class = "badge-laranja" %}
-          {% if t contains 'AMARELO' %}{% assign b_class = "badge-amarelo" %}{% endif %}
-          <a href="{{ post.url | relative_url }}" class="HB-card">
-            {% if post.imagem %}
-              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
-            {% endif %}
-            <div class="HB-card-body">
-              <div class="HB-card-top">
-                <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge {{ b_class }}">{{ post.triagem | replace: 'CÓDIGO LARANJA', 'LARANJA' | replace: 'CÓDIGO AMARELO', 'AMARELO' }}</span>
-              </div>
-              <h2 class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              <div class="HB-meta">Est: {{ post.situacao }} | Loc: {{ post.localizacao }}</div>
-            </div>
-          </a>
-        {% endif %}
-      {% endfor %}
-      {% unless has_medium %}<div style="text-align:center; font-size:11px; color:#94a3b8; padding: 10px;">Sem ocorrências.</div>{% endunless %}
-    </div>
-
-    <!-- COLUNA 3: ESTÁVEL / VERDE OU OUTROS -->
-    <div class="HB-column col-verde">
-      <div class="HB-col-header" style="color: #166534;">
-        <span>🟢 Estável / Outros</span>
-        {% assign count_green = 0 %}
-        {% for post in site.ocorrencias %}
-          {% assign t = post.triagem | upcase %}
-          {% unless t contains 'VERMELHO' or t contains 'LARANJA' or t contains 'AMARELO' %}{% assign count_green = count_green | plus: 1 %}{% endunless %}
-        {% endfor %}
-        <span class="HB-badge badge-verde">{{ count_green }}</span>
-      </div>
-
-      {% assign has_greens = false %}
-      {% for post in site.ocorrencias reversed %}
-        {% assign t = post.triagem | upcase %}
-        {% unless t contains 'VERMELHO' or t contains 'LARANJA' or t contains 'AMARELO' %}
-          {% assign has_greens = true %}
-          <a href="{{ post.url | relative_url }}" class="HB-card">
-            {% if post.imagem %}
-              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
-            {% endif %}
-            <div class="HB-card-body">
-              <div class="HB-card-top">
-                <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-verde">{{ post.triagem | default: "NORMAL" | replace: 'SEM TRIAGEM', 'S/ TRIAGEM' }}</span>
-              </div>
-              <h2 class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              <div class="HB-meta">Est: {{ post.situacao }} | Loc: {{ post.localizacao }}</div>
-            </div>
-          </a>
-        {% endunless %}
-      {% endfor %}
-      {% unless has_greens %}<div style="text-align:center; font-size:11px; color:#94a3b8; padding: 10px;">Sem ocorrências.</div>{% endunless %}
-    </div>
-
-  </div>
-</div>
-            {% if post.imagem %}
-              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
-            {% endif %}
-            <div class="HB-card-body">
-              <div class="HB-card-top">
-                <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-verde">{{ post.triagem | default: "NORMAL" | replace: 'SEM TRIAGEM', 'S/ TRIAGEM' }}</span>
-              </div>
-              <h2 class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              <div class="HB-meta">Est: {{ post.situacao }} | Loc: {{ post.localizacao }}</div>
-            </div>
-          </a>
-        {% endunless %}
-      {% endfor %}
-      {% unless has_greens %}<div style="text-align:center; font-size:11px; color:#94a3b8; padding: 10px;">Sem ocorrências.</div>{% endunless %}
-    </div>
-
-  </div>
-</div>---
-layout: default
-title: Alerta Animal — Sistema de Alerta Animal
----
-
-<style>
-  .container, .container-lg, main {
-    max-width: 100% !important;
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-
-  .homebase-container {
-    width: 100%;
-    max-width: 1920px;
-    margin: 0 auto;
-    padding: 10px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #0f172a;
-  }
-  
-  .HB-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #e0f2fe;
-    color: #0369a1;
-    border: 1px solid #bae6fd;
-    padding: 12px 20px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-  }
-  
-  .HB-header h1 {
-    font-size: 18px;
-    font-weight: 800;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .HB-stats {
-    font-size: 12px;
-    color: #0369a1;
-    font-weight: 600;
-  }
-
-  .HB-stats strong {
-    color: #0f172a;
-  }
-
-  .HB-kanban {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-    width: 100%;
-    align-items: start;
-  }
-
-  .HB-column {
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
     box-sizing: border-box;
   }
+  
+  .HB-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  
+  .HB-header h1 {
+    font-size: 15px;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .HB-kanban {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+
+  .HB-column {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
 
   .HB-col-header {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding-bottom: 8px;
+    padding-bottom: 6px;
     border-bottom: 2px solid #cbd5e1;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  .col-vermelho { border-top: 4px solid #ef4444; }
-  .col-laranja-amarelo { border-top: 4px solid #f97316; }
-  .col-verde { border-top: 4px solid #22c55e; }
+  .col-vermelho { border-top: 3px solid #ef4444; }
+  .col-laranja-amarelo { border-top: 3px solid #f97316; }
+  .col-verde { border-top: 3px solid #22c55e; }
 
+  /* CARTÕES ULTRA-MINIMALISTAS */
   .HB-card {
     background: #ffffff;
     border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    overflow: hidden;
+    border-radius: 4px;
     display: flex;
     flex-direction: row;
-    align-items: stretch;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
-    width: 100%;
+    align-items: center;
     text-decoration: none;
     color: inherit;
+    height: 48px;
+    overflow: hidden;
   }
 
   .HB-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     border-color: #94a3b8;
-    transform: translateY(-1px);
+    background-color: #f1f5f9;
   }
 
   .HB-card-img-wrap {
-    width: 75px;
-    min-width: 75px;
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
     background: #e2e8f0;
-    position: relative;
   }
 
   .HB-card-img {
@@ -681,34 +98,33 @@ title: Alerta Animal — Sistema de Alerta Animal
   }
 
   .HB-card-body {
-    padding: 8px 10px;
+    padding: 4px 8px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 4px;
+    justify-content: center;
     flex-grow: 1;
-    overflow: hidden;
+    min-width: 0;
   }
 
   .HB-card-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 1px;
   }
 
   .HB-id {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     color: #64748b;
-    font-family: monospace;
   }
 
   .HB-badge {
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 800;
     text-transform: uppercase;
-    padding: 1px 4px;
-    border-radius: 3px;
+    padding: 1px 3px;
+    border-radius: 2px;
   }
 
   .badge-vermelho { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
@@ -717,53 +133,24 @@ title: Alerta Animal — Sistema de Alerta Animal
   .badge-verde    { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
 
   .HB-title {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 800;
-    color: #0f172a;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .HB-meta {
-    font-size: 11px;
-    color: #475569;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    line-height: 1.2;
-  }
-
-  .HB-meta span {
-    background: #f8fafc;
-    padding: 1px 4px;
-    border-radius: 3px;
-    border: 1px solid #f1f5f9;
-  }
-
-  .empty-col {
-    text-align: center;
-    padding: 20px 10px;
-    color: #94a3b8;
-    font-size: 12px;
-    font-style: italic;
-  }
-
   @media(max-width: 900px) {
-    .HB-kanban {
-      grid-template-columns: 1fr;
-    }
+    .HB-kanban { grid-template-columns: 1fr; }
   }
 </style>
 
 <div class="homebase-container">
   
   <div class="HB-header">
-    <h1>🐾 Alerta Animal — Sistema de Alerta Animal</h1>
-    <div class="HB-stats">
-      Total Registado: <strong>{{ site.ocorrencias | size }}</strong> ocorrências ativas
-    </div>
+    <h1>🐾 Sistema de Alerta Animal</h1>
+    <div style="font-size: 11px;">Registos: <strong>{{ site.ocorrencias | size }}</strong></div>
   </div>
 
   <div class="HB-kanban">
@@ -771,7 +158,7 @@ title: Alerta Animal — Sistema de Alerta Animal
     <!-- COLUNA 1: CRÍTICO / VERMELHO -->
     <div class="HB-column col-vermelho">
       <div class="HB-col-header" style="color: #991b1b;">
-        <span>🔴 Crítico / Vermelho</span>
+        <span>🔴 Crítico</span>
         {% assign count_red = 0 %}
         {% for post in site.ocorrencias %}
           {% assign t = post.triagem | upcase %}
@@ -787,34 +174,25 @@ title: Alerta Animal — Sistema de Alerta Animal
           {% assign has_reds = true %}
           <a href="{{ post.url | relative_url }}" class="HB-card">
             {% if post.imagem %}
-              <div class="HB-card-img-wrap">
-                <img src="{{ post.imagem }}" alt="{{ post.id }}" class="HB-card-img">
-              </div>
+              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
             {% endif %}
             <div class="HB-card-body">
               <div class="HB-card-top">
                 <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-vermelho">{{ post.triagem }}</span>
+                <span class="HB-badge badge-vermelho">VERM.</span>
               </div>
-              <h2 class="HB-title">{{ post.especie }} — {{ post.date | date: "%d/%m/%Y" }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              <div class="HB-meta">
-                <span><strong>Físico:</strong> {{ post.estado_fisico | default: "N/D" }}</span>
-                <span><strong>Estado:</strong> {{ post.situacao }}</span>
-                <span><strong>Local:</strong> {{ post.localizacao }}</span>
-              </div>
+              <h2 class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
             </div>
           </a>
         {% endif %}
       {% endfor %}
-      {% unless has_reds %}
-        <div class="empty-col">Sem ocorrências críticas.</div>
-      {% endunless %}
+      {% unless has_reds %}<div style="text-align:center; font-size:10px; color:#94a3b8; padding: 6px;">Sem registos.</div>{% endunless %}
     </div>
 
     <!-- COLUNA 2: URGENTE / LARANJA & AMARELO -->
     <div class="HB-column col-laranja-amarelo">
       <div class="HB-col-header" style="color: #9a3412;">
-        <span>🟠 Urgente / Moderado</span>
+        <span>🟠 Urgente</span>
         {% assign count_med = 0 %}
         {% for post in site.ocorrencias %}
           {% assign t = post.triagem | upcase %}
@@ -832,34 +210,25 @@ title: Alerta Animal — Sistema de Alerta Animal
           {% if t contains 'AMARELO' %}{% assign b_class = "badge-amarelo" %}{% endif %}
           <a href="{{ post.url | relative_url }}" class="HB-card">
             {% if post.imagem %}
-              <div class="HB-card-img-wrap">
-                <img src="{{ post.imagem }}" alt="{{ post.id }}" class="HB-card-img">
-              </div>
+              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
             {% endif %}
             <div class="HB-card-body">
               <div class="HB-card-top">
                 <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge {{ b_class }}">{{ post.triagem }}</span>
+                <span class="HB-badge {{ b_class }}">URG.</span>
               </div>
-              <h2 class="HB-title">{{ post.especie }} — {{ post.date | date: "%d/%m/%Y" }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              <div class="HB-meta">
-                <span><strong>Físico:</strong> {{ post.estado_fisico | default: "N/D" }}</span>
-                <span><strong>Estado:</strong> {{ post.situacao }}</span>
-                <span><strong>Local:</strong> {{ post.localizacao }}</span>
-              </div>
+              <h2 class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
             </div>
           </a>
         {% endif %}
       {% endfor %}
-      {% unless has_medium %}
-        <div class="empty-col">Sem ocorrências urgentes.</div>
-      {% endunless %}
+      {% unless has_medium %}<div style="text-align:center; font-size:10px; color:#94a3b8; padding: 6px;">Sem registos.</div>{% endunless %}
     </div>
 
     <!-- COLUNA 3: ESTÁVEL / VERDE OU OUTROS -->
     <div class="HB-column col-verde">
       <div class="HB-col-header" style="color: #166534;">
-        <span>🟢 Estável / Outros</span>
+        <span>🟢 Estável</span>
         {% assign count_green = 0 %}
         {% for post in site.ocorrencias %}
           {% assign t = post.triagem | upcase %}
@@ -875,28 +244,19 @@ title: Alerta Animal — Sistema de Alerta Animal
           {% assign has_greens = true %}
           <a href="{{ post.url | relative_url }}" class="HB-card">
             {% if post.imagem %}
-              <div class="HB-card-img-wrap">
-                <img src="{{ post.imagem }}" alt="{{ post.id }}" class="HB-card-img">
-              </div>
+              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
             {% endif %}
             <div class="HB-card-body">
               <div class="HB-card-top">
                 <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-verde">{{ post.triagem | default: "NORMAL" }}</span>
+                <span class="HB-badge badge-verde">ESTÁVEL</span>
               </div>
-              <h2 class="HB-title">{{ post.especie }} — {{ post.date | date: "%d/%m/%Y" }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
-              <div class="HB-meta">
-                <span><strong>Físico:</strong> {{ post.estado_fisico | default: "N/D" }}</span>
-                <span><strong>Estado:</strong> {{ post.situacao }}</span>
-                <span><strong>Local:</strong> {{ post.localizacao }}</span>
-              </div>
+              <h2 class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</h2>
             </div>
           </a>
         {% endunless %}
       {% endfor %}
-      {% unless has_greens %}
-        <div class="empty-col">Sem ocorrências em estado estável.</div>
-      {% endunless %}
+      {% unless has_greens %}<div style="text-align:center; font-size:10px; color:#94a3b8; padding: 6px;">Sem registos.</div>{% endunless %}
     </div>
 
   </div>

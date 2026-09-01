@@ -82,7 +82,7 @@ layout: default
         padding: 8px 10px;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
     }
 
     .top-section {
@@ -166,22 +166,33 @@ layout: default
         font-weight: 700;
         text-transform: uppercase;
         color: var(--text-muted);
-        margin-top: 2px;
+        margin-top: 4px;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
     .content-box {
-        font-size: 14.5px;
+        font-size: 13.5px;
         background: #f8fafc;
-        padding: 8px 10px;
+        padding: 6px 8px;
         border: 1px solid var(--border-color);
         border-radius: 1px;
-        white-space: pre-wrap;
         word-break: break-word;
-        line-height: 1.1;
+        line-height: 1.35;
         color: var(--text-main);
+    }
+
+    .content-box blockquote {
+        margin: 0 0 6px 0;
+        padding: 4px 8px;
+        background: #f1f5f9;
+        border-left: 3px solid var(--border-color);
+        font-style: normal;
+    }
+
+    .content-box blockquote:last-child {
+        margin-bottom: 0;
     }
 
     .bottom-meta {
@@ -341,7 +352,10 @@ layout: default
 
         <div class="section-title">🩺 Observações e Descrição</div>
         <div class="content-box">
-            {{ content }}
+            <blockquote><strong>Descrição:</strong> {{ page.descricao | default: content }}</blockquote>
+            {% if page.observacoes %}
+            <blockquote><strong>Observações:</strong> {{ page.observacoes }}</blockquote>
+            {% endif %}
         </div>
 
         {% if page.link and page.link != "" %}
@@ -355,7 +369,7 @@ layout: default
             <span>📋 Resumo da Ocorrência (Formato Ficha)</span>
             <button type="button" class="copy-btn" id="btn-copy-sheet">Copiar Ficha</button>
         </div>
-        <div class="content-box" id="raw-sheet-text" style="font-family: monospace; font-size: 11px; max-height: 100px; overflow-y: auto;">Ficha de Ocorrência Animal — ID: {{ page.id }}
+        <div class="content-box" id="raw-sheet-text" style="font-family: monospace; font-size: 11px; max-height: 80px; overflow-y: auto;">Ficha de Ocorrência Animal — ID: {{ page.id }}
 
 📋 RESUMO DA OCORRÊNCIA
 
@@ -395,14 +409,12 @@ layout: default
         var copySheetBtn = document.getElementById('btn-copy-sheet');
         var rawSheetBox = document.getElementById('raw-sheet-text');
 
-        // Link de remoção
         if (removeBtn) {
             var emailSubject = "Pedido de remoção de dados - Ocorrência " + cleanId;
             var emailBody = "Solicito a remoção dos dados referentes à seguinte ocorrência:\n\nID: " + cleanId + "\nLink: " + targetUrl;
             removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
         }
 
-        // Botão de partilhar por email com a estrutura exata da ficha
         if (emailShareBtn && rawSheetBox) {
             emailShareBtn.addEventListener('click', function() {
                 var subject = "Ficha de Ocorrência Animal — ID: " + cleanId;
@@ -412,23 +424,30 @@ layout: default
             });
         }
 
-        // Cópia limpa sem disparar bloqueios de extensões de privacidade (uBlock)
         if (copySheetBtn && rawSheetBox) {
             copySheetBtn.addEventListener('click', function() {
                 var textToCopy = rawSheetBox.innerText || "";
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(textToCopy).then(function() {
+                // Safe DOM fallback copy method to bypass strict clipboard heuristics or extension blocks
+                var textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                try {
+                    var successful = document.execCommand('copy');
+                    if (successful) {
                         copySheetBtn.innerText = "Ok ✓";
                         setTimeout(function() { copySheetBtn.innerText = "Copiar Ficha"; }, 1500);
-                    }).catch(function(err) {
-                        // Fallback legivel se a clipboard API for restrita
-                        console.warn('Clipboard API bloqueada ou indisponível', err);
-                    });
+                    }
+                } catch (err) {
+                    console.warn('Fallback copy failed', err);
                 }
+                document.body.removeChild(textarea);
             });
         }
 
-        // Download TXT estruturado
         if (downloadTxtBtn) {
             downloadTxtBtn.addEventListener('click', function() {
                 var sheetContent = rawSheetBox ? rawSheetBox.innerText : "";

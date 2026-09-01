@@ -9,46 +9,44 @@ layout: default
         --bg-color: #f8fafc;
         --card-bg: #ffffff;
         --text-main: #0f172a;
-        --text-muted: #64748b;
-        --border-color: #94a3b8;
+        --text-muted: #475569;
+        --border-color: #64748b;
     }
 
     body {
         background-color: var(--bg-color);
         margin: 0;
-        padding: 5px;
+        padding: 4px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     .page-wrapper {
-        max-width: 700px;
+        max-width: 680px;
         margin: 0 auto;
         background: var(--card-bg);
-        border-radius: 4px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         border: 1px solid var(--border-color);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 11.5px;
+        border-radius: 2px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        font-size: 11px;
     }
 
     .report-header {
         color: #ffffff;
-        padding: 8px 12px;
+        padding: 6px 10px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-radius: 3px 3px 0 0;
     }
 
-    .report-header-left h1 {
-        font-size: 14px;
+    .report-header h1 {
+        font-size: 13px;
         font-weight: 700;
         margin: 0;
     }
 
     .header-location {
-        font-size: 11px;
+        font-size: 10.5px;
         opacity: 0.95;
-        margin-top: 1px;
     }
 
     .report-header-right {
@@ -56,33 +54,32 @@ layout: default
     }
 
     .report-header-right h3 {
-        font-size: 9px;
+        font-size: 8.5px;
         text-transform: uppercase;
         margin: 0;
-        opacity: 0.85;
     }
 
     .report-header-right h2 {
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 700;
         margin: 0;
     }
 
     .status-banner {
-        padding: 6px 12px;
+        padding: 5px 10px;
         font-weight: 700;
         text-align: center;
-        font-size: 11px;
+        font-size: 10.5px;
         text-transform: uppercase;
-        letter-spacing: 0.3px;
+        border-bottom: 1px solid var(--border-color);
     }
-    .banner-resolved { background: #dcfce7; border-bottom: 2px solid #16a34a; color: #14532d; }
-    .banner-red { background: #fee2e2; border-bottom: 2px solid #dc2626; color: #7f1d1d; }
-    .banner-orange { background: #ffedd5; border-bottom: 2px solid #f97316; color: #7c2d12; }
-    .banner-yellow { background: #fef9c3; border-bottom: 2px solid #ca8a04; color: #713f12; }
+    .banner-resolved { background: #dcfce7; color: #14532d; }
+    .banner-red { background: #fee2e2; color: #7f1d1d; }
+    .banner-orange { background: #ffedd5; color: #7c2d12; }
+    .banner-yellow { background: #fef9c3; color: #713f12; }
 
     .report-body {
-        padding: 10px 12px;
+        padding: 8px 10px;
         display: flex;
         flex-direction: column;
         gap: 8px;
@@ -90,21 +87,20 @@ layout: default
 
     .top-section {
         display: grid;
-        grid-template-columns: 180px 1fr;
-        gap: 8px;
-        align-items: stretch;
+        grid-template-columns: 150px 1fr;
+        gap: 6px;
     }
 
     .animal-img-container {
         width: 100%;
-        height: 125px;
-        border-radius: 2px;
-        overflow: hidden;
+        height: 110px;
         border: 1px solid var(--border-color);
         background: #f1f5f9;
         display: flex;
         align-items: center;
         justify-content: center;
+        border-radius: 1px;
+        overflow: hidden;
     }
 
     .animal-img-container img {
@@ -113,19 +109,14 @@ layout: default
         object-fit: cover;
     }
 
-    .animal-img-placeholder {
-        font-size: 10px;
-        color: var(--text-muted);
-    }
-
     .unified-highlight-box {
         background: #f8fafc;
-        border-radius: 2px;
+        border: 1px solid var(--border-color);
+        border-radius: 1px;
+        padding: 4px 8px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        border: 1px solid var(--border-color);
-        padding: 6px 10px;
+        justify-content: space-around;
     }
 
     .box-row {
@@ -133,94 +124,84 @@ layout: default
         justify-content: space-between;
         align-items: center;
         padding: 2px 0;
-    }
-
-    .box-row:not(:last-child) {
         border-bottom: 1px solid #e2e8f0;
     }
+    .box-row:last-child { border-bottom: none; }
 
     .box-row label {
-        font-size: 9.5px;
+        font-size: 9px;
         font-weight: 700;
         text-transform: uppercase;
     }
 
     .box-row span {
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 700;
-        color: var(--text-main);
-    }
-
-    .content-box {
-        font-size: 11px;
-        color: var(--text-main);
-        background: #f8fafc;
-        padding: 8px 10px;
-        border-radius: 2px;
-        border: 1px solid var(--border-color);
-        white-space: pre-wrap;
-        word-break: break-word;
-        line-height: 1.35;
     }
 
     .section-title {
-        font-size: 10px;
+        font-size: 9.5px;
         font-weight: 700;
         text-transform: uppercase;
         color: var(--text-muted);
-        margin: 2px 0 0 0;
+        margin-top: 2px;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    .copy-btn {
-        background: #e2e8f0;
+    /* TEXTO DAS DESCRIÇÕES MAIOR E MAIS LEGÍVEL */
+    .content-box {
+        font-size: 12.5px;
+        background: #f8fafc;
+        padding: 8px 10px;
         border: 1px solid var(--border-color);
-        padding: 1px 6px;
-        font-size: 9px;
-        font-weight: 700;
-        cursor: pointer;
-        border-radius: 2px;
+        border-radius: 1px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.45;
         color: var(--text-main);
     }
-    .copy-btn:hover { background: #cbd5e1; }
 
     .bottom-meta {
         display: flex;
         justify-content: space-between;
         align-items: center;
         background: #f8fafc;
-        padding: 6px 10px;
-        border-radius: 2px;
+        padding: 6px 8px;
         border: 1px solid var(--border-color);
+        border-radius: 1px;
+        font-size: 10.5px;
     }
 
     .link-badge {
-        display: inline-block;
         background: #2563eb;
         color: #ffffff !important;
         padding: 3px 8px;
-        border-radius: 2px;
-        font-size: 10px;
+        border-radius: 1px;
+        font-size: 10.5px;
         text-decoration: none;
         font-weight: 700;
     }
-    .link-badge:hover { background: #1d4ed8; }
+
+    .copy-btn {
+        background: #e2e8f0;
+        border: 1px solid var(--border-color);
+        padding: 2px 6px;
+        font-size: 9.5px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 1px;
+    }
 
     .report-footer {
         background: #f1f5f9;
         border-top: 1px solid var(--border-color);
-        padding: 6px 12px;
+        padding: 6px 10px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-size: 10px;
-    }
-
-    .footer-actions {
-        display: flex;
-        gap: 4px;
     }
 
     .btn {
@@ -232,20 +213,14 @@ layout: default
         cursor: pointer;
         text-decoration: none;
         padding: 3px 8px;
-        border-radius: 2px;
+        border-radius: 1px;
         text-transform: uppercase;
     }
-    .btn:hover { background: var(--text-muted); }
-
+    
     @media print {
         body { background: #ffffff; padding: 0; }
-        .page-wrapper { box-shadow: none; border: none; margin: 0; max-width: 100%; }
+        .page-wrapper { box-shadow: none; border: none; }
         .copy-btn, .footer-actions { display: none !important; }
-    }
-
-    @media (max-width: 600px) {
-        .top-section { grid-template-columns: 1fr; }
-        .animal-img-container { height: 140px; }
     }
 </style>
 
@@ -278,8 +253,8 @@ layout: default
 <div class="page-wrapper" style="--theme-color: {{ theme_color }};">
 
     <header class="report-header" style="background-color: {{ theme_color }};">
-        <div class="report-header-left">
-            <h1>{{ page.especie }}{% if page.estado_fisico and page.estado_fisico != "Desconhecido" %} — {{ page.estado_fisico }}{% endif %}</h1>
+        <div>
+            <h1>{{ page.especie }}{% if page.estado_fisico %} — {{ page.estado_fisico }}{% endif %}</h1>
             {% if page.localizacao %}<div class="header-location">📍 {{ page.localizacao }}</div>{% endif %}
         </div>
         <div class="report-header-right">
@@ -294,13 +269,12 @@ layout: default
 
     <main class="report-body">
         
-        <!-- Topo: Imagem e Dados Principais (Visão de 5 segundos) -->
         <div class="top-section">
             <div class="animal-img-container">
                 {% if page.imagem %}
-                    <img src="{{ page.imagem }}" alt="Ocorrência {{ page.id }}">
+                    <img src="{{ page.imagem }}" alt="Foto">
                 {% else %}
-                    <div class="animal-img-placeholder">Sem Imagem</div>
+                    <span style="color:var(--text-muted); font-size:10px;">Sem Imagem</span>
                 {% endif %}
             </div>
             
@@ -310,42 +284,39 @@ layout: default
                     <span>{{ page.situacao | default: "N/D" }}</span>
                 </div>
                 <div class="box-row">
-                    <label style="color: {{ theme_color }};">Nível Alerta</label>
+                    <label style="color: {{ theme_color }};">Alerta</label>
                     <span>{{ page.triagem | default: "N/D" }}</span>
                 </div>
                 <div class="box-row">
-                    <label style="color: {{ theme_color }};">Estado Físico</label>
+                    <label style="color: {{ theme_color }};">Estado</label>
                     <span>{{ page.estado_fisico | default: "N/D" }}</span>
                 </div>
                 {% if page.sexo and page.sexo != "Não indicado" %}
                 <div class="box-row">
-                    <label style="color: {{ theme_color }};">Sexo / Nome</label>
+                    <label style="color: {{ theme_color }};">Sexo/Nome</label>
                     <span>{{ page.sexo }}{% if page.nome %} / {{ page.nome }}{% endif %}</span>
                 </div>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Observações e Descrição (Prioritário no topo) -->
         <div class="section-title">🩺 Observações e Descrição</div>
         <div class="content-box">
             {{ content }}
         </div>
 
-        <!-- Link para Publicação Original de forma limpa -->
-        {% if page.link %}
+        {% if page.link and page.link != "" %}
         <div class="bottom-meta">
-            <span style="font-weight: 700; font-size: 10px; color: var(--text-muted);">Aceder à fonte original para interagir com o autor:</span>
+            <span style="font-weight: 700; color: var(--text-muted);">Aceder à fonte original para interagir com o autor:</span>
             <a href="{{ page.link }}" target="_blank" class="link-badge">📘 Publicação Original</a>
         </div>
         {% endif %}
 
-        <!-- Ficha Completa movida para baixo com Botão de Cópia -->
         <div class="section-title">
             <span>📋 Ficha Completa (Texto Direto)</span>
             <button type="button" class="copy-btn" id="btn-copy-sheet">Copiar Ficha</button>
         </div>
-        <div class="content-box" id="raw-sheet-text" style="font-family: monospace; font-size: 10px; max-height: 100px; overflow-y: auto;">{{ page.ficha_texto | default: page.ficha | default: "Sem ficha detalhada disponível." }}</div>
+        <div class="content-box" id="raw-sheet-text" style="font-family: monospace; font-size: 11px; max-height: 80px; overflow-y: auto;">{{ page.ficha_texto }}</div>
 
     </main>
 
@@ -353,7 +324,7 @@ layout: default
         <div style="color: var(--text-muted); font-weight: 700;">
             ID: {{ page.id }} — <a id="btn-remove-data" href="#" style="color: #dc2626; text-decoration: underline;">Pedir remoção</a>
         </div>
-        <div class="footer-actions">
+        <div style="display: flex; gap: 4px;">
             <button type="button" onclick="window.print();" class="btn">🖨️ Imprimir</button>
             <button type="button" id="btn-download-txt" class="btn">📥 TXT</button>
         </div>
@@ -363,8 +334,7 @@ layout: default
 
 <script>
     var animalIdJs = {{ page.id | jsonify }};
-    var sheetQrLink = {{ page.qr_link | jsonify }};
-    var targetUrl = sheetQrLink && sheetQrLink.trim() !== "" ? sheetQrLink.trim() : window.location.href;
+    var targetUrl = window.location.href;
 
     window.addEventListener('DOMContentLoaded', function() {
         var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
@@ -379,10 +349,9 @@ layout: default
 
         if (copySheetBtn && rawSheetBox) {
             copySheetBtn.addEventListener('click', function() {
-                var textToCopy = rawSheetBox.innerText;
-                navigator.clipboard.writeText(textToCopy).then(function() {
-                    copySheetBtn.innerText = "Copiado! ✓";
-                    setTimeout(function() { copySheetBtn.innerText = "Copiar Ficha"; }, 2000);
+                navigator.clipboard.writeText(rawSheetBox.innerText).then(function() {
+                    copySheetBtn.innerText = "Ok ✓";
+                    setTimeout(function() { copySheetBtn.innerText = "Copiar Ficha"; }, 1500);
                 });
             });
         }

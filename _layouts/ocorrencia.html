@@ -139,6 +139,28 @@ layout: default
         font-weight: 700;
     }
 
+    .details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        padding: 6px 8px;
+        border-radius: 1px;
+    }
+
+    .detail-item {
+        font-size: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-item strong {
+        color: var(--text-muted);
+        font-size: 8.5px;
+        text-transform: uppercase;
+    }
+
     .section-title {
         font-size: 9.5px;
         font-weight: 700;
@@ -150,7 +172,6 @@ layout: default
         align-items: center;
     }
 
-    /* TEXTO DAS DESCRIÇÕES MAIOR E MAIS LEGÍVEL */
     .content-box {
         font-size: 12.5px;
         background: #f8fafc;
@@ -300,6 +321,15 @@ layout: default
             </div>
         </div>
 
+        <div class="section-title">📝 Detalhes e Dados de Terreno</div>
+        <div class="details-grid">
+            <div class="detail-item"><strong>Concelho</strong><span>{{ page.concelho | default: "Não indicado" }}</span></div>
+            <div class="detail-item"><strong>Data Ocorrência</strong><span>{{ page.data_ocorrencia_inicial | default: "Não indicada" }}</span></div>
+            <div class="detail-item"><strong>Esterilizado</strong><span>{{ page.esterilizado | default: "Desconhecido" }}</span></div>
+            <div class="detail-item"><strong>Identificação</strong><span>{{ page.identificacao | default: "Não indicado" }}</span></div>
+            <div class="detail-item" style="grid-column: span 2;"><strong>Características</strong><span>{{ page.caracteristicas | default: "Sem características específicas" }}</span></div>
+        </div>
+
         <div class="section-title">🩺 Observações e Descrição</div>
         <div class="content-box">
             {{ content }}
@@ -316,7 +346,7 @@ layout: default
             <span>📋 Ficha Completa (Texto Direto)</span>
             <button type="button" class="copy-btn" id="btn-copy-sheet">Copiar Ficha</button>
         </div>
-        <div class="content-box" id="raw-sheet-text" style="font-family: monospace; font-size: 11px; max-height: 80px; overflow-y: auto;">{{ page.ficha_texto }}</div>
+        <div class="content-box" id="raw-sheet-text" style="font-family: monospace; font-size: 11px; max-height: 80px; overflow-y: auto;">{{ page.ficha_texto | default: "Sem ficha detalhada disponível." }}</div>
 
     </main>
 
@@ -349,10 +379,15 @@ layout: default
 
         if (copySheetBtn && rawSheetBox) {
             copySheetBtn.addEventListener('click', function() {
-                navigator.clipboard.writeText(rawSheetBox.innerText).then(function() {
-                    copySheetBtn.innerText = "Ok ✓";
-                    setTimeout(function() { copySheetBtn.innerText = "Copiar Ficha"; }, 1500);
-                });
+                var textToCopy = rawSheetBox.innerText || "";
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy).then(function() {
+                        copySheetBtn.innerText = "Ok ✓";
+                        setTimeout(function() { copySheetBtn.innerText = "Copiar Ficha"; }, 1500);
+                    }).catch(function(err) {
+                        console.error('Erro ao copiar', err);
+                    });
+                }
             });
         }
 
@@ -367,6 +402,7 @@ layout: default
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
+                setTimeout(function() { URL.revokeObjectURL(url); }, 100);
             });
         }
     });

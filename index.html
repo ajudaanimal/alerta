@@ -65,7 +65,7 @@ title: Alerta Animal — Sistema de Alerta Animal
   .col-laranja { border-top: 3px solid #f97316; }
   .col-outros { border-top: 3px solid #64748b; }
 
-  /* CARTÕES COMPACTOS COM LOCALIZAÇÃO */
+  /* CARTÕES COMPACTOS */
   .HB-card {
     background: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
@@ -196,11 +196,11 @@ title: Alerta Animal — Sistema de Alerta Animal
             {% endif %}
             <div class="HB-card-body">
               <div class="HB-card-top">
-                <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-vermelho">{{ post.triagem | default: "Vermelho" }}</span>
+                <span class="HB-id">{{ post.slug | default: post.id }}</span>
+                <span class="HB-badge badge-vermelho">{{ post.situacao | default: "REGISTO" }}</span>
               </div>
-              <div class="HB-title">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
-              <div class="HB-subtitle">{{ post.especie }}{% if post.nome and post.nome != "" %} ({{ post.nome }}){% endif %}</div>
+              <div class="HB-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
+              <div class="HB-subtitle">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
             </div>
           </a>
         {% endif %}
@@ -231,11 +231,11 @@ title: Alerta Animal — Sistema de Alerta Animal
             {% endif %}
             <div class="HB-card-body">
               <div class="HB-card-top">
-                <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-laranja">{{ post.triagem | default: "Laranja" }}</span>
+                <span class="HB-id">{{ post.slug | default: post.id }}</span>
+                <span class="HB-badge badge-laranja">{{ post.situacao | default: "REGISTO" }}</span>
               </div>
-              <div class="HB-title">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
-              <div class="HB-subtitle">{{ post.especie }}{% if post.nome and post.nome != "" %} ({{ post.nome }}){% endif %}</div>
+              <div class="HB-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
+              <div class="HB-subtitle">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
             </div>
           </a>
         {% endif %}
@@ -266,11 +266,11 @@ title: Alerta Animal — Sistema de Alerta Animal
             {% endif %}
             <div class="HB-card-body">
               <div class="HB-card-top">
-                <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-outros">{{ post.triagem | default: "Não especificado" }}</span>
+                <span class="HB-id">{{ post.slug | default: post.id }}</span>
+                <span class="HB-badge badge-outros">{{ post.situacao | default: "REGISTO" }}</span>
               </div>
-              <div class="HB-title">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
-              <div class="HB-subtitle">{{ post.especie }}{% if post.nome and post.nome != "" %} ({{ post.nome }}){% endif %}</div>
+              <div class="HB-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
+              <div class="HB-subtitle">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
             </div>
           </a>
         {% endunless %}

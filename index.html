@@ -291,9 +291,8 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
               <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
             {% endif %}
             <div class="HB-card-body">
-              <div class="HB-card-top">
-                <span class="HB-id">{{ post.slug | default: post.id }}</span>
-                <span class="HB-badge badge-vermelho">{{ post.situacao | default: "REGISTO" }}</span>
+              <div class="HB-card-top" style="justify-content: flex-end;">
+                <span class="HB-badge badge-vermelho">{{ post.situacao | default: "REGISTO" | upcase }}</span>
               </div>
               <div class="HB-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
               <div class="HB-subtitle">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
@@ -326,9 +325,8 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
               <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
             {% endif %}
             <div class="HB-card-body">
-              <div class="HB-card-top">
-                <span class="HB-id">{{ post.slug | default: post.id }}</span>
-                <span class="HB-badge badge-laranja">{{ post.situacao | default: "REGISTO" }}</span>
+              <div class="HB-card-top" style="justify-content: flex-end;">
+                <span class="HB-badge badge-laranja">{{ post.situacao | default: "REGISTO" | upcase }}</span>
               </div>
               <div class="HB-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
               <div class="HB-subtitle">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
@@ -339,7 +337,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       {% unless has_orange %}<div style="text-align:center; font-size:11px; color:var(--text-muted); padding: 10px;">Sem registos.</div>{% endunless %}
     </div>
 
-    <!-- COLUNA 3: AMARELO / OUTROS / SEM TRIAGEM -->
+    <!-- COLUNA 3: AMARELO / OUTROS -->
     <div class="HB-column col-amarelo">
       <div class="HB-col-header" style="color: #eab308;">
         <span>🟡 Amarelo </span>
@@ -361,9 +359,8 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
               <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
             {% endif %}
             <div class="HB-card-body">
-              <div class="HB-card-top">
-                <span class="HB-id">{{ post.slug | default: post.id }}</span>
-                <span class="HB-badge badge-amarelo">{{ post.situacao | default: "REGISTO" }}</span>
+              <div class="HB-card-top" style="justify-content: flex-end;">
+                <span class="HB-badge badge-amarelo">{{ post.situacao | default: "REGISTO" | upcase }}</span>
               </div>
               <div class="HB-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
               <div class="HB-subtitle">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
@@ -373,7 +370,5 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       {% endfor %}
       {% unless has_yellow %}<div style="text-align:center; font-size:11px; color:var(--text-muted); padding: 10px;">Sem registos.</div>{% endunless %}
     </div>
-
-  </div>
 
 </div>

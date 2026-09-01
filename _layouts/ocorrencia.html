@@ -1,6 +1,17 @@
 ---
 layout: default
 ---
+<!-- Meta tags Open Graph para Social Preview / Delta Chat -->
+<head>
+  <meta property="og:title" content="Ocorrência: {{ page.especie }} (ID: {{ page.id }})">
+  <meta property="og:description" content="{{ page.observacoes | strip_html | truncate: 120 | default: page.descricao | strip_html | truncate: 120 }}">
+  {% if page.imagem %}
+    <meta property="og:image" content="{{ page.imagem | absolute_url }}">
+  {% endif %}
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="article">
+</head>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Leaflet CSS e JS para o Minimapa -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -521,6 +532,90 @@ layout: default
 
                 var whatsappUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(mensagem);
                 window.open(whatsappUrl, '_blank');
+            });
+        }
+
+        // Configuração do botão de partilha por email estruturado
+        var emailShareBtn = document.getElementById('btn-email-share');
+        if (emailShareBtn) {
+            emailShareBtn.addEventListener('click', function() {
+                var especie = {{ page.especie | default: "Animal" | jsonify }};
+                var idCaso = {{ page.id | default: "N/D" | jsonify }};
+                var local = {{ page.localizacao | default: "Portugal" | jsonify }};
+                var triagem = {{ page.triagem | default: "N/D" | jsonify }};
+                var estadoFisico = {{ page.estado_fisico | default: "N/D" | jsonify }};
+                var situacao = {{ page.situacao | default: "N/D" | jsonify }};
+                var concelho = {{ page.concelho | default: "Não indicado" | jsonify }};
+                var dataOcorrencia = {{ page.data_ocorrencia_inicial | default: "Não indicada" | jsonify }};
+                var sexo = {{ page.sexo | default: "N/D" | jsonify }};
+                var nomeAnimal = {{ page.nome | default: "" | jsonify }};
+                var esterilizado = {{ page.esterilizado | default: "Desconhecido" | jsonify }};
+                var identificacao = {{ page.identificacao | default: "Não indicado" | jsonify }};
+                var caracteristicas = {{ page.caracteristicas | default: "Sem características específicas" | jsonify }};
+                
+                var obsEl = document.getElementById('obs-content');
+                var observacoes = obsEl ? obsEl.innerText.trim() : "Sem observações.";
+                var descEl = document.getElementById('desc-content');
+                var descricao = descEl ? descEl.innerText.trim() : "Sem descrição.";
+
+                var textoTxt = "=== RELATÓRIO DE OCORRÊNCIA ANIMAL ===\n" +
+                               "ID: " + idCaso + "\n" +
+                               "Data Registo: " + {{ page.date | date: "%d/%m/%Y" | jsonify }} + "\n\n" +
+                               "--- DADOS PRINCIPAIS ---\n" +
+                               "Espécie: " + especie + "\n" +
+                               "Localização: " + local + "\n" +
+                               "Concelho: " + concelho + "\n" +
+                               "Data Ocorrência: " + dataOcorrencia + "\n" +
+                               "Situação: " + situacao + "\n" +
+                               "Triagem / Alerta: " + triagem + "\n" +
+                               "Estado Físico: " + estadoFisico + "\n\n" +
+                               "--- DETALHES ---\n" +
+                               "Sexo/Nome: " + sexo + (nomeAnimal ? " / " + nomeAnimal : "") + "\n" +
+                               "Esterilizado: " + esterilizado + "\n" +
+                               "Identificação: " + identificacao + "\n" +
+                               "Características: " + caracteristicas + "\n\n" +
+                               "--- OBSERVAÇÕES ---\n" + observacoes + "\n\n" +
+                               "--- DESCRIÇÃO ---\n" + descricao + "\n\n" +
+                               "Link Direto da Ocorrência (Inclui imagem pré-visualizada):\n" + targetUrl;
+
+                var assunto = encodeURIComponent("Ocorrência Animal - ID: " + idCaso + " ("  + especie + ")");
+                var corpo = encodeURIComponent(textoTxt);
+                window.location.href = "mailto:?subject=" + assunto + "&body=" + corpo;
+            });
+        }
+
+        // Funcionalidade para o botão de descarregar TXT
+        var downloadTxtBtn = document.getElementById('btn-download-txt');
+        if (downloadTxtBtn) {
+            downloadTxtBtn.addEventListener('click', function() {
+                var obsEl = document.getElementById('obs-content');
+                var descEl = document.getElementById('desc-content');
+                var conteudoTexto = "RELATÓRIO DE OCORRÊNCIA\nID: " + animalIdJs + "\nLink: " + targetUrl + "\n\n" +
+                                    "Local: " + animalLocation + "\n" +
+                                    "Observações: " + (obsEl ? obsEl.innerText : "") + "\n" +
+                                    "Descrição: " + (descEl ? descEl.innerText : "");
+                
+                var blob = new Blob([conteudoTexto], { type: 'text/plain;charset=utf-8' });
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = "ocorrencia_" + animalIdJs + ".txt";
+                link.click();
+            });
+        }
+
+        // Funcionalidade para o botão de descarregar MD
+        var downloadMdBtn = document.getElementById('btn-download-md');
+        if (downloadMdBtn) {
+            downloadMdBtn.addEventListener('click', function() {
+                var conteudoMd = "---\nlayout: default\ntitle: Ocorrência " + animalIdJs + "\n---\n\n" +
+                                   "# " + {{ page.especie | jsonify }} + "\n\n" +
+                                   "- **ID:** " + animalIdJs + "\n- **Local:** " + animalLocation + "\n- **Link:** " + targetUrl;
+                
+                var blob = new Blob([conteudoMd], { type: 'text/markdown;charset=utf-8' });
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = "ocorrencia_" + animalIdJs + ".md";
+                link.click();
             });
         }
 

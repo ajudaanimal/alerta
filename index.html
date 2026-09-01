@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Alerta Animal
+title: Alerta Animal — Sistema de Alerta Animal
 ---
 
 <style>
@@ -65,7 +65,7 @@ title: Alerta Animal
   .col-laranja-amarelo { border-top: 3px solid #f97316; }
   .col-verde { border-top: 3px solid #22c55e; }
 
-  /* CARTÕES ULTRA-COMPACTOS */
+  /* CARTÕES COMPACTOS COM LOCALIZAÇÃO */
   .HB-card {
     background: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
@@ -75,9 +75,9 @@ title: Alerta Animal
     align-items: center !important;
     text-decoration: none !important;
     color: #0f172a !important;
-    height: 46px !important;
-    min-height: 46px !important;
-    max-height: 46px !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
     overflow: hidden !important;
     box-shadow: none !important;
   }
@@ -88,9 +88,9 @@ title: Alerta Animal
   }
 
   .HB-card-img-wrap {
-    width: 46px !important;
-    min-width: 46px !important;
-    height: 46px !important;
+    width: 52px !important;
+    min-width: 52px !important;
+    height: 52px !important;
     background: #e2e8f0;
     flex-shrink: 0;
   }
@@ -114,7 +114,7 @@ title: Alerta Animal
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    margin-bottom: 2px !important;
+    margin-bottom: 1px !important;
   }
 
   .HB-id {
@@ -147,6 +147,16 @@ title: Alerta Animal
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     color: #0f172a !important;
+  }
+
+  .HB-subtitle {
+    font-size: 10px !important;
+    color: #64748b !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
   }
 
   @media(max-width: 900px) {
@@ -187,9 +197,10 @@ title: Alerta Animal
             <div class="HB-card-body">
               <div class="HB-card-top">
                 <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-vermelho">VERM.</span>
+                <span class="HB-badge badge-vermelho">{{ post.situacao | default: "VERM." }}</span>
               </div>
-              <div class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</div>
+              <div class="HB-title">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
+              <div class="HB-subtitle">{{ post.especie }}{% if post.nome and post.nome != "" %} ({{ post.nome }}){% endif %}</div>
             </div>
           </a>
         {% endif %}
@@ -223,9 +234,10 @@ title: Alerta Animal
             <div class="HB-card-body">
               <div class="HB-card-top">
                 <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge {{ b_class }}">URG.</span>
+                <span class="HB-badge {{ b_class }}">{{ post.situacao | default: "URG." }}</span>
               </div>
-              <div class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</div>
+              <div class="HB-title">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
+              <div class="HB-subtitle">{{ post.especie }}{% if post.nome and post.nome != "" %} ({{ post.nome }}){% endif %}</div>
             </div>
           </a>
         {% endif %}
@@ -257,9 +269,10 @@ title: Alerta Animal
             <div class="HB-card-body">
               <div class="HB-card-top">
                 <span class="HB-id">{{ post.id }}</span>
-                <span class="HB-badge badge-verde">ESTÁVEL</span>
+                <span class="HB-badge badge-verde">{{ post.situacao | default: "ESTÁVEL" }}</span>
               </div>
-              <div class="HB-title">{{ post.especie }} {% if post.nome and post.nome != "" %}({{ post.nome }}){% endif %}</div>
+              <div class="HB-title">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
+              <div class="HB-subtitle">{{ post.especie }}{% if post.nome and post.nome != "" %} ({{ post.nome }}){% endif %}</div>
             </div>
           </a>
         {% endunless %}

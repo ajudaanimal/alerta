@@ -3,16 +3,15 @@ layout: default
 ---
 <!-- Meta tags Open Graph para Social Preview -->
 <head>
-  <meta property="og:title" content="Ocorrência: {{ page.especie }} (ID: {{ page.id }})">
-  <meta property="og:description" content="{{ page.observacoes | strip_html | truncate: 120 | default: page.descricao | strip_html | truncate: 120 }}">
-  {% if page.imagem %}
-    <meta property="og:image" content="{{ page.imagem | absolute_url }}">
-  {% endif %}
-  <meta property="og:url" content="{{ page.url | absolute_url }}">
-  <meta property="og:type" content="article">
+    <meta property="og:title" content="Ocorrência: {{ page.especie }} (ID: {{ page.id }})">
+    <meta property="og:description" content="{{ page.observacoes | strip_html | truncate: 120 | default: 'Ocorrência registada na plataforma Alerta Animal.' }}">
+    {% if page.imagem %}
+        <meta property="og:image" content="{{ page.imagem | absolute_url }}">
+    {% endif %}
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <meta property="og:type" content="article">
 </head>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Leaflet CSS e JS para o Minimapa -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -294,37 +293,6 @@ layout: default
         color: var(--text-main);
     }
 
-    .bottom-meta {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        background: var(--box-bg);
-        padding: 10px 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        font-size: 11px;
-    }
-
-    .link-badge {
-        background: var(--card-bg);
-        color: var(--text-main) !important;
-        border: 1px solid var(--border-color);
-        padding: 5px 10px;
-        border-radius: 4px;
-        font-size: 11px;
-        text-decoration: none;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        transition: background 0.2s;
-    }
-
-    .link-badge:hover {
-        background: var(--border-color);
-    }
-
     #single-case-map {
         width: 100%;
         height: 200px;
@@ -375,7 +343,7 @@ layout: default
     @media print {
         body { background: #ffffff !important; color: #000000 !important; padding: 0; }
         .page-wrapper { box-shadow: none; border: none; }
-        .bottom-meta, .report-footer { display: none !important; }
+        .report-footer { display: none !important; }
     }
 </style>
 
@@ -387,21 +355,21 @@ layout: default
 {% assign banner_text = "⚠️ ALERTA ATIVO" %}
 
 {% if est_caso contains 'RESOLVIDO' %}
-  {% assign banner_class = "banner-resolved" %}
-  {% assign banner_text = "✓ " | append: (page.estado_caso | default: "Resolvido") %}
-  {% assign theme_color = "#16a34a" %}
+    {% assign banner_class = "banner-resolved" %}
+    {% assign banner_text = "✓ " | append: (page.estado_caso | default: "Resolvido") %}
+    {% assign theme_color = "#16a34a" %}
 {% elsif t contains 'VERM' or est_fisico contains 'FERIDO' or est_fisico contains 'CRÍTICO' %}
-  {% assign banner_class = "banner-red" %}
-  {% assign banner_text = "🚨 " | append: (page.triagem | default: "Emergência") | append: " — " | append: (page.estado_fisico | default: "Crítico") %}
-  {% assign theme_color = "#dc2626" %}
+    {% assign banner_class = "banner-red" %}
+    {% assign banner_text = "🚨 " | append: (page.triagem | default: "Emergência") | append: " — " | append: (page.estado_fisico | default: "Crítico") %}
+    {% assign theme_color = "#dc2626" %}
 {% elsif t contains 'LARANJA' or est_fisico contains 'URGENTE' %}
-  {% assign banner_class = "banner-orange" %}
-  {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Urgente") | append: " — Socorro Urgente" %}
-  {% assign theme_color = "#f97316" %}
+    {% assign banner_class = "banner-orange" %}
+    {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Urgente") | append: " — Socorro Urgente" %}
+    {% assign theme_color = "#f97316" %}
 {% else %}
-  {% assign banner_class = "banner-yellow" %}
-  {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Alerta") | append: " — Cuidados Médicos" %}
-  {% assign theme_color = "#ca8a04" %}
+    {% assign banner_class = "banner-yellow" %}
+    {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Alerta") | append: " — Cuidados Médicos" %}
+    {% assign theme_color = "#ca8a04" %}
 {% endif %}
 
 <div class="page-wrapper" style="--theme-color: {{ theme_color }};">
@@ -472,7 +440,7 @@ layout: default
         </h2>
         <div id="single-case-map"></div>
 
-        <h2 class="section-title">🩺 Observações e Cuidados</h2>
+        <h2 class="section-title">🩺 Observações e Acompanhamento</h2>
         <div class="content-box">
             <div id="obs-content">
                 {% if page.observacoes %}
@@ -481,20 +449,6 @@ layout: default
                     <em style="color: var(--text-muted); font-size: 11px;">Sem observações adicionais registadas.</em>
                 {% endif %}
             </div>
-        </div>
-
-        <h2 class="section-title">📖 Descrição</h2>
-        <div class="bottom-meta">
-            <blockquote style="margin: 0; padding: 6px 10px; width: 100%; border-left: 3px solid {{ theme_color }}; background: var(--card-bg); border-radius: 4px; border: 1px solid var(--border-color); box-sizing: border-box;">
-                <span id="desc-content" style="font-size: 13px; color: var(--text-main); line-height: 1.4;">{{ page.descricao | default: content }}</span>
-            </blockquote>
-            
-            {% if page.link and page.link != "" %}
-            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-top: 2px;">
-                <span style="font-weight: 700; color: var(--text-muted); font-size: 10px;">Aceder à fonte original:</span>
-                <a href="{{ page.link }}" target="_blank" class="link-badge">📘 Publicação Original</a>
-            </div>
-            {% endif %}
         </div>
     </main>
 
@@ -509,8 +463,6 @@ layout: default
             </button>
             <button type="button" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copiado!');" class="btn">📋 Copiar</button>
             <button type="button" id="btn-email-share" class="btn">📧 Email</button>
-            <button type="button" id="btn-download-md" class="btn">📥 MD</button>
-            <button type="button" id="btn-download-txt" class="btn">📥 TXT</button>
             <button type="button" onclick="window.print();" class="btn">🖨️ Imprimir</button>
         </div>
     </footer>
@@ -528,9 +480,7 @@ layout: default
     var animalLocation = {{ page.localizacao | default: "Portugal" | jsonify }};
     var themeColorJs = {{ theme_color | jsonify }};
 
-    // Inicializar minimapa com Nominatim e atribuição personalizada do OSM com a bandeira da Palestina
     document.addEventListener("DOMContentLoaded", function() {
-        // Funcionalidade da Imagem Ampliada (Modal)
         var imgElement = document.getElementById('clickable-animal-img');
         var modal = document.getElementById('imageModal');
         var modalImg = document.getElementById('modalImage');
@@ -565,7 +515,7 @@ layout: default
 
         L.control.attribution({
             prefix: false
-        }).addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | 🇵🇸').addTo(map);
+        }).addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors').addTo(map);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19
@@ -612,7 +562,6 @@ layout: default
             });
         }
 
-        // Configuração do botão de partilha por email estruturado
         var emailShareBtn = document.getElementById('btn-email-share');
         if (emailShareBtn) {
             emailShareBtn.addEventListener('click', function() {
@@ -632,8 +581,6 @@ layout: default
                 
                 var obsEl = document.getElementById('obs-content');
                 var observacoes = obsEl ? obsEl.innerText.trim() : "Sem observações.";
-                var descEl = document.getElementById('desc-content');
-                var descricao = descEl ? descEl.innerText.trim() : "Sem descrição.";
 
                 var textoTxt = "=== RELATÓRIO DE OCORRÊNCIA ANIMAL ===\n" +
                                "ID: " + idCaso + "\n" +
@@ -651,57 +598,21 @@ layout: default
                                "Esterilizado: " + esterilizado + "\n" +
                                "Identificação: " + identificacao + "\n" +
                                "Características: " + caracteristicas + "\n\n" +
-                               "--- OBSERVAÇÕES ---\n" + observacoes + "\n\n" +
-                               "--- DESCRIÇÃO ---\n" + descricao + "\n\n" +
-                               "Link Direto da Ocorrência (Inclui imagem pré-visualizada):\n" + targetUrl;
+                               "--- ACOMPANHAMENTO / OBSERVAÇÕES ---\n" + observacoes + "\n\n" +
+                               "Link Direto da Ocorrência:\n" + targetUrl;
 
-                var assunto = encodeURIComponent("Ocorrência Animal - ID: " + idCaso + " ("  + especie + ")");
+                var assunto = encodeURIComponent("Ocorrência Animal - ID: " + idCaso + " (" + especie + ")");
                 var corpo = encodeURIComponent(textoTxt);
                 window.location.href = "mailto:?subject=" + assunto + "&body=" + corpo;
-          });
-      }
+            });
+        }
 
-      // Funcionalidade para o botão de descarregar TXT
-      var downloadTxtBtn = document.getElementById('btn-download-txt');
-      if (downloadTxtBtn) {
-          downloadTxtBtn.addEventListener('click', function() {
-              var obsEl = document.getElementById('obs-content');
-              var descEl = document.getElementById('desc-content');
-              var conteudoTexto = "RELATÓRIO DE OCORRÊNCIA\nID: " + animalIdJs + "\nLink: " + targetUrl + "\n\n" +
-                                    "Local: " + animalLocation + "\n" +
-                                    "Observações: " + (obsEl ? obsEl.innerText : "") + "\n" +
-                                    "Descrição: " + (descEl ? descEl.innerText : "");
-              
-              var blob = new Blob([conteudoTexto], { type: 'text/plain;charset=utf-8' });
-              var link = document.createElement('a');
-              link.href = URL.createObjectURL(blob);
-              link.download = "ocorrencia_" + animalIdJs + ".txt";
-              link.click();
-          });
-      }
-
-      // Funcionalidade para o botão de descarregar MD
-      var downloadMdBtn = document.getElementById('btn-download-md');
-      if (downloadMdBtn) {
-          downloadMdBtn.addEventListener('click', function() {
-              var conteudoMd = "---\nlayout: default\ntitle: Ocorrência " + animalIdJs + "\n---\n\n" +
-                                   "# " + {{ page.especie | jsonify }} + "\n\n" +
-                                   "- **ID:** " + animalIdJs + "\n- **Local:** " + animalLocation + "\n- **Link:** " + targetUrl;
-              
-              var blob = new Blob([conteudoMd], { type: 'text/markdown;charset=utf-8' });
-              var link = document.createElement('a');
-              link.href = URL.createObjectURL(blob);
-              link.download = "ocorrencia_" + animalIdJs + ".md";
-              link.click();
-          });
-      }
-
-      var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
-      var removeBtn = document.getElementById('btn-remove-data');
-      if (removeBtn) {
-          var emailSubject = "Pedido de remoção de dados - Ocorrência " + cleanId;
-          var emailBody = "Solicito a remoção dos dados referentes à seguinte ocorrência:\n\nID: " + cleanId + "\nLink: " + targetUrl;
-          removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
-      }
-  });
+        var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
+        var removeBtn = document.getElementById('btn-remove-data');
+        if (removeBtn) {
+            var emailSubject = "Pedido de remoção de dados - Ocorrência " + cleanId;
+            var emailBody = "Solicito a remoção dos dados referentes à seguinte ocorrência:\n\nID: " + cleanId + "\nLink: " + targetUrl;
+            removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
+        }
+    });
 </script>

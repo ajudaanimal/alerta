@@ -1,45 +1,76 @@
 ---
 layout: default
-title: "{{ page.id }} — {{ page.especie }}{% if page.nome and page.nome != '' %} ({{ page.nome }}){% endif %}"
+title: "{{ page.id }} — {{ page.especie }}"
 ---
 
-<div class="ficha-animal-container" style="max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
-  <header style="border-bottom: 2px solid #e2e8f0; margin-bottom: 24px; padding-bottom: 16px; display: flex; flex-direction: column; gap: 10px;">
-    <h1 style="font-size: 26px; font-weight: 900; color: #0f172a; margin: 0;">
-      {{ page.id }} — {{ page.especie }}{% if page.nome and page.nome != "" %} ({{ page.nome }}){% endif %}
+<div style="max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+  
+  <!-- CABEÇALHO -->
+  <header style="margin-bottom: 24px;">
+    <h1 style="font-size: 22px; font-weight: 800; color: #0f172a; margin: 0 0 16px 0;">
+      /ocorrencias/{{ page.id }} — {{ page.especie }}{% if page.nome and page.nome != "Não indicado" and page.nome != "" %} ({{ page.nome }}){% endif %}
     </h1>
     
     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-      <span class="badge" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; text-transform: uppercase;">
+      <span style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
         Situação: {{ page.situacao }}
       </span>
-      <span class="badge" style="background: #fef9c3; color: #713f12; border: 1px solid #fde047; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; text-transform: uppercase;">
+      <span style="background: #fef9c3; color: #854d0e; border: 1px solid #fde047; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
         Estado: {{ page.estado_caso }}
       </span>
       {% if page.estado_fisico and page.estado_fisico != "Desconhecido" %}
-      <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; text-transform: uppercase;">
+      <span style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
         Condição: {{ page.estado_fisico }}
       </span>
       {% endif %}
     </div>
   </header>
 
+  <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 30px;">
+
+  <!-- FOTOGRAFIA -->
   {% if page.imagem %}
-    <div class="foto-animal" style="text-align: center; margin-bottom: 24px;">
-      <img src="{{ page.imagem }}" alt="Foto da Ocorrência {{ page.id }}" style="max-width: 100%; max-height: 450px; object-fit: cover; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
+    <div style="text-align: center; margin-bottom: 30px;">
+      <img src="{{ page.imagem }}" alt="Foto da Ocorrência {{ page.id }}" style="max-width: 100%; max-height: 500px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);">
     </div>
   {% endif %}
 
-  <div class="detalhes-tecnicos" style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 20px; border-radius: 10px; margin-bottom: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
-    <p style="margin: 0;"><strong>📍 Localização:</strong> {{ page.localizacao }} ({{ page.distrito }})</p>
-    <p style="margin: 0;"><strong>🏷️ Nome:</strong> {{ page.nome }}</p>
-    <p style="margin: 0;"><strong>🚻 Sexo:</strong> {{ page.sexo }}</p>
-    <p style="margin: 0;"><strong>🩺 Triagem:</strong> {{ page.triagem }}</p>
-    <p style="margin: 0;"><strong>📞 Contacto:</strong> {{ page.contacto | default: "Não indicado" }}</p>
-    <p style="margin: 0;"><strong>📅 Registado a:</strong> {{ page.date | date: "%d/%m/%Y %H:%M" }}</p>
+  <!-- CAIXA DE DETALHES -->
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px 20px; border-radius: 8px; margin-bottom: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; font-size: 13px;">
+    <div style="margin: 0; color: #334155;"><strong>📍 Localização:</strong> {{ page.localizacao }}</div>
+    <div style="margin: 0; color: #334155;"><strong>🏷️ Nome:</strong> {{ page.nome }}</div>
+    <div style="margin: 0; color: #334155;"><strong>🚻 Sexo:</strong> {{ page.sexo }}</div>
+    <div style="margin: 0; color: #334155;"><strong>🩺 Triagem:</strong> {{ page.triagem }}</div>
+    <div style="margin: 0; color: #334155;"><strong>📞 Contacto:</strong> {{ page.contacto | default: "Não indicado" }}</div>
+    <div style="margin: 0; color: #334155;"><strong>📅 Registado a:</strong> {{ page.date | date: "%d/%m/%Y %H:%M" }}</div>
   </div>
 
-  <article class="conteudo-markdown" style="line-height: 1.7; font-size: 15px;">
+  <!-- CONTEÚDO (DESCRIÇÃO E OBSERVAÇÕES GERADAS PELO SCRIPT) -->
+  <article style="line-height: 1.7; font-size: 14px; color: #334155;">
     {{ content }}
   </article>
+
 </div>
+
+<style>
+  /* Pequenos ajustes para os títulos que vêm do Markdown (##) para ficarem iguais à imagem */
+  article h2 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 8px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+  }
+  article ul {
+    padding-left: 20px;
+  }
+  article a {
+    color: #2563eb;
+    text-decoration: none;
+  }
+  article a:hover {
+    text-decoration: underline;
+  }
+</style>

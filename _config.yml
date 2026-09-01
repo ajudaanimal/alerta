@@ -4,10 +4,14 @@ markdown: kramdown
 url: "https://ajudaanimal.github.io"
 baseurl: "/alerta"
 
+# 1. ADICIONAR ISTO: Obriga o Jekyll a gerar a página mesmo que a hora pareça futura
+future: true 
+
 collections:
   ocorrencias:
     output: true
-    permalink: /ocorrencias/:path/
+    # 2. ALTERAR ISTO: Mudar de :path para :name garante um link limpo e fiável
+    permalink: /ocorrencias/:name/ 
 
 defaults:
   - scope:

@@ -420,41 +420,41 @@ layout: default
     </div>
 
     <main class="report-body">
-        <div class="top-section">
-            <div class="animal-img-container">
-                {% if page.imagem %}
-                    <img id="clickable-animal-img" src="{{ page.imagem }}" alt="Fotografia do animal" title="Clique para ampliar">
-                {% else %}
-                    <span style="color:var(--text-muted); font-size:10px;">Sem Imagem</span>
-                {% endif %}
+    <div class="top-section">
+        <div class="animal-img-container">
+            {% if page.imagem %}
+                <img id="clickable-animal-img" src="{{ page.imagem }}" alt="Fotografia do animal" title="Clique para ampliar">
+            {% else %}
+                <span style="color:var(--text-muted); font-size:10px;">Sem Imagem</span>
+            {% endif %}
+        </div>
+        
+        <div class="unified-highlight-box" style="border-left: 3px solid {{ theme_color }};">
+            <div class="box-row">
+                <label style="color: {{ theme_color }};">Situação</label>
+                <span>{{ page.situacao | default: "N/D" }}</span>
             </div>
-            
-            <div class="unified-highlight-box" style="border-left: 3px solid {{ theme_color }};">
-                <div class="box-row">
-                    <label style="color: {{ theme_color }};">Situação</label>
-                    <span>{{ page.situacao | default: "N/D" }}</span>
-                </div>
-                <div class="box-row">
-                    <label style="color: {{ theme_color }};">Alerta</label>
-                    <span>{{ page.triagem | default: "N/D" }}</span>
-                </div>
-                <div class="box-row">
-                    <label style="color: {{ theme_color }};">Estado Caso</label>
-                    <span>{{ page.estado_caso | default: "N/D" }}</span>
-                </div>
+            <div class="box-row">
+                <label style="color: {{ theme_color }};">Alerta</label>
+                <span>{{ page.nivel_alerta | default: page.triagem | default: "N/D" }}</span>
+            </div>
+            <div class="box-row">
+                <label style="color: {{ theme_color }};">Estado Caso</label>
+                <span>{{ page.estado_caso | default: "N/D" }}</span>
             </div>
         </div>
+    </div>
 
+         
         <h2 class="section-title">📝 Detalhes e Dados de Terreno</h2>
-        <div class="details-grid">
-            <div class="detail-item"><strong>Localidade</strong><span>{{ page.localidade | default: page.freguesia | default: "Não indicada" }}</span></div>
-            <div class="detail-item"><strong>Concelho</strong><span>{{ page.distrito | default: "Não indicado" }}</span></div>
-            <div class="detail-item"><strong>Distrito</strong><span>{{ page.idade | default: "Não indicado" }}</span></div>
-            <div class="detail-item"><strong>Data Ocorrência Inicial</strong><span>{{ page.data_ocorrencia_inicial | default: "Não indicada" }}</span></div>
-            <div class="detail-item"><strong>Idade</strong><span>{{ page.concelho | default: "Não indicado" }}</span></div>
-            <div class="detail-item"><strong>Características / Socorro</strong><span>{{ page.estado_fisico | default: "Não indicado" }} — Requer Socorro Urgente</span></div>
-        </div>
-
+<div class="details-grid">
+    <div class="detail-item"><strong>Localidade</strong><span>{{ page.localidade | default: page.freguesia | default: "Não indicada" }}</span></div>
+    <div class="detail-item"><strong>Concelho</strong><span>{{ page.concelho | default: "Não indicado" }}</span></div>
+    <div class="detail-item"><strong>Distrito</strong><span>{{ page.distrito | default: "Não indicado" }}</span></div>
+    <div class="detail-item"><strong>Data Ocorrência Inicial</strong><span>{{ page.data_ocorrencia_inicial | default: "Não indicada" }}</span></div>
+    <div class="detail-item"><strong>Idade</strong><span>{{ page.idade | default: "Não indicada" }}</span></div>
+    <div class="detail-item"><strong>Características / Socorro</strong><span>{{ page.estado_fisico | default: "Não indicado" }}</span></div>
+</div>
         <h2 class="section-title">🩺 Observações e Acompanhamento</h2>
         <div class="content-box">
             <div id="obs-content">

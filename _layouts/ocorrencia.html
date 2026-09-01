@@ -47,6 +47,20 @@ layout: default
     .header-location {
         font-size: 10.5px;
         opacity: 0.95;
+        margin-top: 2px;
+    }
+
+    /* Estilos para os links de mapa */
+    .map-links a {
+        color: #e2e8f0;
+        text-decoration: none;
+        border-bottom: 1px dashed #e2e8f0;
+        margin: 0 2px;
+    }
+
+    .map-links a:hover {
+        color: #ffffff;
+        border-bottom-style: solid;
     }
 
     .report-header-right {
@@ -89,6 +103,16 @@ layout: default
         display: grid;
         grid-template-columns: 150px 1fr;
         gap: 6px;
+    }
+
+    /* Responsividade para ecrãs pequenos (Mobile) */
+    @media (max-width: 480px) {
+        .top-section {
+            grid-template-columns: 1fr;
+        }
+        .animal-img-container {
+            height: 180px; /* Aumenta um pouco a imagem no mobile */
+        }
     }
 
     .animal-img-container {
@@ -166,7 +190,7 @@ layout: default
         font-weight: 700;
         text-transform: uppercase;
         color: var(--text-muted);
-        margin-top: 4px;
+        margin: 4px 0 0 0; /* Removido default margin do h2 */
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -255,9 +279,9 @@ layout: default
     }
     
     @media print {
-        body { background: #ffffff; padding: 0; }
+        body { background: #ffffff; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .page-wrapper { box-shadow: none; border: none; }
-        .footer-actions, .btn-group { display: none !important; }
+        .bottom-meta, .report-footer { display: none !important; }
     }
 </style>
 
@@ -292,7 +316,15 @@ layout: default
     <header class="report-header" style="background-color: {{ theme_color }};">
         <div>
             <h1>{{ page.especie }}{% if page.estado_fisico %} — {{ page.estado_fisico }}{% endif %}</h1>
-            {% if page.localizacao %}<div class="header-location">📍 {{ page.localizacao }}</div>{% endif %}
+            {% if page.localizacao %}
+            <div class="header-location">
+                📍 {{ page.localizacao }} 
+                <span class="map-links">
+                    (<a href="https://www.google.com/maps/search/?api=1&query={{ page.localizacao | url_encode }}" target="_blank" title="Procurar no Google Maps">G.Maps</a> | 
+                    <a href="https://www.openstreetmap.org/search?query={{ page.localizacao | url_encode }}" target="_blank" title="Procurar no OpenStreetMap">OSM</a>)
+                </span>
+            </div>
+            {% endif %}
         </div>
         <div class="report-header-right">
             <h3>{{ page.date | date: "%d/%m/%Y" }}</h3>
@@ -309,7 +341,7 @@ layout: default
         <div class="top-section">
             <div class="animal-img-container">
                 {% if page.imagem %}
-                    <img src="{{ page.imagem }}" alt="Foto">
+                    <img src="{{ page.imagem }}" alt="Fotografia do animal da espécie {{ page.especie | default: 'desconhecida' }}">
                 {% else %}
                     <span style="color:var(--text-muted); font-size:10px;">Sem Imagem</span>
                 {% endif %}
@@ -337,7 +369,7 @@ layout: default
             </div>
         </div>
 
-        <div class="section-title">📝 Detalhes e Dados de Terreno</div>
+        <h2 class="section-title">📝 Detalhes e Dados de Terreno</h2>
         <div class="details-grid">
             <div class="detail-item"><strong>Concelho</strong><span>{{ page.concelho | default: "Não indicado" }}</span></div>
             <div class="detail-item"><strong>Data Ocorrência</strong><span>{{ page.data_ocorrencia_inicial | default: "Não indicada" }}</span></div>
@@ -346,15 +378,16 @@ layout: default
             <div class="detail-item" style="grid-column: span 2;"><strong>Características</strong><span>{{ page.caracteristicas | default: "Sem características específicas" }}</span></div>
         </div>
 
-        <div class="section-title">🩺 Observações e Descrição</div>
+        <h2 class="section-title">🩺 Observações e Descrição</h2>
         <div class="content-box">
-            <span class="sub-label">Descrição Detalhada</span>
-            <blockquote><span id="desc-content">{{ page.descricao | default: content }}</span></blockquote>
-
             {% if page.observacoes %}
             <span class="sub-label">Observações e Cuidados</span>
             <div style="margin-top: 2px;" id="obs-content">{{ page.observacoes }}</div>
+            <div style="height: 6px;"></div>
             {% endif %}
+
+            <span class="sub-label">Descrição</span>
+            <blockquote><span id="desc-content">{{ page.descricao | default: content }}</span></blockquote>
         </div>
 
         {% if page.link and page.link != "" %}
@@ -418,11 +451,11 @@ layout: default
             md += "- **Características:** " + caracteristicas + "\n\n";
 
             md += "## 🩺 Observações e Descrição\n\n";
-            if (descricao) {
-                md += "### Descrição Detalhada\n\n> " + descricao.replace(/\n/g, "\n> ") + "\n\n";
-            }
             if (observacoes) {
                 md += "### Observações e Cuidados\n\n" + observacoes + "\n\n";
+            }
+            if (descricao) {
+                md += "### Descrição\n\n> " + descricao.replace(/\n/g, "\n> ") + "\n\n";
             }
 
             md += "---\n\n🔗 Consulte a ficha digital completa em:\n" + targetUrl;
@@ -444,11 +477,11 @@ layout: default
             txt += "• Características: " + caracteristicas + "\n\n";
 
             txt += "🩺 OBSERVAÇÕES E DESCRIÇÃO\n\n";
-            if (descricao) {
-                txt += "Descrição Detalhada:\n\"" + descricao + "\"\n\n";
-            }
             if (observacoes) {
                 txt += "Observações e Cuidados:\n" + observacoes + "\n\n";
+            }
+            if (descricao) {
+                txt += "Descrição:\n\"" + descricao + "\"\n\n";
             }
 
             txt += "🔗 Consulte a ficha digital completa em:\n" + targetUrl;
@@ -473,7 +506,18 @@ layout: default
             emailShareBtn.addEventListener('click', function() {
                 var subject = "Ficha de Ocorrência Animal — ID: " + cleanId;
                 var body = generateReportText(false);
-                var mailtoLink = "mailto:?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+                var encodedSubject = encodeURIComponent(subject);
+                var encodedBody = encodeURIComponent(body);
+                
+                // Previne falhas caso a descrição seja tão longa que quebre o limite do 'mailto:'
+                var maxUrlLength = 2000;
+                var mailtoLink = "mailto:?subject=" + encodedSubject + "&body=" + encodedBody;
+                
+                if (mailtoLink.length > maxUrlLength) {
+                    var safeBody = body.substring(0, 1000) + "\n\n[...Texto truncado devido ao limite de carateres do email. Consulte o link para o texto completo.]\n\n🔗 " + targetUrl;
+                    mailtoLink = "mailto:?subject=" + encodedSubject + "&body=" + encodeURIComponent(safeBody);
+                }
+                
                 window.location.href = mailtoLink;
             });
         }
@@ -500,7 +544,7 @@ layout: default
                 var url = URL.createObjectURL(blob);
                 var a = document.createElement('a');
                 a.href = url;
-                a.download = "Ocorrencia_" + cleanId.replace(/[^a-zA-Z0-9-_]/g, '_') + ".txt";
+                a.download = "Ocorrencia_" + cleanId.replace(/[^a-zA-Z0-9-_]/g, '_') + ".txt"; // Corrigido para .txt
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);

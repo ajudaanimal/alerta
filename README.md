@@ -20,4 +20,4 @@ Para reportar uma situação de animal ferido ou doente, abra uma nova Ficha de 
 
 Para outros assuntos, por favor contate-nos via email.
 
-[!animal](https://github.com/ajudaanimal/alerta/blob/main/_assets/img/animal.jpeg?raw=true)
+![animal](https://github.com/ajudaanimal/alerta/blob/main/_assets/img/animal.jpeg?raw=true)

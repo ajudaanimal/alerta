@@ -448,23 +448,28 @@ layout: default
          
         <h2 class="section-title">📝 Detalhes e Dados de Terreno</h2>
 <div class="details-grid">
-    <div class="detail-item"><strong>Localidade</strong><span>{{ page.localidade | default: page.freguesia | default: "Não indicada" }}</span></div>
-    <div class="detail-item"><strong>Concelho</strong><span>{{ page.concelho | default: "Não indicado" }}</span></div>
-    <div class="detail-item"><strong>Distrito</strong><span>{{ page.distrito | default: "Não indicado" }}</span></div>
-    <div class="detail-item"><strong>Data Ocorrência Inicial</strong><span>{{ page.data_ocorrencia_inicial | default: "Não indicada" }}</span></div>
-    <div class="detail-item"><strong>Idade</strong><span>{{ page.idade | default: "Não indicada" }}</span></div>
-    <div class="detail-item"><strong>Características / Socorro</strong><span>{{ page.estado_fisico | default: "Não indicado" }}</span></div>
+    <div class="detail-item"><strong>Localidade</strong><span>{{ page.localidade | default: page.freguesia | default: "" }}</span></div>
+    <div class="detail-item"><strong>Concelho</strong><span>{{ page.concelho | default: "" }}</span></div>
+    <div class="detail-item"><strong>Distrito</strong><span>{{ page.distrito | default: "" }}</span></div>
+    <div class="detail-item"><strong>Data Ocorrência Inicial</strong><span>{{ page.data_ocorrencia_inicial | default: "" }}</span></div>
+    <div class="detail-item"><strong>Idade</strong><span>{{ page.idade | default: "" }}</span></div>
+    <div class="detail-item"><strong>Condição</strong><span>{{ page.estado_fisico | default: "" }}</span></div>
 </div>
         <h2 class="section-title">🩺 Observações e Acompanhamento</h2>
-        <div class="content-box">
-            <div id="obs-content">
-                {% if page.observacoes %}
-                    {{ page.observacoes }}
-                {% else %}
-                    <em style="color: var(--text-muted); font-size: 11.5px;">Sem observações adicionais registadas.</em>
-                {% endif %}
-            </div>
-        </div>
+<div class="content-box">
+    <div class="obs-meta-summary" style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px;">
+        <div><strong>Situação:</strong> {{ page.situacao | default: "N/D" }}</div>
+        <div><strong>Condição:</strong> {{ page.estado_fisico | default: "N/D" }}</div>
+        <div><strong>Alerta:</strong> {{ page.nivel_alerta | default: "N/D" }}</div>
+    </div>
+    <div id="obs-content">
+        {% if page.observacoes %}
+            {{ page.observacoes }}
+        {% else %}
+            <em style="color: var(--text-muted); font-size: 11.5px;">Sem observações adicionais registadas.</em>
+        {% endif %}
+    </div>
+</div>
 
         <h2 class="section-title">
             <span>🗺️ Localização no Mapa</span>

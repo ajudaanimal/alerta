@@ -12,7 +12,7 @@ title: Alerta Animal
     color: #0f172a;
   }
   
-  /* Cabeçalho com azul claro/institucional limpo */
+  /* Cabeçalho com azul claro limpo */
   .HB-header {
     display: flex;
     justify-content: space-between;
@@ -44,7 +44,7 @@ title: Alerta Animal
     color: #0f172a;
   }
 
-  /* Layout de 3 Colunas Otimizado para Ecrãs Largos (1920x1080) */
+  /* Layout de 3 Colunas Otimizado para 1920x1080 */
   .HB-kanban {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -79,7 +79,7 @@ title: Alerta Animal
   .col-laranja-amarelo { border-top: 4px solid #f97316; }
   .col-verde { border-top: 4px solid #22c55e; }
 
-  /* Cards Operacionais Detalhados com Imagem */
+  /* Cards Operacionais */
   .HB-card {
     background: #ffffff;
     border: 1px solid #cbd5e1;
@@ -202,7 +202,7 @@ title: Alerta Animal
 <div class="homebase-container">
   
   <div class="HB-header">
-    <h1>🚨 Central de Operações</h1>
+    <h1>🚨 Central de Alertas Animais</h1>
     <div class="HB-stats">
       Total Registado: <strong>{{ site.ocorrencias | size }}</strong> ocorrências ativas
     </div>
@@ -214,8 +214,12 @@ title: Alerta Animal
     <div class="HB-column col-vermelho">
       <div class="HB-col-header" style="color: #991b1b;">
         <span>🔴 Crítico / Vermelho</span>
-        {% assign reds = site.ocorrencias | where_exp: "item", "item.triagem contains 'VERMELHO'" %}
-        <span class="HB-badge badge-vermelho">{{ reds | size }}</span>
+        {% assign count_red = 0 %}
+        {% for post in site.ocorrencias %}
+          {% assign t = post.triagem | upcase %}
+          {% if t contains 'VERMELHO' %}{% assign count_red = count_red | plus: 1 %}{% endif %}
+        {% endfor %}
+        <span class="HB-badge badge-vermelho">{{ count_red }}</span>
       </div>
 
       {% assign has_reds = false %}
@@ -256,8 +260,12 @@ title: Alerta Animal
     <div class="HB-column col-laranja-amarelo">
       <div class="HB-col-header" style="color: #9a3412;">
         <span>🟠 Urgente / Moderado</span>
-        {% assign oranges_yellows = site.ocorrencias | where_exp: "item", "item.triagem contains 'LARANJA' or item.triagem contains 'AMARELO'" %}
-        <span class="HB-badge badge-laranja">{{ oranges_yellows | size }}</span>
+        {% assign count_med = 0 %}
+        {% for post in site.ocorrencias %}
+          {% assign t = post.triagem | upcase %}
+          {% if t contains 'LARANJA' or t contains 'AMARELO' %}{% assign count_med = count_med | plus: 1 %}{% endif %}
+        {% endfor %}
+        <span class="HB-badge badge-laranja">{{ count_med }}</span>
       </div>
 
       {% assign has_medium = false %}
@@ -300,8 +308,12 @@ title: Alerta Animal
     <div class="HB-column col-verde">
       <div class="HB-col-header" style="color: #166534;">
         <span>🟢 Estável / Outros</span>
-        {% assign greens = site.ocorrencias | where_exp: "item", "item.triagem contains 'VERDE' or item.triagem == nil or item.triagem == ''" %}
-        <span class="HB-badge badge-verde">{{ greens | size }}</span>
+        {% assign count_green = 0 %}
+        {% for post in site.ocorrencias %}
+          {% assign t = post.triagem | upcase %}
+          {% unless t contains 'VERMELHO' or t contains 'LARANJA' or t contains 'AMARELO' %}{% assign count_green = count_green | plus: 1 %}{% endunless %}
+        {% endfor %}
+        <span class="HB-badge badge-verde">{{ count_green }}</span>
       </div>
 
       {% assign has_greens = false %}

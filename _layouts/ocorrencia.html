@@ -303,6 +303,18 @@ layout: default
         .page-wrapper { box-shadow: none; border: none; }
         .bottom-meta, .report-footer, .dark-mode-btn { display: none !important; }
     }
+
+
+    /* Remove a sombra e o fundo indesejado do marcador do Leaflet */
+    .leaflet-marker-shadow {
+       display: none !important;
+    }
+    .leaflet-marker-icon {
+       background: transparent !important;
+       border: none !important;
+    }
+    
+
 </style>
 
 {% assign t = page.triagem | upcase %}

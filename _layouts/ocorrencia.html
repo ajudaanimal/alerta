@@ -347,6 +347,8 @@ layout: default
     }
 </style>
 
+</style>
+
 {% assign t = page.triagem | upcase %}
 {% assign est_caso = page.estado_caso | upcase %}
 {% assign est_fisico = page.estado_fisico | upcase %}
@@ -372,16 +374,28 @@ layout: default
     {% assign theme_color = "#ca8a04" %}
 {% endif %}
 
+{% comment %} Prioridade de localização: Localidade > Concelho > Distrito > Localização {% endcomment %}
+{% assign display_loc = page.localidade | default: page.freguesia %}
+{% if display_loc == blank or display_loc == nil %}
+    {% assign display_loc = page.concelho %}
+{% endif %}
+{% if display_loc == blank or display_loc == nil %}
+    {% assign display_loc = page.distrito %}
+{% endif %}
+{% if display_loc == blank or display_loc == nil %}
+    {% assign display_loc = page.localizacao %}
+{% endif %}
+
 <div class="page-wrapper" style="--theme-color: {{ theme_color }};">
     <header class="report-header" style="background-color: {{ theme_color }};">
         <div>
             <h1>{{ page.especie }}{% if page.estado_fisico %} — {{ page.estado_fisico }}{% endif %}</h1>
-            {% if page.localizacao %}
+            {% if display_loc %}
             <div class="header-location">
-                📍 {{ page.localizacao }} 
+                📍 {{ display_loc }} 
                 <span class="map-links">
-                    (<a href="https://www.google.com/maps/search/?api=1&query={{ page.localizacao | url_encode }}" target="_blank" title="Procurar no Google Maps">G.Maps</a> | 
-                    <a href="https://www.openstreetmap.org/search?query={{ page.localizacao | url_encode }}" target="_blank" title="Procurar no OpenStreetMap">OSM</a>)
+                    (<a href="https://www.google.com/maps/search/?api=1&query={{ display_loc | append: ', Portugal' | url_encode }}" target="_blank" rel="noopener" title="Procurar no Google Maps">G.Maps</a> | 
+                    <a href="https://www.openstreetmap.org/search?query={{ display_loc | append: ', Portugal' | url_encode }}" target="_blank" rel="noopener" title="Procurar no OpenStreetMap">OSM</a>)
                 </span>
             </div>
             {% endif %}

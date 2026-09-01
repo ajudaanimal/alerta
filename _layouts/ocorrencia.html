@@ -516,6 +516,34 @@ layout: default
             });
         }
 
+        <script>
+    var animalIdJs = {{ page.id | jsonify }};
+    var targetUrl = window.location.href;
+    var themeColorJs = {{ theme_color | jsonify }};
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Modal de Imagem Ampliada
+        var imgElement = document.getElementById('clickable-animal-img');
+        var modal = document.getElementById('imageModal');
+        var modalImg = document.getElementById('modalImage');
+        var closeBtn = document.getElementById('modalCloseBtn');
+
+        if (imgElement && modal) {
+            imgElement.addEventListener('click', function() {
+                modal.style.display = 'flex';
+                modalImg.src = this.src;
+            });
+
+            var closeModal = function() { modal.style.display = 'none'; };
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeModal();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeModal();
+            });
+        }
+
         // Inicialização do Mapa Leaflet
         var map = L.map('single-case-map', {
             attributionControl: false
@@ -568,6 +596,14 @@ layout: default
         // Último recurso
         searchQueries.push("Portugal");
 
+        // Construção da string de localização limpa para o Popup
+        var popupLocParts = [];
+        if (geoLocalidade) popupLocParts.push(geoLocalidade);
+        if (geoConcelho) popupLocParts.push(geoConcelho);
+        if (geoDistrito) popupLocParts.push(geoDistrito);
+
+        var popupLocationText = popupLocParts.length > 0 ? popupLocParts.join(", ") : geoLocal;
+
         function geocodeSequentially(queries, index) {
             if (index >= queries.length) {
                 console.warn("Nenhuma das tentativas de geocodificação obteve resposta.");
@@ -608,8 +644,15 @@ layout: default
                             popupAnchor: [0, -12]
                         });
 
-                        L.marker([lat, lon], { icon: circleIcon }).addTo(map)
-                            .bindPopup("<b>{{ page.especie }}</b><br>" + (geoLocalidade || geoConcelho || geoDistrito || geoLocal || "Localização aproximada"))
+                        // Popup formatado dinamicamente
+                        var popupContent = "<b>{{ page.especie }}</b>";
+                        if (popupLocationText) {
+                            popupContent += "<br>" + popupLocationText;
+                        }
+
+                        L.marker([lat, lon], { icon: circleIcon })
+                            .addTo(map)
+                            .bindPopup(popupContent)
                             .openPopup();
                     } else {
                         geocodeSequentially(queries, index + 1);
@@ -629,7 +672,7 @@ layout: default
             whatsappBtn.addEventListener('click', function() {
                 var especie = {{ page.especie | default: "Animal" | jsonify }};
                 var estado = {{ page.estado_fisico | default: "Desconhecido" | jsonify }};
-                var local = geoLocal || geoLocalidade || geoConcelho || "Portugal";
+                var local = popupLocationText || "Portugal";
 
                 var mensagem = "🚨 *ALERTA ANIMAL* 🚨\n\n" +
                                "🐾 *Espécie:* " + especie + " (" + estado + ")\n" +
@@ -646,7 +689,7 @@ layout: default
             emailShareBtn.addEventListener('click', function() {
                 var especie = {{ page.especie | default: "Animal" | jsonify }};
                 var idCaso = {{ page.id | default: "N/D" | jsonify }};
-                var local = geoLocal || geoLocalidade || geoConcelho || "Portugal";
+                var local = popupLocationText || "Portugal";
                 var estadoFisico = {{ page.estado_fisico | default: "N/D" | jsonify }};
                 
                 var obsEl = document.getElementById('obs-content');

@@ -303,18 +303,6 @@ layout: default
         .page-wrapper { box-shadow: none; border: none; }
         .bottom-meta, .report-footer, .dark-mode-btn { display: none !important; }
     }
-
-
-    /* Remove a sombra e o fundo indesejado do marcador do Leaflet */
-    .leaflet-marker-shadow {
-       display: none !important;
-    }
-    .leaflet-marker-icon {
-       background: transparent !important;
-       border: none !important;
-    }
-    
-
 </style>
 
 {% assign t = page.triagem | upcase %}
@@ -442,7 +430,7 @@ layout: default
             ID: {{ page.id }} — <a id="btn-remove-data" href="#" style="color: #dc2626; text-decoration: underline;">Pedir remoção</a>
         </div>
         <div class="btn-group">
-            <a href="https://api.whatsapp.com/send?text=Alerta%20Animal:%20{{ page.especie | url_encode }}%20({{ page.estado_fisico | url_encode }})%20em%20{{ page.localizacao | url_encode }}%250AVer%20detalhes:%20{{ site.url }}{{ page.url }}" target="_blank" class="btn" style="background: #25d366; color: white;">📲 WhatsApp</a>
+            <button type="button" id="btn-whatsapp-share" class="btn" style="background: #25d366; color: white;" title="Partilhar no WhatsApp">📲</button>
             <button type="button" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copiado!');" class="btn">📋 Copiar Link</button>
             <button type="button" id="btn-email-share" class="btn" style="background: #2563eb; color: white;">📧 Email</button>
             <button type="button" id="btn-download-md" class="btn">📥 MD</button>
@@ -456,6 +444,7 @@ layout: default
     var animalIdJs = {{ page.id | jsonify }};
     var targetUrl = window.location.href;
     var animalLocation = {{ page.localizacao | default: "Portugal" | jsonify }};
+    var themeColorJs = {{ theme_color | jsonify }};
 
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
@@ -482,10 +471,40 @@ layout: default
                     var lat = parseFloat(data[0].lat);
                     var lon = parseFloat(data[0].lon);
                     map.setView([lat, lon], 14);
-                    L.marker([lat, lon]).addTo(map).bindPopup("<b>{{ page.especie }}</b><br>{{ page.localizacao }}").openPopup();
+
+                    // Ícone limpo em SVG (sem fundo branco indesejado)
+                    var cleanPinIcon = L.divIcon({
+                        className: 'custom-map-pin',
+                        html: `<div style="background-color: ${themeColorJs}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 6px rgba(0,0,0,0.4);"></div>`,
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8],
+                        popupAnchor: [0, -10]
+                    });
+
+                    L.marker([lat, lon], { icon: cleanPinIcon }).addTo(map)
+                        .bindPopup("<b>{{ page.especie }}</b><br>{{ page.localizacao }}")
+                        .openPopup();
                 }
             })
             .catch(err => console.error("Erro ao carregar mapa do caso:", err));
+
+        // Configurar botão do WhatsApp formatado corretamente
+        var whatsappBtn = document.getElementById('btn-whatsapp-share');
+        if (whatsappBtn) {
+            whatsappBtn.addEventListener('click', function() {
+                var especie = {{ page.especie | default: "Animal" | jsonify }};
+                var estado = {{ page.estado_fisico | default: "Desconhecido" | jsonify }};
+                var local = {{ page.localizacao | default: "Portugal" | jsonify }};
+
+                var mensagem = "🚨 *ALERTA ANIMAL* 🚨\n\n" +
+                               "🐾 *Espécie:* " + especie + " (" + estado + ")\n" +
+                               "📍 *Local:* " + local + "\n\n" +
+                               "👉 *Ver detalhes e ajudar:* " + targetUrl;
+
+                var whatsappUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(mensagem);
+                window.open(whatsappUrl, '_blank');
+            });
+        }
 
         // Configurar botões de exportação e partilha
         var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';

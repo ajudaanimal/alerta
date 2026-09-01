@@ -1,6 +1,5 @@
 ---
 layout: default
-title: "{{ page.id }} — {{ page.especie }}"
 ---
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -12,41 +11,38 @@ title: "{{ page.id }} — {{ page.especie }}"
         --text-main: #0f172a;
         --text-muted: #475569;
         --border-color: #cbd5e1;
-        --theme-color: #2563eb;
     }
 
     .page-wrapper {
-        max-width: 850px;
-        margin: 30px auto;
+        max-width: 750px;
+        margin: 15px auto;
         background: var(--card-bg);
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
         overflow: hidden;
         border: 1px solid var(--border-color);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     .report-header {
         color: #ffffff;
-        padding: 22px 28px;
+        padding: 12px 18px;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
     .report-header-left h1 {
-        font-size: 22px;
-        font-weight: 900;
-        letter-spacing: -0.5px;
-        margin: 0 0 2px 0;
+        font-size: 16px;
+        font-weight: 800;
+        margin: 0;
     }
 
     .header-location {
-        font-size: 14px;
-        opacity: 0.98;
-        margin-top: 6px;
-        font-weight: 700;
-        letter-spacing: 0.3px;
+        font-size: 12px;
+        opacity: 0.95;
+        margin-top: 2px;
+        font-weight: 600;
     }
 
     .report-header-right {
@@ -54,26 +50,24 @@ title: "{{ page.id }} — {{ page.especie }}"
     }
 
     .report-header-right h3 {
-        font-size: 12px;
-        opacity: 0.9;
+        font-size: 10px;
+        opacity: 0.85;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
         margin: 0;
     }
 
     .report-header-right h2 {
-        font-size: 16px;
-        font-weight: 900;
-        margin: 2px 0 0 0;
+        font-size: 13px;
+        font-weight: 800;
+        margin: 1px 0 0 0;
     }
 
     .status-banner {
-        padding: 14px 28px;
-        font-weight: 900;
+        padding: 8px 18px;
+        font-weight: 800;
         text-align: center;
-        font-size: 14px;
+        font-size: 12px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
     .banner-resolved { background: #dcfce7; border-bottom: 2px solid #16a34a; color: #14532d; }
     .banner-red { background: #fee2e2; border-bottom: 2px solid #dc2626; color: #7f1d1d; }
@@ -81,32 +75,23 @@ title: "{{ page.id }} — {{ page.especie }}"
     .banner-yellow { background: #fef9c3; border-bottom: 2px solid #ca8a04; color: #713f12; }
 
     .report-body {
-        padding: 28px;
+        padding: 16px;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 12px;
     }
 
     .top-section {
         display: grid;
-        grid-template-columns: 350px 1fr;
-        gap: 20px;
-        align-items: start;
-        padding-bottom: 20px;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .animal-img-wrapper {
-        width: 350px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+        grid-template-columns: 240px 1fr;
+        gap: 12px;
+        align-items: stretch;
     }
 
     .animal-img-container {
         width: 100%;
-        height: 240px;
-        border-radius: 8px;
+        height: 150px;
+        border-radius: 6px;
         overflow: hidden;
         border: 1px solid var(--border-color);
         background: #f8fafc;
@@ -122,153 +107,127 @@ title: "{{ page.id }} — {{ page.especie }}"
     }
 
     .animal-img-placeholder {
-        font-size: 12px;
+        font-size: 11px;
         color: var(--text-muted);
-        font-weight: 700;
-        text-align: center;
-        padding: 10px;
-    }
-
-    .animal-meta-tags {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--text-main);
-        background: #f8fafc;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        text-align: center;
+        font-weight: 600;
     }
 
     .unified-highlight-box {
         background: #f8fafc;
-        border-radius: 8px;
+        border-radius: 6px;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        justify-content: space-around;
+        border: 1px solid var(--border-color);
+        padding: 8px 12px;
     }
 
-    .box-section-item {
-        padding: 14px 18px;
+    .box-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 0;
     }
 
-    .box-section-item:not(:last-child) {
+    .box-row:not(:last-child) {
         border-bottom: 1px solid var(--border-color);
     }
 
-    .box-section-item label {
-        display: block;
-        font-size: 11px;
+    .box-row label {
+        font-size: 10px;
         font-weight: 800;
         text-transform: uppercase;
-        margin-bottom: 4px;
     }
 
-    .box-section-item h2 {
-        font-size: 16px;
-        font-weight: 900;
+    .box-row span {
+        font-size: 12px;
+        font-weight: 800;
         color: var(--text-main);
-        margin: 0;
     }
 
-    .section-block {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .section-block h3 {
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border-bottom: 2px solid var(--bg-color);
-        padding-bottom: 4px;
-        margin: 0;
-    }
-
-    .section-block .content-text {
-        font-size: 13px;
+    .content-box {
+        font-size: 12px;
         color: var(--text-main);
         background: #f8fafc;
-        padding: 10px 14px;
-        border-radius: 8px;
+        padding: 10px;
+        border-radius: 6px;
         border: 1px solid var(--border-color);
         white-space: pre-wrap;
         word-break: break-word;
     }
 
+    .grid-info-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-items: center;
+        background: #f8fafc;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+    }
+
     .link-badge {
         display: inline-block;
-        background: #1877f2;
+        background: #2563eb;
         color: #ffffff !important;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
         text-decoration: none;
         font-weight: 700;
     }
-    .link-badge:hover { background: #145dbf; }
+    .link-badge:hover { background: #1d4ed8; }
 
     .protected-contact {
-        background: #f1f5f9;
+        background: #e2e8f0;
         color: #0f172a;
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-size: 13px;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
         cursor: pointer;
         border: 1px dashed var(--border-color);
         display: inline-block;
         user-select: none;
         font-weight: 700;
     }
-    .protected-contact:hover { background: #e2e8f0; }
 
     .qr-section {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 10px;
         background: #f8fafc;
-        padding: 14px;
-        border-radius: 8px;
+        padding: 8px 12px;
+        border-radius: 6px;
         border: 1px solid var(--border-color);
     }
 
     .qr-img-container {
-        width: 80px;
-        height: 80px;
+        width: 55px;
+        height: 55px;
         background: #ffffff;
         border-radius: 4px;
         border: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
         flex-shrink: 0;
     }
 
     .report-footer {
         background: #f8fafc;
         border-top: 1px solid var(--border-color);
-        padding: 16px 28px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .footer-top-row {
+        padding: 10px 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 11px;
-        color: var(--text-muted);
-        font-weight: 700;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .footer-actions {
         display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
+        gap: 6px;
     }
 
     .btn {
@@ -276,15 +235,15 @@ title: "{{ page.id }} — {{ page.especie }}"
         color: #ffffff;
         border: none;
         font-weight: 700;
-        font-size: 12px;
+        font-size: 11px;
         cursor: pointer;
         text-decoration: none;
-        padding: 7px 12px;
-        border-radius: 6px;
+        padding: 5px 10px;
+        border-radius: 4px;
         text-transform: uppercase;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
     }
     .btn:hover { background: var(--text-muted); }
 
@@ -292,14 +251,15 @@ title: "{{ page.id }} — {{ page.especie }}"
 
     @media print {
         body { background: #ffffff; padding: 0; }
-        .page-wrapper { box-shadow: none; border: none; margin: 0; }
+        .page-wrapper { box-shadow: none; border: none; margin: 0; max-width: 100%; }
         .protected-contact { display: none !important; }
         .print-phone-fallback { display: inline !important; }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 600px) {
         .top-section { grid-template-columns: 1fr; }
-        .animal-img-wrapper { width: 100%; }
+        .animal-img-container { height: 180px; }
+        .grid-info-row { grid-template-columns: 1fr; gap: 6px; }
     }
 </style>
 
@@ -318,21 +278,20 @@ title: "{{ page.id }} — {{ page.especie }}"
   {% assign theme_color = "#16a34a" %}
 {% elsif t contains 'VERM' or est_fisico contains 'FERIDO' or est_fisico contains 'CRÍTICO' %}
   {% assign banner_class = "banner-red" %}
-  {% assign banner_text = "🚨 " | append: (page.triagem | default: "Emergência") | append: " — " | append: (page.estado_fisico | default: "Crítico") | append: " — Necessita Resgate Imediato" %}
+  {% assign banner_text = "🚨 " | append: (page.triagem | default: "Emergência") | append: " — " | append: (page.estado_fisico | default: "Crítico") | append: " — Resgate Imediato" %}
   {% assign theme_color = "#dc2626" %}
 {% elsif t contains 'LARANJA' or est_fisico contains 'URGENTE' %}
   {% assign banner_class = "banner-orange" %}
-  {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Urgente") | append: " — " | append: (page.estado_fisico | default: "Urgente") | append: " — Necessita Socorro Urgente" %}
+  {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Urgente") | append: " — " | append: (page.estado_fisico | default: "Urgente") | append: " — Socorro Urgente" %}
   {% assign theme_color = "#f97316" %}
 {% else %}
   {% assign banner_class = "banner-yellow" %}
-  {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Alerta") | append: " — " | append: (page.estado_fisico | default: "Vulnerável") | append: " — Necessita Cuidados Médicos" %}
+  {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Alerta") | append: " — " | append: (page.estado_fisico | default: "Vulnerável") | append: " — Cuidados Médicos" %}
   {% assign theme_color = "#ca8a04" %}
 {% endif %}
 
 <div class="page-wrapper" style="--theme-color: {{ theme_color }};">
 
-    <!-- 1. CABEÇALHO E IDENTIFICAÇÃO -->
     <header class="report-header" style="background-color: {{ theme_color }};">
         <div class="report-header-left">
             <h1>{{ page.especie }}{% if page.estado_fisico and page.estado_fisico != "Desconhecido" %} — {{ page.estado_fisico }}{% endif %}</h1>
@@ -342,113 +301,89 @@ title: "{{ page.id }} — {{ page.especie }}"
         </div>
         <div class="report-header-right">
             <h3>{{ page.date | date: "%d/%m/%Y" }}</h3>
-            <h2>{{ page.distrito | default: page.situacao }}</h2>
+            <h2>ID: {{ page.id }}</h2>
         </div>
     </header>
 
-    <!-- 2. BANNER DE ESTADO -->
     <div class="status-banner {{ banner_class }}">
         {{ banner_text }}
     </div>
 
-    <!-- CORPO DA FICHA -->
     <main class="report-body">
         
-        <!-- 3. BLOCO SUPERIOR ESQUERDO (IMAGEM) + 4. PAINEL LATERAL -->
         <div class="top-section">
-            <div class="animal-img-wrapper">
-                <div class="animal-img-container">
-                    {% if page.imagem %}
-                        <img src="{{ page.imagem }}" alt="Foto da Ocorrência {{ page.id }}">
-                    {% else %}
-                        <div class="animal-img-placeholder">Sem Imagem Disponível</div>
-                    {% endif %}
-                </div>
-                <div class="animal-meta-tags">
-                    <h4>{% if page.nome and page.nome != "Não indicado" and page.nome != "" %}{{ page.nome }} / {% endif %}{% if page.sexo and page.sexo != "Não indicado" %}{{ page.sexo }} / {% endif %}ID: {{ page.id }}</h4>
-                </div>
+            <div class="animal-img-container">
+                {% if page.imagem %}
+                    <img src="{{ page.imagem }}" alt="Foto da Ocorrência {{ page.id }}">
+                {% else %}
+                    <div class="animal-img-placeholder">Sem Imagem</div>
+                {% endif %}
             </div>
             
-            <!-- PAINEL LATERAL DIREITO -->
-            <div class="unified-highlight-box" style="border: 2px solid {{ theme_color }};">
-                <div class="box-section-item">
+            <div class="unified-highlight-box" style="border-left: 4px solid {{ theme_color }};">
+                <div class="box-row">
                     <label style="color: {{ theme_color }};">Situação</label>
-                    <h2>{{ page.situacao | default: "Não especificada" }}</h2>
+                    <span>{{ page.situacao | default: "N/D" }}</span>
                 </div>
-                
-                <div class="box-section-item">
+                <div class="box-row">
                     <label style="color: {{ theme_color }};">Nível de Alerta</label>
-                    <h2>{{ page.triagem | default: "Não especificado" }}</h2>
+                    <span>{{ page.triagem | default: "N/D" }}</span>
                 </div>
-
-                <div class="box-section-item">
+                <div class="box-row">
                     <label style="color: {{ theme_color }};">Estado Físico</label>
-                    <h2>{{ page.estado_fisico | default: "Não especificado" }}</h2>
+                    <span>{{ page.estado_fisico | default: "N/D" }}</span>
                 </div>
-
-                {% if page.estado_detalhado and page.estado_detalhado != "" %}
-                    <div class="box-section-item">
-                        <label style="color: {{ theme_color }};">Estado Detalhado</label>
-                        <h2>{{ page.estado_detalhado }}</h2>
-                    </div>
+                {% if page.sexo and page.sexo != "Não indicado" %}
+                <div class="box-row">
+                    <label style="color: {{ theme_color }};">Sexo / Nome</label>
+                    <span>{{ page.sexo }}{% if page.nome %} / {{ page.nome }}{% endif %}</span>
+                </div>
                 {% endif %}
             </div>
         </div>
 
-        <!-- 5. CONTEÚDO MARKDOWN E SECÇÕES -->
-        <div style="font-size: 14px; color: var(--text-main);">
+        <div class="content-box">
             {{ content }}
         </div>
 
-        <!-- CONTACTOS E LIGAÇÃO ORIGINAL -->
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; align-items: center;">
-            <div class="info-group">
-                <label style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Contacto Telefónico</label>
-                <div class="value" style="margin-top: 4px;">
-                    {% if page.contacto and page.contacto != "Não indicado" and page.contacto != "" %}
-                        <span id="protected-contact-box" class="protected-contact" title="Clique para revelar o telemóvel">🔒 Revelar Telemóvel (Sob Consulta)</span>
-                        <span class="print-phone-fallback">{{ page.contacto }}</span>
-                    {% else %}
-                        <span style="font-size: 13px;">Através da publicação original</span>
-                    {% endif %}
-                </div>
+        <div class="grid-info-row">
+            <div>
+                <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px;">Contacto Telefónico</span>
+                {% if page.contacto and page.contacto != "Não indicado" and page.contacto != "" %}
+                    <span id="protected-contact-box" class="protected-contact" title="Clique para revelar">🔒 Revelar Telemóvel</span>
+                    <span class="print-phone-fallback">{{ page.contacto }}</span>
+                {% else %}
+                    <span style="font-size: 11px;">Via post original</span>
+                {% endif %}
             </div>
-            <div class="info-group">
-                <label style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Publicação Original</label>
-                <div class="value" style="margin-top: 4px;">
-                    {% if page.link %}
-                        <a href="{{ page.link }}" target="_blank" class="link-badge">📘 Ver Post Original</a>
-                    {% else %}
-                        <span style="font-size: 12px; color: var(--text-muted);">Não disponível</span>
-                    {% endif %}
-                </div>
+            <div>
+                <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px;">Publicação Original</span>
+                {% if page.link %}
+                    <a href="{{ page.link }}" target="_blank" class="link-badge">📘 Ver Post Original</a>
+                {% else %}
+                    <span style="font-size: 11px; color: var(--text-muted);">Indisponível</span>
+                {% endif %}
             </div>
         </div>
 
-        <!-- QR CODE AUTOREFERENCIAL -->
         <div class="qr-section">
             <div class="qr-img-container" id="qrcode-target"></div>
             <div>
-                <h3 style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: {{ theme_color }}; margin-bottom: 2px;">Aceder a esta Ficha via QR Code</h3>
-                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Aponte a câmara para abrir diretamente esta mesma ficha digital em qualquer dispositivo.</p>
-                <div id="qr-text-url" style="font-family: monospace; font-size: 10px; color: var(--text-muted); margin-top: 2px; word-break: break-all;">
-                    {{ page.qr_link }}
-                </div>
+                <h4 style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: {{ theme_color }}; margin: 0 0 2px 0;">QR Code da Ficha</h4>
+                <p style="font-size: 11px; color: var(--text-muted); margin: 0;">Aponte a câmara para abrir esta ficha digital em qualquer dispositivo.</p>
             </div>
         </div>
 
     </main>
 
-    <!-- 7. RODAPÉ E AÇÕES -->
     <footer class="report-footer">
-        <div class="footer-top-row">
-            <span>Registo Alerta Animal — Ficheiro criado a {{ page.date | date: "%d/%m/%Y %H:%M" }}</span>
-            <a id="btn-remove-data" href="#" style="color: #dc2626; text-decoration: underline; font-weight: 700;">Pedir remoção de dados</a>
+        <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">
+            ID: {{ page.id }} — <a id="btn-remove-data" href="#" style="color: #dc2626; text-decoration: underline;">Pedir remoção</a>
         </div>
         <div class="footer-actions">
             <button type="button" onclick="window.print();" class="btn">🖨️ Imprimir</button>
-            <button type="button" id="btn-download-txt" class="btn">📥 Guardar TXT</button>
-            <a id="btn-email-share" href="#" class="btn">✉️ Partilhar por Email</a>
+            <button type="button" id="btn-download-txt" class="btn">📥 TXT</button>
+            <a id="btn-email-share" href="#" class="btn">✉️ Email</a>
         </div>
     </footer>
 
@@ -458,7 +393,6 @@ title: "{{ page.id }} — {{ page.especie }}"
     var animalIdJs = {{ page.id | jsonify }};
     var realContact = {{ page.contacto | jsonify }};
     var sheetQrLink = {{ page.qr_link | jsonify }};
-    
     var targetUrl = sheetQrLink && sheetQrLink.trim() !== "" ? sheetQrLink.trim() : window.location.href;
 
     window.addEventListener('DOMContentLoaded', function() {
@@ -467,27 +401,20 @@ title: "{{ page.id }} — {{ page.especie }}"
         var emailBtn = document.getElementById('btn-email-share');
         var removeBtn = document.getElementById('btn-remove-data');
         var downloadTxtBtn = document.getElementById('btn-download-txt');
-        var qrTextDisplay = document.getElementById('qr-text-url');
-
-        if (qrTextDisplay && (!sheetQrLink || sheetQrLink.trim() === "")) {
-            qrTextDisplay.innerText = targetUrl;
-        }
-
         var qrContainer = document.getElementById('qrcode-target');
+
         if (qrContainer && targetUrl) {
             qrContainer.innerHTML = "";
             try {
                 new QRCode(qrContainer, {
                     text: targetUrl,
-                    width: 76,
-                    height: 76,
+                    width: 50,
+                    height: 50,
                     colorDark: "#0f172a",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.M
                 });
-            } catch(e) {
-                qrContainer.innerHTML = '<span style="font-size:9px; color:red;">Erro QR</span>';
-            }
+            } catch(e) {}
         }
 
         if (contactBox) {
@@ -501,138 +428,25 @@ title: "{{ page.id }} — {{ page.especie }}"
         }
 
         if (emailBtn) {
-            var emailSubject = "Partilha de Ficha de Ocorrência Animal — ID: " + cleanId;
-            var emailBody = "Consulte a ficha completa do animal em:\n" + targetUrl;
-            emailBtn.href = "mailto:?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
+            emailBtn.href = "mailto:?subject=" + encodeURIComponent("Ficha Ocorrência Animal ID: " + cleanId) + "&body=" + encodeURIComponent("Consulte a ficha em:\n" + targetUrl);
         }
 
         if (removeBtn) {
-            var removeSubject = "pedido remoçao de dados pessoais";
-            var removeBody = "Informação da Ocorrência ID: " + cleanId + "\nLink da Ficha: " + targetUrl + "\n\nMotivo do pedido de remoção de dados da ficha: ";
-            removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent(removeSubject) + "&body=" + encodeURIComponent(removeBody);
+            removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent("Pedido de remoção de dados") + "&body=" + encodeURIComponent("ID Ocorrência: " + cleanId + "\nLink: " + targetUrl);
         }
 
         if (downloadTxtBtn) {
             downloadTxtBtn.addEventListener('click', function() {
-                var txtContent = "==================================================\n" +
-                                 "FICHA DE OCORRÊNCIA: " + cleanId + "\n" +
-                                 "==================================================\n" +
-                                 "Espécie: " + {{ page.especie | jsonify }} + "\n" +
-                                 "Situação: " + {{ page.situacao | jsonify }} + "\n" +
-                                 "Localização: " + {{ page.localizacao | jsonify }} + "\n" +
-                                 "Distrito: " + {{ page.distrito | jsonify }} + "\n\n" +
-                                 "Link Direto da Ficha / QR: " + targetUrl + "\n" +
-                                 "Publicação Original: " + {{ page.link | jsonify }} + "\n" +
-                                 "==================================================";
-
+                var txtContent = "OCORRÊNCIA: " + cleanId + "\nLink: " + targetUrl;
                 var blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
                 var url = URL.createObjectURL(blob);
                 var a = document.createElement('a');
                 a.href = url;
-                a.download = "Ficha_Ocorrencia_" + cleanId + ".txt";
+                a.download = "Ocorrencia_" + cleanId + ".txt";
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                URL.revokeObjectURL(url);
             });
         }
     });
-</script>---
-layout: default
-title: "{{ page.id }} — {{ page.especie }}"
----
-
-<div style="max-width: 800px; margin: 30px auto; padding: 0 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-  
-  <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-    
-    <!-- BARRA COLORIDA DE NÍVEL DE ALERTA -->
-    {% assign t = page.triagem | upcase %}
-    {% assign bar_color = "#64748b" %}
-    {% if t contains 'VERM' %}
-      {% assign bar_color = "#ef4444" %}
-    {% elsif t contains 'LARANJA' %}
-      {% assign bar_color = "#f97316" %}
-    {% elsif t contains 'AMARELO' %}
-      {% assign bar_color = "#eab308" %}
-    {% elsif t contains 'ESTÁVEL' or t contains 'VERDE' %}
-      {% assign bar_color = "#22c55e" %}
-    {% endif %}
-    
-    <div style="height: 6px; background-color: {{ bar_color }};"></div>
-
-    <div style="padding: 24px;">
-      
-      <!-- CABEÇALHO -->
-      <header style="border-bottom: 1px solid #e2e8f0; margin-bottom: 20px; padding-bottom: 16px;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
-          <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0;">
-            {{ page.id }} — {{ page.especie }}{% if page.nome and page.nome != "Não indicado" and page.nome != "" %} ({{ page.nome }}){% endif %}
-          </h1>
-          <span style="font-size: 11px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 3px 8px; border-radius: 4px; border: 1px solid #cbd5e1;">
-            {{ page.date | date: "%d/%m/%Y %H:%M" }}
-          </span>
-        </div>
-        
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <span style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-            Situação: {{ page.situacao }}
-          </span>
-          <span style="background: #fef9c3; color: #713f12; border: 1px solid #fde047; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-            Estado: {{ page.estado_caso }}
-          </span>
-          {% if page.estado_fisico and page.estado_fisico != "Desconhecido" %}
-          <span style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-            Condição: {{ page.estado_fisico }}
-          </span>
-          {% endif %}
-        </div>
-      </header>
-
-      <!-- FOTOGRAFIA -->
-      {% if page.imagem %}
-        <div style="text-align: center; margin-bottom: 24px;">
-          <img src="{{ page.imagem }}" alt="Foto da Ocorrência {{ page.id }}" style="max-width: 100%; max-height: 450px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0;">
-        </div>
-      {% endif %}
-
-      <!-- CAIXA DE DETALHES TÉCNICOS -->
-      <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px 20px; border-radius: 6px; margin-bottom: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; font-size: 13px; color: #334155;">
-        <div><strong>📍 Localização:</strong> {{ page.localizacao }}{% if page.distrito %} ({{ page.distrito }}){% endif %}</div>
-        <div><strong>🏷️ Nome:</strong> {{ page.nome | default: "Não indicado" }}</div>
-        <div><strong>🚻 Sexo:</strong> {{ page.sexo | default: "Não indicado" }}</div>
-        <div><strong>🩺 Triagem:</strong> {{ page.triagem | default: "Não especificada" }}</div>
-        <div><strong>📞 Contacto:</strong> {{ page.contacto | default: "Não indicado" }}</div>
-      </div>
-
-      <!-- CONTEÚDO MARKDOWN -->
-      <article style="line-height: 1.7; font-size: 14px; color: #334155;">
-        {{ content }}
-      </article>
-
-    </div>
-  </div>
-
-</div>
-
-<style>
-  article h2 {
-    font-size: 16px;
-    font-weight: 800;
-    color: #0f172a;
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 6px;
-    margin-top: 20px;
-    margin-bottom: 10px;
-  }
-  article ul {
-    padding-left: 20px;
-  }
-  article a {
-    color: #2563eb;
-    text-decoration: none;
-  }
-  article a:hover {
-    text-decoration: underline;
-  }
-</style>
+</script>

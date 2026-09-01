@@ -4,7 +4,8 @@ markdown: kramdown
 url: "https://ajudaanimal.github.io"
 baseurl: "/alerta"
 plugins:
-  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-seo-tag
 # 1. ADICIONAR ISTO: Obriga o Jekyll a gerar a página mesmo que a hora pareça futura
 future: true 
 

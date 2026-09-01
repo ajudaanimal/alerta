@@ -21,15 +21,40 @@ title: Sistema de Alerta Animal
     background: #e0f2fe;
     color: #0369a1;
     border: 1px solid #bae6fd;
-    padding: 14px 20px;
+    padding: 10px 16px;
     border-radius: 8px;
     margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
   }
   
   .HB-header h1 {
-    font-size: 18px !important;
+    font-size: 16px !important;
     font-weight: 800 !important;
     margin: 0 !important;
+  }
+
+  .HB-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .HB-nav-links a {
+    color: #0369a1;
+    text-decoration: none;
+    background: #ffffff;
+    border: 1px solid #bae6fd;
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .HB-nav-links a:hover {
+    background: #f0f9ff;
+    border-color: #7dd3fc;
   }
 
   .HB-kanban {
@@ -168,7 +193,12 @@ title: Sistema de Alerta Animal
   
   <div class="HB-header">
     <h1>🐾 Alerta Animal</h1>
-    <div style="font-size: 12px; font-weight: 600;">Registos: <strong>{{ site.ocorrencias | size }}</strong></div>
+    <div class="HB-nav-links">
+      <span>Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
+      <span>•</span>
+      <a href="{{ '/mapa.html' | relative_url }}">🗺️ Mapa</a>
+      <a href="{{ '/feed.xml' | relative_url }}">📡 RSS Feed</a>
+    </div>
   </div>
 
   <div class="HB-kanban">

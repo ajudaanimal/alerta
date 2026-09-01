@@ -3,7 +3,8 @@ description: "Portal de resgate de animais"
 markdown: kramdown
 url: "https://ajudaanimal.github.io"
 baseurl: "/alerta"
-
+plugins:
+  - jekyll-feed
 # 1. ADICIONAR ISTO: Obriga o Jekyll a gerar a página mesmo que a hora pareça futura
 future: true 
 

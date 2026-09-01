@@ -1,15 +1,10 @@
 # Termos de Utilização
 
-## 1. Natureza do Serviço e Isenção de Responsabilidade
-Esta plataforma funciona estritamente como um canal de comunicação de base comunitária para a sinalização pública de animais feridos, doentes ou em situação de vulnerabilidade, facilitando a emissão de pedidos de ajuda e a partilha de ocorrências em mapa.
+## 1. Âmbito e Natureza Comunitária
+Esta plataforma funciona exclusivamente como um canal tecnológico voluntário de base comunitária para a sinalização pública de animais feridos ou doentes em Portugal. 
 
-* **Ausência de Socorro Direto:** Os criadores e administradores da plataforma não prestam serviços diretos de resgate, recolha ou assistência veterinária, nem garantem o sucesso ou a resolução das ocorrências reportadas.
-* **Não Substituição dos Serviços Oficiais:** A plataforma não substitui os meios oficiais de emergência ou assistência imediata. Em caso de perigo iminente ou crime em curso, deve contactar diretamente as autoridades competentes (112, PSP, GNR, Bombeiros, Centros de Recolha Oficial ou Centros de Recuperação de Animais Silvestres).
-* **Isenção de Responsabilidade:** Os administradores declinam qualquer responsabilidade civil, criminal ou operacional sobre o desfecho das ocorrências no terreno, o estado de saúde dos animais ou a atuação de terceiros e voluntários.
+* **Isenção de Responsabilidade Civil:** Os criadores e administradores da plataforma não prestam serviços diretos de socorro ou resgate animal e declinam qualquer responsabilidade civil ou criminal decorrente do desfecho das ocorrências no terreno ou da atuação de terceiros.
+* **Serviços de Emergência:** A plataforma não substitui os serviços públicos oficiais. Perante uma situação de emergência, perigo iminente ou crime, deve contactar imediatamente as autoridades competentes em Portugal (112, SEPNA/GNR, PSP, ou os Serviços Veterinários Municipais respetivos).
 
-## 2. Conteúdos Gerados pela Comunidade
-Todos os dados, fotografias, descrições e localizações publicados são inseridos de forma descentralizada pelos utilizadores. A plataforma atua apenas como um meio tecnológico passivo de partilha, não assumindo a autoria, garantia de veracidade ou validação prévia dos conteúdos submetidos.
-
-## 3. Restrições de Uso e Proteção contra Fins Comerciais
-* **Proibição Comercial:** Os dados agregados da plataforma, o mapa de ocorrências e os diretórios não podem ser utilizados para fins lucrativos, criação de bases de dados paralelas comerciais ou serviços concorrentes.
-* **Combate ao Scraping Indevido:** É vedada a extração automatizada massiva de dados (*scraping*) e a reprodução comercial dos conteúdos da comunidade. A partilha e adaptação da informação devem respeitar estritamente a licença Creative Commons (CC BY-NC-SA) adotada pelo projeto.
+## 2. Direitos e Propriedade dos Dados
+A infraestrutura, design e bases de dados do projeto estão protegidos. Os conteúdos informativos e de partilha pública regem-se estritamente pela licença CC BY-NC-ND 4.0 associada a este repositório, sendo proibida a exploração comercial ou a criação de bases de dados paralelas com fins lucrativos.

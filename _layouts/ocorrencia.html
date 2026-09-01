@@ -184,15 +184,21 @@ layout: default
     }
 
     .content-box blockquote {
-        margin: 0 0 6px 0;
+        margin: 2px 0 6px 0;
         padding: 4px 8px;
         background: #f1f5f9;
         border-left: 3px solid var(--border-color);
         font-style: normal;
     }
 
-    .content-box blockquote:last-child {
-        margin-bottom: 0;
+    .sub-label {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-top: 4px;
+        margin-bottom: 2px;
+        display: block;
     }
 
     .bottom-meta {
@@ -214,16 +220,6 @@ layout: default
         font-size: 10.5px;
         text-decoration: none;
         font-weight: 700;
-    }
-
-    .copy-btn {
-        background: #e2e8f0;
-        border: 1px solid var(--border-color);
-        padding: 2px 6px;
-        font-size: 9.5px;
-        font-weight: 700;
-        cursor: pointer;
-        border-radius: 1px;
     }
 
     .report-footer {
@@ -261,7 +257,7 @@ layout: default
     @media print {
         body { background: #ffffff; padding: 0; }
         .page-wrapper { box-shadow: none; border: none; }
-        .copy-btn, .footer-actions, .btn-group { display: none !important; }
+        .footer-actions, .btn-group { display: none !important; }
     }
 </style>
 
@@ -352,9 +348,12 @@ layout: default
 
         <div class="section-title">🩺 Observações e Descrição</div>
         <div class="content-box">
-            <blockquote><strong>Descrição:</strong> {{ page.descricao | default: content }}</blockquote>
+            <span class="sub-label">Descrição Detalhada</span>
+            <blockquote><span id="desc-content">{{ page.descricao | default: content }}</span></blockquote>
+
             {% if page.observacoes %}
-            <blockquote><strong>Observações:</strong> {{ page.observacoes }}</blockquote>
+            <span class="sub-label">Observações e Cuidados</span>
+            <div style="margin-top: 2px;" id="obs-content">{{ page.observacoes }}</div>
             {% endif %}
         </div>
 
@@ -365,23 +364,6 @@ layout: default
         </div>
         {% endif %}
 
-        <div class="section-title">
-            <span>📋 Resumo da Ocorrência (Formato Ficha)</span>
-            <button type="button" class="copy-btn" id="btn-copy-sheet">Copiar Ficha</button>
-        </div>
-        <div class="content-box" id="raw-sheet-text" style="font-family: monospace; font-size: 11px; max-height: 80px; overflow-y: auto;">Ficha de Ocorrência Animal — ID: {{ page.id }}
-
-📋 RESUMO DA OCORRÊNCIA
-
-• ID: {{ page.id }}
-• Espécie: {{ page.especie | default: "Desconhecido" }}
-• Situação: {{ page.situacao | default: "Desconhecido" }}
-• Estado Físico: {{ page.estado_fisico | default: "Desconhecido" }}
-• Localização: {{ page.localizacao | default: "Não indicada" }}
-
-🔗 Consulte a ficha digital completa em:
-{{ site.url }}{{ site.baseurl }}{{ page.url }}</div>
-
     </main>
 
     <footer class="report-footer">
@@ -390,8 +372,9 @@ layout: default
         </div>
         <div class="btn-group">
             <button type="button" id="btn-email-share" class="btn" style="background: #2563eb;">📧 Email</button>
+            <button type="button" id="btn-download-md" class="btn" style="background: #0f172a;">📥 MD</button>
+            <button type="button" id="btn-download-txt" class="btn" style="background: #475569;">📥 TXT</button>
             <button type="button" onclick="window.print();" class="btn">🖨️ Imprimir</button>
-            <button type="button" id="btn-download-txt" class="btn">📥 TXT</button>
         </div>
     </footer>
 
@@ -401,13 +384,84 @@ layout: default
     var animalIdJs = {{ page.id | jsonify }};
     var targetUrl = window.location.href;
 
+    function generateReportText(isMarkdown) {
+        var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
+        var especie = {{ page.especie | default: "Desconhecido" | jsonify }};
+        var situacao = {{ page.situacao | default: "Desconhecido" | jsonify }};
+        var estadoFisico = {{ page.estado_fisico | default: "Desconhecido" | jsonify }};
+        var localizacao = {{ page.localizacao | default: "Não indicada" | jsonify }};
+        var concelho = {{ page.concelho | default: "Não indicado" | jsonify }};
+        var dataOcorrencia = {{ page.data_ocorrencia_inicial | default: "Não indicada" | jsonify }};
+        var esterilizado = {{ page.esterilizado | default: "Desconhecido" | jsonify }};
+        var identificacao = {{ page.identificacao | default: "Não indicado" | jsonify }};
+        var caracteristicas = {{ page.caracteristicas | default: "Não indicado" | jsonify }};
+
+        var descElem = document.getElementById('desc-content');
+        var obsElem = document.getElementById('obs-content');
+        var descricao = descElem ? descElem.innerText.trim() : "";
+        var observacoes = obsElem ? obsElem.innerText.trim() : "";
+
+        if (isMarkdown) {
+            var md = "# Ficha de Ocorrência Animal — ID: " + cleanId + "\n\n";
+            md += "## 📋 Resumo da Ocorrência\n\n";
+            md += "- **ID:** " + cleanId + "\n";
+            md += "- **Espécie:** " + especie + "\n";
+            md += "- **Situação:** " + situacao + "\n";
+            md += "- **Estado Físico:** " + estadoFisico + "\n";
+            md += "- **Localização:** " + localizacao + "\n\n";
+
+            md += "## 📝 Detalhes e Dados de Terreno\n\n";
+            md += "- **Concelho:** " + concelho + "\n";
+            md += "- **Data Ocorrência:** " + dataOcorrencia + "\n";
+            md += "- **Esterilizado:** " + esterilizado + "\n";
+            md += "- **Identificação:** " + identificacao + "\n";
+            md += "- **Características:** " + caracteristicas + "\n\n";
+
+            md += "## 🩺 Observações e Descrição\n\n";
+            if (descricao) {
+                md += "### Descrição Detalhada\n\n> " + descricao.replace(/\n/g, "\n> ") + "\n\n";
+            }
+            if (observacoes) {
+                md += "### Observações e Cuidados\n\n" + observacoes + "\n\n";
+            }
+
+            md += "---\n\n🔗 Consulte a ficha digital completa em:\n" + targetUrl;
+            return md;
+        } else {
+            var txt = "Ficha de Ocorrência Animal — ID: " + cleanId + "\n\n";
+            txt += "📋 RESUMO DA OCORRÊNCIA\n\n";
+            txt += "• ID: " + cleanId + "\n";
+            txt += "• Espécie: " + especie + "\n";
+            txt += "• Situação: " + situacao + "\n";
+            txt += "• Estado Físico: " + estadoFisico + "\n";
+            txt += "• Localização: " + localizacao + "\n\n";
+
+            txt += "📝 DETALHES E DADOS DE TERRENO\n\n";
+            txt += "• Concelho: " + concelho + "\n";
+            txt += "• Data Ocorrência: " + dataOcorrencia + "\n";
+            txt += "• Esterilizado: " + esterilizado + "\n";
+            txt += "• Identificação: " + identificacao + "\n";
+            txt += "• Características: " + caracteristicas + "\n\n";
+
+            txt += "🩺 OBSERVAÇÕES E DESCRIÇÃO\n\n";
+            if (descricao) {
+                txt += "Descrição Detalhada:\n\"" + descricao + "\"\n\n";
+            }
+            if (observacoes) {
+                txt += "Observações e Cuidados:\n" + observacoes + "\n\n";
+            }
+
+            txt += "🔗 Consulte a ficha digital completa em:\n" + targetUrl;
+            return txt;
+        }
+    }
+
     window.addEventListener('DOMContentLoaded', function() {
         var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
         var removeBtn = document.getElementById('btn-remove-data');
         var emailShareBtn = document.getElementById('btn-email-share');
+        var downloadMdBtn = document.getElementById('btn-download-md');
         var downloadTxtBtn = document.getElementById('btn-download-txt');
-        var copySheetBtn = document.getElementById('btn-copy-sheet');
-        var rawSheetBox = document.getElementById('raw-sheet-text');
 
         if (removeBtn) {
             var emailSubject = "Pedido de remoção de dados - Ocorrência " + cleanId;
@@ -415,43 +469,34 @@ layout: default
             removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
         }
 
-        if (emailShareBtn && rawSheetBox) {
+        if (emailShareBtn) {
             emailShareBtn.addEventListener('click', function() {
                 var subject = "Ficha de Ocorrência Animal — ID: " + cleanId;
-                var body = rawSheetBox.innerText || "";
+                var body = generateReportText(false);
                 var mailtoLink = "mailto:?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
                 window.location.href = mailtoLink;
             });
         }
 
-        if (copySheetBtn && rawSheetBox) {
-            copySheetBtn.addEventListener('click', function() {
-                var textToCopy = rawSheetBox.innerText || "";
-                // Safe DOM fallback copy method to bypass strict clipboard heuristics or extension blocks
-                var textarea = document.createElement('textarea');
-                textarea.value = textToCopy;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                document.body.appendChild(textarea);
-                textarea.focus();
-                textarea.select();
-                try {
-                    var successful = document.execCommand('copy');
-                    if (successful) {
-                        copySheetBtn.innerText = "Ok ✓";
-                        setTimeout(function() { copySheetBtn.innerText = "Copiar Ficha"; }, 1500);
-                    }
-                } catch (err) {
-                    console.warn('Fallback copy failed', err);
-                }
-                document.body.removeChild(textarea);
+        if (downloadMdBtn) {
+            downloadMdBtn.addEventListener('click', function() {
+                var mdContent = generateReportText(true);
+                var blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8;' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = "Ocorrencia_" + cleanId.replace(/[^a-zA-Z0-9-_]/g, '_') + ".md";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(function() { URL.revokeObjectURL(url); }, 100);
             });
         }
 
         if (downloadTxtBtn) {
             downloadTxtBtn.addEventListener('click', function() {
-                var sheetContent = rawSheetBox ? rawSheetBox.innerText : "";
-                var blob = new Blob([sheetContent], { type: 'text/plain;charset=utf-8;' });
+                var txtContent = generateReportText(false);
+                var blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
                 var url = URL.createObjectURL(blob);
                 var a = document.createElement('a');
                 a.href = url;

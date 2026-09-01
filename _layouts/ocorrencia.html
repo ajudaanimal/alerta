@@ -446,9 +446,9 @@ layout: default
 
         <h2 class="section-title">📝 Detalhes e Dados de Terreno</h2>
         <div class="details-grid">
-            <div class="detail-item"><strong>Localidade (Freguesia)</strong><span>{{ page.localidade | default: page.freguesia | default: "Não indicada" }}</span></div>
-            <div class="detail-item"><strong>Concelho</strong><span>{{ page.concelho | default: "Não indicado" }}</span></div>
-            <div class="detail-item"><strong>Distrito</strong><span>{{ page.distrito | default: "Não indicado" }}</span></div>
+            <div class="detail-item"><strong>Localidade (Freguesia)</strong><span id="field-localidade">{{ page.localidade | default: page.freguesia | default: "Não indicada" }}</span></div>
+            <div class="detail-item"><strong>Concelho</strong><span id="field-concelho">{{ page.concelho | default: "Não indicado" }}</span></div>
+            <div class="detail-item"><strong>Distrito</strong><span id="field-distrito">{{ page.distrito | default: "Não indicado" }}</span></div>
             <div class="detail-item"><strong>Data Ocorrência Inicial</strong><span>{{ page.data_ocorrencia_inicial | default: "Não indicada" }}</span></div>
             <div class="detail-item"><strong>Idade</strong><span>{{ page.idade | default: "Não indicada" }}</span></div>
             <div class="detail-item"><strong>Estado Físico</strong><span>{{ page.estado_fisico | default: "Não indicado" }}</span></div>
@@ -551,40 +551,7 @@ layout: default
         var geoDistrito   = cleanLoc({{ page.distrito | jsonify }});
         var geoLocal      = cleanLoc({{ page.localizacao | jsonify }});
 
-        var searchQueries = [];
-        
-        // 1. Prioridade Máxima: Localidade
-        if (geoLocalidade) {
-            if (geoConcelho && geoDistrito) {
-                searchQueries.push(geoLocalidade + ", " + geoConcelho + ", " + geoDistrito + ", Portugal");
-            } else if (geoConcelho) {
-                searchQueries.push(geoLocalidade + ", " + geoConcelho + ", Portugal");
-            }
-            searchQueries.push(geoLocalidade + ", Portugal");
-        }
-
-        // 2. Segunda Prioridade: Concelho
-        if (geoConcelho) {
-            if (geoDistrito) {
-                searchQueries.push(geoConcelho + ", " + geoDistrito + ", Portugal");
-            }
-            searchQueries.push(geoConcelho + ", Portugal");
-        }
-
-        // 3. Terceira Prioridade: Distrito
-        if (geoDistrito) {
-            searchQueries.push(geoDistrito + ", Portugal");
-        }
-
-        // 4. Fallback: Campo Localização
-        if (searchQueries.length === 0 && geoLocal) {
-            searchQueries.push(geoLocal + ", Portugal");
-        }
-
-        // Último recurso: Centrar em Portugal
-        searchQueries.push("Portugal");
-
-        // Função limpa e sem duplicados para a localização única
+        // Função centralizada para limpar e eliminar repetições exatas (Ex: Viana do Castelo, Distrito de Viana do Castelo -> Viana do Castelo)
         function formatarPopupLimpo(loc, conc, dist, fallback) {
             const ignorar = ["não indicado", "não indicada", "n/d", "null", "undefined", ""];
             const limpar = (str) => {
@@ -598,6 +565,7 @@ layout: default
             const c = limpar(conc);
             const d = limpar(dist);
 
+            // O Set remove automaticamente elementos repetidos
             const partesUnicas = [...new Set([l, c, d].filter(Boolean))];
 
             if (partesUnicas.length > 0) {
@@ -607,6 +575,40 @@ layout: default
         }
 
         var popupLocationText = formatarPopupLimpo(geoLocalidade, geoConcelho, geoDistrito, geoLocal);
+
+        // Aplica a limpeza também de forma dinâmica na tabela de detalhes do concelho para remover repetições visuais
+        var elConcelho = document.getElementById('field-concelho');
+        if (elConcelho) {
+            elConcelho.innerText = popupLocationText || "Não indicado";
+        }
+
+        var searchQueries = [];
+        
+        if (geoLocalidade) {
+            if (geoConcelho && geoDistrito) {
+                searchQueries.push(geoLocalidade + ", " + geoConcelho + ", " + geoDistrito + ", Portugal");
+            } else if (geoConcelho) {
+                searchQueries.push(geoLocalidade + ", " + geoConcelho + ", Portugal");
+            }
+            searchQueries.push(geoLocalidade + ", Portugal");
+        }
+
+        if (geoConcelho) {
+            if (geoDistrito) {
+                searchQueries.push(geoConcelho + ", " + geoDistrito + ", Portugal");
+            }
+            searchQueries.push(geoConcelho + ", Portugal");
+        }
+
+        if (geoDistrito) {
+            searchQueries.push(geoDistrito + ", Portugal");
+        }
+
+        if (searchQueries.length === 0 && geoLocal) {
+            searchQueries.push(geoLocal + ", Portugal");
+        }
+
+        searchQueries.push("Portugal");
 
         function geocodeSequentially(queries, index) {
             if (index >= queries.length) {

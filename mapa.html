@@ -74,9 +74,9 @@ title: "Mapa de Ocorrências — Alerta Animal"
     box-shadow: none !important;
   }
 
-  /* Estilo personalizado para os círculos de agrupamento (Clusters) */
+  /* Estilo personalizado para os círculos de agrupamento (Clusters) mais discretos */
   .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
-    background-color: rgba(37, 99, 235, 0.6) !important;
+    background-color: rgba(37, 99, 235, 0.5) !important;
   }
   .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
     background-color: #2563eb !important;
@@ -168,8 +168,10 @@ title: "Mapa de Ocorrências — Alerta Animal"
       maxZoom: 19
     }).addTo(map);
 
-    // Criar o grupo de clusters para gerir sobreposições automaticamente
+    // Configuração refinada do Cluster para ser menos agressivo e desagrupar num zoom mais afastado
     var markersClusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 38,         // Raio menor (só junta pontos se estiverem muito perto)
+      disableClusteringAtZoom: 9,   // A partir do zoom 9 para trás, mostra todos os pontos individuais soltos!
       spiderfyOnMaxZoom: true,
       showCoverageOnHover: false,
       zoomToBoundsOnClick: true

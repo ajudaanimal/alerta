@@ -50,7 +50,6 @@ layout: default
         margin-top: 2px;
     }
 
-    /* Estilos para os links de mapa */
     .map-links a {
         color: #e2e8f0;
         text-decoration: none;
@@ -105,13 +104,12 @@ layout: default
         gap: 6px;
     }
 
-    /* Responsividade para ecrãs pequenos (Mobile) */
     @media (max-width: 480px) {
         .top-section {
             grid-template-columns: 1fr;
         }
         .animal-img-container {
-            height: 180px; /* Aumenta um pouco a imagem no mobile */
+            height: 180px;
         }
     }
 
@@ -190,7 +188,7 @@ layout: default
         font-weight: 700;
         text-transform: uppercase;
         color: var(--text-muted);
-        margin: 4px 0 0 0; /* Removido default margin do h2 */
+        margin: 4px 0 0 0;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -205,24 +203,6 @@ layout: default
         word-break: break-word;
         line-height: 1.35;
         color: var(--text-main);
-    }
-
-    .content-box blockquote {
-        margin: 2px 0 6px 0;
-        padding: 4px 8px;
-        background: #f1f5f9;
-        border-left: 3px solid var(--border-color);
-        font-style: normal;
-    }
-
-    .sub-label {
-        font-size: 9px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        margin-top: 4px;
-        margin-bottom: 2px;
-        display: block;
     }
 
     .bottom-meta {
@@ -360,7 +340,6 @@ layout: default
                     <label style="color: {{ theme_color }};">Estado</label>
                     <span>{{ page.estado_fisico | default: "N/D" }}</span>
                 </div>
-                <!-- Sexo/Nome foi removido daqui para não ser a prioridade visual -->
             </div>
         </div>
 
@@ -380,7 +359,7 @@ layout: default
                 {% if page.observacoes %}
                     {{ page.observacoes }}
                 {% else %}
-                    <em style="color: var(--text-muted); font-size: 13px;">Sem observações adicionais registadas.</em>
+                    <em style="color: var(--text-muted); font-size: 11px;">Sem observações adicionais registadas.</em>
                 {% endif %}
             </div>
         </div>
@@ -452,12 +431,11 @@ layout: default
             md += "- **Identificação:** " + identificacao + "\n";
             md += "- **Características:** " + caracteristicas + "\n\n";
 
-            md += "## 🩺 Observações e Descrição\n\n";
             if (observacoes) {
-                md += "### Observações e Cuidados\n\n" + observacoes + "\n\n";
+                md += "## 🩺 Observações e Cuidados\n\n" + observacoes + "\n\n";
             }
             if (descricao) {
-                md += "### Descrição\n\n> " + descricao.replace(/\n/g, "\n> ") + "\n\n";
+                md += "## 📖 Descrição\n\n> " + descricao.replace(/\n/g, "\n> ") + "\n\n";
             }
 
             md += "---\n\n🔗 Consulte a ficha digital completa em:\n" + targetUrl;
@@ -478,12 +456,11 @@ layout: default
             txt += "• Identificação: " + identificacao + "\n";
             txt += "• Características: " + caracteristicas + "\n\n";
 
-            txt += "🩺 OBSERVAÇÕES E DESCRIÇÃO\n\n";
             if (observacoes) {
-                txt += "Observações e Cuidados:\n" + observacoes + "\n\n";
+                txt += "🩺 OBSERVAÇÕES E CUIDADOS\n" + observacoes + "\n\n";
             }
             if (descricao) {
-                txt += "Descrição:\n\"" + descricao + "\"\n\n";
+                txt += "📖 DESCRIÇÃO\n\"" + descricao + "\"\n\n";
             }
 
             txt += "🔗 Consulte a ficha digital completa em:\n" + targetUrl;
@@ -511,7 +488,6 @@ layout: default
                 var encodedSubject = encodeURIComponent(subject);
                 var encodedBody = encodeURIComponent(body);
                 
-                // Previne falhas caso a descrição seja tão longa que quebre o limite do 'mailto:'
                 var maxUrlLength = 2000;
                 var mailtoLink = "mailto:?subject=" + encodedSubject + "&body=" + encodedBody;
                 
@@ -546,7 +522,7 @@ layout: default
                 var url = URL.createObjectURL(blob);
                 var a = document.createElement('a');
                 a.href = url;
-                a.download = "Ocorrencia_" + cleanId.replace(/[^a-zA-Z0-9-_]/g, '_') + ".txt"; // Corrigido para .txt
+                a.download = "Ocorrencia_" + cleanId.replace(/[^a-zA-Z0-9-_]/g, '_') + ".txt";
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);

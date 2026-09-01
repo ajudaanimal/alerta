@@ -340,10 +340,43 @@ layout: default
     }
 
     @media print {
-        body { background: #ffffff !important; color: #000000 !important; padding: 0; }
-        .page-wrapper { box-shadow: none; border: none; }
-        .report-footer { display: none !important; }
-    }
+  /* 1. Esconder elementos desnecessários para o PDF */
+  nav, header, footer, .btn, .no-print, #map-controls {
+    display: none !important;
+  }
+
+  /* 2. Formatação da Página (A4 e margens limpas) */
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  /* 3. Ajuste de Imagens e Cartões */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+  }
+
+  /* 4. Evitar quebras de página a meio de tabelas ou blocos de informação */
+  .ocorrencia-card, table, blockquote {
+    page-break-inside: avoid;
+  }
+
+  /* 5. Garantir que o mapa do Leaflet é impresso visivelmente */
+  #map {
+    height: 300px !important;
+    width: 100% !important;
+    page-break-inside: avoid;
+  }
+}
 </style>
 
 {% assign t = page.triagem | upcase %}

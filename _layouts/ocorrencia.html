@@ -6,43 +6,49 @@ layout: default
 
 <style>
     :root {
-        --bg-color: #f1f5f9;
+        --bg-color: #f8fafc;
         --card-bg: #ffffff;
         --text-main: #0f172a;
-        --text-muted: #475569;
-        --border-color: #cbd5e1;
+        --text-muted: #64748b;
+        --border-color: #94a3b8;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        margin: 0;
+        padding: 5px;
     }
 
     .page-wrapper {
-        max-width: 750px;
-        margin: 15px auto;
+        max-width: 700px;
+        margin: 0 auto;
         background: var(--card-bg);
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-        overflow: hidden;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         border: 1px solid var(--border-color);
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 11.5px;
     }
 
     .report-header {
         color: #ffffff;
-        padding: 12px 18px;
+        padding: 8px 12px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        border-radius: 3px 3px 0 0;
     }
 
     .report-header-left h1 {
-        font-size: 16px;
-        font-weight: 800;
+        font-size: 14px;
+        font-weight: 700;
         margin: 0;
     }
 
     .header-location {
-        font-size: 12px;
+        font-size: 11px;
         opacity: 0.95;
-        margin-top: 2px;
-        font-weight: 600;
+        margin-top: 1px;
     }
 
     .report-header-right {
@@ -50,24 +56,25 @@ layout: default
     }
 
     .report-header-right h3 {
-        font-size: 10px;
-        opacity: 0.85;
+        font-size: 9px;
         text-transform: uppercase;
         margin: 0;
+        opacity: 0.85;
     }
 
     .report-header-right h2 {
-        font-size: 13px;
-        font-weight: 800;
-        margin: 1px 0 0 0;
+        font-size: 11px;
+        font-weight: 700;
+        margin: 0;
     }
 
     .status-banner {
-        padding: 8px 18px;
-        font-weight: 800;
+        padding: 6px 12px;
+        font-weight: 700;
         text-align: center;
-        font-size: 12px;
+        font-size: 11px;
         text-transform: uppercase;
+        letter-spacing: 0.3px;
     }
     .banner-resolved { background: #dcfce7; border-bottom: 2px solid #16a34a; color: #14532d; }
     .banner-red { background: #fee2e2; border-bottom: 2px solid #dc2626; color: #7f1d1d; }
@@ -75,26 +82,26 @@ layout: default
     .banner-yellow { background: #fef9c3; border-bottom: 2px solid #ca8a04; color: #713f12; }
 
     .report-body {
-        padding: 16px;
+        padding: 10px 12px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
     }
 
     .top-section {
         display: grid;
-        grid-template-columns: 240px 1fr;
-        gap: 12px;
+        grid-template-columns: 180px 1fr;
+        gap: 8px;
         align-items: stretch;
     }
 
     .animal-img-container {
         width: 100%;
-        height: 150px;
-        border-radius: 6px;
+        height: 125px;
+        border-radius: 2px;
         overflow: hidden;
         border: 1px solid var(--border-color);
-        background: #f8fafc;
+        background: #f1f5f9;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -107,63 +114,85 @@ layout: default
     }
 
     .animal-img-placeholder {
-        font-size: 11px;
+        font-size: 10px;
         color: var(--text-muted);
-        font-weight: 600;
     }
 
     .unified-highlight-box {
         background: #f8fafc;
-        border-radius: 6px;
+        border-radius: 2px;
         display: flex;
         flex-direction: column;
-        justify-content: space-around;
+        justify-content: space-between;
         border: 1px solid var(--border-color);
-        padding: 8px 12px;
+        padding: 6px 10px;
     }
 
     .box-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 4px 0;
+        padding: 2px 0;
     }
 
     .box-row:not(:last-child) {
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid #e2e8f0;
     }
 
     .box-row label {
-        font-size: 10px;
-        font-weight: 800;
+        font-size: 9.5px;
+        font-weight: 700;
         text-transform: uppercase;
     }
 
     .box-row span {
-        font-size: 12px;
-        font-weight: 800;
+        font-size: 11px;
+        font-weight: 700;
         color: var(--text-main);
     }
 
     .content-box {
-        font-size: 12px;
+        font-size: 11px;
         color: var(--text-main);
         background: #f8fafc;
-        padding: 10px;
-        border-radius: 6px;
+        padding: 8px 10px;
+        border-radius: 2px;
         border: 1px solid var(--border-color);
         white-space: pre-wrap;
         word-break: break-word;
+        line-height: 1.35;
     }
 
-    .grid-info-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
+    .section-title {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 2px 0 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .copy-btn {
+        background: #e2e8f0;
+        border: 1px solid var(--border-color);
+        padding: 1px 6px;
+        font-size: 9px;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 2px;
+        color: var(--text-main);
+    }
+    .copy-btn:hover { background: #cbd5e1; }
+
+    .bottom-meta {
+        display: flex;
+        justify-content: space-between;
         align-items: center;
         background: #f8fafc;
-        padding: 8px 12px;
-        border-radius: 6px;
+        padding: 6px 10px;
+        border-radius: 2px;
         border: 1px solid var(--border-color);
     }
 
@@ -171,63 +200,27 @@ layout: default
         display: inline-block;
         background: #2563eb;
         color: #ffffff !important;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 2px;
+        font-size: 10px;
         text-decoration: none;
         font-weight: 700;
     }
     .link-badge:hover { background: #1d4ed8; }
 
-    .protected-contact {
-        background: #e2e8f0;
-        color: #0f172a;
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-size: 11px;
-        cursor: pointer;
-        border: 1px dashed var(--border-color);
-        display: inline-block;
-        user-select: none;
-        font-weight: 700;
-    }
-
-    .qr-section {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: #f8fafc;
-        padding: 8px 12px;
-        border-radius: 6px;
-        border: 1px solid var(--border-color);
-    }
-
-    .qr-img-container {
-        width: 55px;
-        height: 55px;
-        background: #ffffff;
-        border-radius: 4px;
-        border: 1px solid var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
     .report-footer {
-        background: #f8fafc;
+        background: #f1f5f9;
         border-top: 1px solid var(--border-color);
-        padding: 10px 16px;
+        padding: 6px 12px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
+        font-size: 10px;
     }
 
     .footer-actions {
         display: flex;
-        gap: 6px;
+        gap: 4px;
     }
 
     .btn {
@@ -235,31 +228,24 @@ layout: default
         color: #ffffff;
         border: none;
         font-weight: 700;
-        font-size: 11px;
+        font-size: 10px;
         cursor: pointer;
         text-decoration: none;
-        padding: 5px 10px;
-        border-radius: 4px;
+        padding: 3px 8px;
+        border-radius: 2px;
         text-transform: uppercase;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
     }
     .btn:hover { background: var(--text-muted); }
-
-    .print-phone-fallback { display: none; }
 
     @media print {
         body { background: #ffffff; padding: 0; }
         .page-wrapper { box-shadow: none; border: none; margin: 0; max-width: 100%; }
-        .protected-contact { display: none !important; }
-        .print-phone-fallback { display: inline !important; }
+        .copy-btn, .footer-actions { display: none !important; }
     }
 
     @media (max-width: 600px) {
         .top-section { grid-template-columns: 1fr; }
-        .animal-img-container { height: 180px; }
-        .grid-info-row { grid-template-columns: 1fr; gap: 6px; }
+        .animal-img-container { height: 140px; }
     }
 </style>
 
@@ -274,19 +260,18 @@ layout: default
 {% if est_caso contains 'RESOLVIDO' %}
   {% assign banner_class = "banner-resolved" %}
   {% assign banner_text = "✓ " | append: (page.estado_caso | default: "Resolvido") %}
-  {% if page.data_resolucao %}{% assign banner_text = banner_text | append: " — " | append: page.data_resolucao %}{% endif %}
   {% assign theme_color = "#16a34a" %}
 {% elsif t contains 'VERM' or est_fisico contains 'FERIDO' or est_fisico contains 'CRÍTICO' %}
   {% assign banner_class = "banner-red" %}
-  {% assign banner_text = "🚨 " | append: (page.triagem | default: "Emergência") | append: " — " | append: (page.estado_fisico | default: "Crítico") | append: " — Resgate Imediato" %}
+  {% assign banner_text = "🚨 " | append: (page.triagem | default: "Emergência") | append: " — " | append: (page.estado_fisico | default: "Crítico") %}
   {% assign theme_color = "#dc2626" %}
 {% elsif t contains 'LARANJA' or est_fisico contains 'URGENTE' %}
   {% assign banner_class = "banner-orange" %}
-  {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Urgente") | append: " — " | append: (page.estado_fisico | default: "Urgente") | append: " — Socorro Urgente" %}
+  {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Urgente") | append: " — Socorro Urgente" %}
   {% assign theme_color = "#f97316" %}
 {% else %}
   {% assign banner_class = "banner-yellow" %}
-  {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Alerta") | append: " — " | append: (page.estado_fisico | default: "Vulnerável") | append: " — Cuidados Médicos" %}
+  {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Alerta") | append: " — Cuidados Médicos" %}
   {% assign theme_color = "#ca8a04" %}
 {% endif %}
 
@@ -295,9 +280,7 @@ layout: default
     <header class="report-header" style="background-color: {{ theme_color }};">
         <div class="report-header-left">
             <h1>{{ page.especie }}{% if page.estado_fisico and page.estado_fisico != "Desconhecido" %} — {{ page.estado_fisico }}{% endif %}</h1>
-            {% if page.localizacao %}
-                <div class="header-location">📍 {{ page.localizacao }}</div>
-            {% endif %}
+            {% if page.localizacao %}<div class="header-location">📍 {{ page.localizacao }}</div>{% endif %}
         </div>
         <div class="report-header-right">
             <h3>{{ page.date | date: "%d/%m/%Y" }}</h3>
@@ -311,22 +294,23 @@ layout: default
 
     <main class="report-body">
         
+        <!-- Topo: Imagem e Dados Principais (Visão de 5 segundos) -->
         <div class="top-section">
             <div class="animal-img-container">
                 {% if page.imagem %}
-                    <img src="{{ page.imagem }}" alt="Foto da Ocorrência {{ page.id }}">
+                    <img src="{{ page.imagem }}" alt="Ocorrência {{ page.id }}">
                 {% else %}
                     <div class="animal-img-placeholder">Sem Imagem</div>
                 {% endif %}
             </div>
             
-            <div class="unified-highlight-box" style="border-left: 4px solid {{ theme_color }};">
+            <div class="unified-highlight-box" style="border-left: 3px solid {{ theme_color }};">
                 <div class="box-row">
                     <label style="color: {{ theme_color }};">Situação</label>
                     <span>{{ page.situacao | default: "N/D" }}</span>
                 </div>
                 <div class="box-row">
-                    <label style="color: {{ theme_color }};">Nível de Alerta</label>
+                    <label style="color: {{ theme_color }};">Nível Alerta</label>
                     <span>{{ page.triagem | default: "N/D" }}</span>
                 </div>
                 <div class="box-row">
@@ -342,49 +326,36 @@ layout: default
             </div>
         </div>
 
-        <!-- Descrição / Ficha Direta -->
+        <!-- Observações e Descrição (Prioritário no topo) -->
+        <div class="section-title">🩺 Observações e Descrição</div>
         <div class="content-box">
             {{ content }}
         </div>
 
-        <div class="grid-info-row">
-            <div>
-                <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px;">Contacto Telefónico</span>
-                {% if page.contacto and page.contacto != "Não indicado" and page.contacto != "" %}
-                    <span id="protected-contact-box" class="protected-contact" title="Clique para revelar">🔒 Revelar Telemóvel</span>
-                    <span class="print-phone-fallback">{{ page.contacto }}</span>
-                {% else %}
-                    <span style="font-size: 11px;">Via post original</span>
-                {% endif %}
-            </div>
-            <div>
-                <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 2px;">Publicação Original</span>
-                {% if page.link %}
-                    <a href="{{ page.link }}" target="_blank" class="link-badge">📘 Ver Post Original</a>
-                {% else %}
-                    <span style="font-size: 11px; color: var(--text-muted);">Indisponível</span>
-                {% endif %}
-            </div>
+        <!-- Link para Publicação Original de forma limpa -->
+        {% if page.link %}
+        <div class="bottom-meta">
+            <span style="font-weight: 700; font-size: 10px; color: var(--text-muted);">Aceder à fonte original para interagir com o autor:</span>
+            <a href="{{ page.link }}" target="_blank" class="link-badge">📘 Publicação Original</a>
         </div>
+        {% endif %}
 
-        <div class="qr-section">
-            <div class="qr-img-container" id="qrcode-target"></div>
-            <div>
-                <h4 style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: {{ theme_color }}; margin: 0 0 2px 0;">QR Code da Ficha</h4>
-                <p style="font-size: 11px; color: var(--text-muted); margin: 0;">Aponte a câmara para abrir esta ficha digital em qualquer dispositivo.</p>
-            </div>
+        <!-- Ficha Completa movida para baixo com Botão de Cópia -->
+        <div class="section-title">
+            <span>📋 Ficha Completa (Texto Direto)</span>
+            <button type="button" class="copy-btn" id="btn-copy-sheet">Copiar Ficha</button>
         </div>
+        <div class="content-box" id="raw-sheet-text" style="font-family: monospace; font-size: 10px; max-height: 100px; overflow-y: auto;">{{ page.ficha_texto | default: page.ficha | default: "Sem ficha detalhada disponível." }}</div>
 
     </main>
 
     <footer class="report-footer">
-        <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">
+        <div style="color: var(--text-muted); font-weight: 700;">
             ID: {{ page.id }} — <a id="btn-remove-data" href="#" style="color: #dc2626; text-decoration: underline;">Pedir remoção</a>
         </div>
         <div class="footer-actions">
             <button type="button" onclick="window.print();" class="btn">🖨️ Imprimir</button>
             <button type="button" id="btn-download-txt" class="btn">📥 TXT</button>
-            <a id="btn-email-share" href="#" class="btn">✉️ Email</a>
         </div>
     </footer>
 
@@ -392,66 +363,33 @@ layout: default
 
 <script>
     var animalIdJs = {{ page.id | jsonify }};
-    var realContact = {{ page.contacto | jsonify }};
     var sheetQrLink = {{ page.qr_link | jsonify }};
-    var animalEspecie = {{ page.especie | jsonify }};
-    var animalSituacao = {{ page.situacao | jsonify }};
-    var animalLocalizacao = {{ page.localizacao | jsonify }};
-    var animalEstadoFisico = {{ page.estado_fisico | jsonify }};
     var targetUrl = sheetQrLink && sheetQrLink.trim() !== "" ? sheetQrLink.trim() : window.location.href;
 
     window.addEventListener('DOMContentLoaded', function() {
         var cleanId = animalIdJs ? String(animalIdJs).replace(/['"]/g, '') : 'Desconhecido';
-        var contactBox = document.getElementById('protected-contact-box');
-        var emailBtn = document.getElementById('btn-email-share');
         var removeBtn = document.getElementById('btn-remove-data');
         var downloadTxtBtn = document.getElementById('btn-download-txt');
-        var qrContainer = document.getElementById('qrcode-target');
-
-        if (qrContainer && targetUrl) {
-            qrContainer.innerHTML = "";
-            try {
-                new QRCode(qrContainer, {
-                    text: targetUrl,
-                    width: 50,
-                    height: 50,
-                    colorDark: "#0f172a",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-            } catch(e) {}
-        }
-
-        if (contactBox) {
-            contactBox.addEventListener('click', function() {
-                contactBox.innerText = realContact;
-                contactBox.style.background = 'transparent';
-                contactBox.style.border = 'none';
-                contactBox.style.padding = '0';
-                contactBox.style.fontWeight = '700';
-            });
-        }
-
-        if (emailBtn) {
-            var emailSubject = "Ficha de Ocorrência Animal — ID: " + cleanId;
-            var emailBody = "📋 RESUMO DA OCORRÊNCIA\n\n" +
-                            "• ID: " + cleanId + "\n" +
-                            "• Espécie: " + (animalEspecie || "N/D") + "\n" +
-                            "• Situação: " + (animalSituacao || "N/D") + "\n" +
-                            "• Estado Físico: " + (animalEstadoFisico || "N/D") + "\n" +
-                            "• Localização: " + (animalLocalizacao || "N/D") + "\n\n" +
-                            "🔗 Consulte a ficha digital completa em:\n" + targetUrl;
-            
-            emailBtn.href = "mailto:?subject=" + encodeURIComponent(emailSubject) + "&body=" + encodeURIComponent(emailBody);
-        }
+        var copySheetBtn = document.getElementById('btn-copy-sheet');
+        var rawSheetBox = document.getElementById('raw-sheet-text');
 
         if (removeBtn) {
             removeBtn.href = "mailto:comapanhia.pt@gmail.com?subject=" + encodeURIComponent("Pedido de remoção de dados") + "&body=" + encodeURIComponent("ID Ocorrência: " + cleanId + "\nLink: " + targetUrl);
         }
 
+        if (copySheetBtn && rawSheetBox) {
+            copySheetBtn.addEventListener('click', function() {
+                var textToCopy = rawSheetBox.innerText;
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    copySheetBtn.innerText = "Copiado! ✓";
+                    setTimeout(function() { copySheetBtn.innerText = "Copiar Ficha"; }, 2000);
+                });
+            });
+        }
+
         if (downloadTxtBtn) {
             downloadTxtBtn.addEventListener('click', function() {
-                var txtContent = "OCORRÊNCIA: " + cleanId + "\nLink: " + targetUrl;
+                var txtContent = "OCORRÊNCIA: " + cleanId + "\nLink: " + targetUrl + "\n\n" + (rawSheetBox ? rawSheetBox.innerText : "");
                 var blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
                 var url = URL.createObjectURL(blob);
                 var a = document.createElement('a');

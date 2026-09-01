@@ -1,25 +1,13 @@
-# Privacidade e Proteção de Dados (RGPD)
+**Aviso Legal e de Privacidade**
 
-    Esta plataforma atua estritamente como um prestador de serviços de mero alojamento de conteúdos informativos gerados por terceiros (utilizadores), beneficiando das isenções de responsabilidade aplicáveis aos serviços de hosting ao abrigo da legislação da União Europeia e do ordenamento jurídico português.
+**1. Estatuto e Licenciamento (*Fair Use* e Direitos)**
+A plataforma disponibiliza conteúdos informativos estritamente sob a licença Creative Commons Atribuição-NãoComercial-SemDerivas (CC BY-NC-ND 4.0). Os elementos estruturais e os dados agregados regem-se pelas normas gerais de direitos de autor, permitindo o uso justo (*fair use*) para partilha pública e não comercial, sem alteração dos materiais originais.
 
-    A administração da plataforma não exerce uma vigilância geral nem realiza um controlo prévio obrigatório de todas as publicações efetuadas, declinando responsabilidade inicial sobre os dados submetidos externamente.
+**2. Direitos das Pessoas e Proteção de Dados (RGPD)**
+Em cumprimento do Regulamento Geral sobre a Proteção de Dados (RGPD), a plataforma opera como um repositório comunitário de partilha descentralizada. A salvaguarda dos direitos fundamentais e da privacidade de terceiros é assegurada através de um canal direto de comunicação (*notice-and-takedown*), garantindo a resposta imediata a pedidos legítimos de remoção de dados indevidos.
 
-2. Finalidade do Tratamento
+**3. Defesa de Direitos Preexistentes**
+Quaisquer direitos de propriedade intelectual anteriores ou preexistentes sobre os materiais submetidos mantêm-se na titularidade dos respetivos autores. A utilização da plataforma implica a aceitação expressa de que a base de dados comunitária não pode ser objeto de extração automatizada (*scraping*) nem de reutilização comercial por terceiros.
 
-    Os dados estritamente necessários inseridos nos alertas (como localização aproximada e fotografias do animal) são processados exclusivamente para o fim legítimo de sinalização comunitária e pedido de ajuda voluntária.
-
-    O cumprimento do Regulamento Geral sobre a Proteção de Dados (RGPD) foca-se na minimização da recolha e na resposta rápida a solicitações legítimas.
-
-3. Mecanismo de Aviso e Remoção (Notice-and-Takedown)
-
-    Não tendo conhecimento prévio de ilegalidades, a plataforma compromete-se a agir com prontidão assim que for notificada.
-
-    Qualquer cidadão ou titular de dados que identifique uma publicação indevida (como dados pessoais sensíveis ou elementos privados) pode solicitar a remoção ou anonimização imediata.
-
-    Os pedidos devem ser enviados para os contactos oficiais do projeto, comprometendo-se a administração a proceder à supressão do conteúdo de forma célere após a receção da notificação.
-
-4. Direitos dos Utilizadores
-
-    Os titulares dos dados mantêm o direito de acesso, retificação, oposição e apagamento dos dados que lhes digam respeito, nos termos previstos pelo RGPD.
-
-    Para o exercício destes direitos ou resolução de questões de privacidade, utilize os canais de contacto disponibilizados no repositório oficial.
+**4. Situações de Emergência e Exceção de Ação**
+Dada a natureza crítica e de interesse público associada ao socorro animal, a gestão da plataforma reserva-se o direito de atuar, reencaminhar ocorrências para as autoridades competentes ou ajustar a visibilidade de dados sempre que tal seja estritamente necessário para salvaguardar a vida ou o bem-estar imediato de um animal em perigo iminente, ao abrigo dos princípios legais de urgência e salvaguarda humanitária.

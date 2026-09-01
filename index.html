@@ -193,13 +193,45 @@ title: Sistema de Alerta Animal
   
   <div class="HB-header">
     <h1>🐾 Alerta Animal</h1>
-    <div class="HB-nav-links">
-      <span>Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
-      <span>•</span>
-      <a href="{{ '/mapa.html' | relative_url }}">🗺️ Mapa</a>
-      <a href="{{ '/feed.xml' | relative_url }}">📡 RSS Feed</a>
+    
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <button onclick="toggleDarkMode()" title="Alternar Modo Escuro" style="background: #ffffff; border: 1px solid #bae6fd; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 14px;">🌓</button>
+      
+      <div class="HB-nav-links" style="margin: 0; border: none; background: transparent; padding: 0;">
+        <span>Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
+        <span>•</span>
+        <a href="{{ '/mapa.html' | relative_url }}">🗺️ Mapa</a>
+        <a href="{{ '/feed.xml' | relative_url }}">📡 RSS Feed</a>
+        <a href="https://forms.gle/O_TEU_LINK_AQUI" target="_blank" style="background: #22c55e !important; color: white !important; border-color: #16a34a !important;">➕ Reportar</a>
+      </div>
     </div>
   </div>
+
+  <div style="margin-bottom: 16px;">
+    <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, estado ou ID..." onkeyup="filterCards()" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+  </div>
+
+<script>
+  function filterCards() {
+    let input = document.getElementById('searchBox').value.toLowerCase();
+    let cards = document.querySelectorAll('.HB-card');
+    cards.forEach(card => {
+      let text = card.innerText.toLowerCase();
+      card.style.display = text.includes(input) ? "flex" : "none";
+    });
+  }
+  
+  function toggleDarkMode() {
+    let isDark = document.body.style.background === 'rgb(15, 23, 42)';
+    document.body.style.background = isDark ? '#ffffff' : '#0f172a';
+    document.body.style.color = isDark ? '#0f172a' : '#f1f5f9';
+    
+    document.querySelectorAll('.HB-card').forEach(card => {
+      card.style.background = isDark ? '#ffffff' : '#1e293b';
+      card.style.borderColor = isDark ? '#cbd5e1' : '#334155';
+    });
+  }
+</script>
 
   <div class="HB-kanban">
 

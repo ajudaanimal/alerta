@@ -4,7 +4,6 @@ title: "Sistema de Alerta Animal"
 description: "Plataforma de monitorização e alerta de ocorrências de animais. Consulte o estado dos registos em tempo real."
 image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg"
 ---
-
 <style>
   :root {
     --bg-main: #f8fafc;
@@ -221,7 +220,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     border-radius: 12px;
     padding: 12px 16px;
     display: grid;
-    grid-template-columns: 60px 145px 1fr 180px;
+    grid-template-columns: 60px 160px 1fr 180px;
     align-items: center;
     gap: 16px;
     text-decoration: none;
@@ -264,16 +263,18 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     letter-spacing: 0.03em;
   }
 
-  /* Cores de Alerta Refinadas e Acessíveis */
-  .badge-roxo    { background: rgba(147, 51, 234, 0.12); color: #7e22ce; border-color: rgba(147, 51, 234, 0.25); }
-  .badge-vermelho { background: rgba(239, 68, 68, 0.12); color: #dc2626; border-color: rgba(239, 68, 68, 0.25); }
-  .badge-laranja  { background: rgba(249, 115, 22, 0.12); color: #ea580c; border-color: rgba(249, 115, 22, 0.25); }
-  .badge-amarelo  { background: rgba(234, 179, 8, 0.12); color: #ca8a04; border-color: rgba(234, 179, 8, 0.25); }
+  /* Cores de Triagem Clínicas baseadas nos novos valores exatos */
+  .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; border-color: rgba(239, 68, 68, 0.3); }
+  .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; border-color: rgba(249, 115, 22, 0.3); }
+  .badge-amarelo  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; border-color: rgba(234, 179, 8, 0.3); }
+  .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; border-color: rgba(59, 130, 246, 0.3); }
+  .badge-indefinido { background: rgba(100, 116, 139, 0.15); color: #64748b; border-color: rgba(100, 116, 139, 0.3); }
 
-  html.dark-mode .badge-roxo    { background: rgba(147, 51, 234, 0.2); color: #c084fc; border-color: rgba(147, 51, 234, 0.3); }
-  html.dark-mode .badge-vermelho { background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
-  html.dark-mode .badge-laranja  { background: rgba(249, 115, 22, 0.2); color: #fb923c; border-color: rgba(249, 115, 22, 0.3); }
-  html.dark-mode .badge-amarelo  { background: rgba(234, 179, 8, 0.2); color: #facc15; border-color: rgba(234, 179, 8, 0.3); }
+  html.dark-mode .badge-vermelho { background: rgba(239, 68, 68, 0.25); color: #f87171; border-color: rgba(239, 68, 68, 0.4); }
+  html.dark-mode .badge-laranja  { background: rgba(249, 115, 22, 0.25); color: #fb923c; border-color: rgba(249, 115, 22, 0.4); }
+  html.dark-mode .badge-amarelo  { background: rgba(234, 179, 8, 0.25); color: #facc15; border-color: rgba(234, 179, 8, 0.4); }
+  html.dark-mode .badge-azul     { background: rgba(59, 130, 246, 0.25); color: #60a5fa; border-color: rgba(59, 130, 246, 0.4); }
+  html.dark-mode .badge-indefinido { background: rgba(100, 116, 139, 0.25); color: #94a3b8; border-color: rgba(100, 116, 139, 0.4); }
 
   .row-details {
     display: flex;
@@ -421,48 +422,60 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       </button>
     </div>
     
-    <div class="filter-group" role="group" aria-label="Filtrar por nível de alerta por ordem de prioridade">
+    <!-- Filtros por Prioridade baseados nas categorias exatas de Triagem -->
+    <div class="filter-group" role="group" aria-label="Filtrar por nível de triagem clínica">
       <button type="button" class="filter-chip active" onclick="filterStatus('all', this)" aria-pressed="true">Todos</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('emergencia', this)" aria-pressed="false">Emergência</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('urgente', this)" aria-pressed="false">Urgente</button>
+      <button type="button" class="filter-chip" onclick="filterStatus('vermelho', this)" aria-pressed="false">🔴 Vermelho</button>
+      <button type="button" class="filter-chip" onclick="filterStatus('laranja', this)" aria-pressed="false">🟠 Laranja</button>
+      <button type="button" class="filter-chip" onclick="filterStatus('amarelo', this)" aria-pressed="false">🟡 Amarelo</button>
+      <button type="button" class="filter-chip" onclick="filterStatus('azul', this)" aria-pressed="false">🔵 Azul</button>
+      <button type="button" class="filter-chip" onclick="filterStatus('indefinido', this)" aria-pressed="false">⚪ Indefinido</button>
     </div>
   </section>
 
   <div class="manifest-list" id="manifestList" aria-live="polite">
     {% for post in site.ocorrencias reversed %}
-      {% assign alerta = post.nivel_alerta | upcase %}
+      {% assign triagem_val = post.triagem | strip | capitalize %}
       
-      {% assign badge_class = "badge-amarelo" %}
-      {% assign status_filter = "normal" %}
+      {% assign badge_class = "badge-indefinido" %}
+      {% assign status_filter = "indefinido" %}
       
-      {% if alerta contains 'EMERGÊNCIA' or alerta contains 'EMERGENCIA' %}
-        {% assign badge_class = "badge-roxo" %}
-        {% assign status_filter = "emergencia" %}
-      {% elsif alerta contains 'URGENTE' or alerta contains 'VERM' %}
+      {% if triagem_val == 'Vermelho' %}
         {% assign badge_class = "badge-vermelho" %}
-        {% assign status_filter = "urgente" %}
-      {% elsif alerta contains 'ALTO' or alerta contains 'MODERADO' or alerta contains 'LARANJA' or alerta contains 'MONITORIZAÇÃO' or alerta contains 'RISCO' %}
+        {% assign status_filter = "vermelho" %}
+      {% elsif triagem_val == 'Laranja' %}
         {% assign badge_class = "badge-laranja" %}
-        {% assign status_filter = "moderado" %}
+        {% assign status_filter = "laranja" %}
+      {% elsif triagem_val == 'Amarelo' %}
+        {% assign badge_class = "badge-amarelo" %}
+        {% assign status_filter = "amarelo" %}
+      {% elsif triagem_val == 'Azul' %}
+        {% assign badge_class = "badge-azul" %}
+        {% assign status_filter = "azul" %}
       {% endif %}
 
       {% assign raw_date = post.data_ocorrencia_inicial | default: post.date %}
+      
       <a href="{{ post.url | relative_url }}" 
          class="manifest-row" 
          data-status="{{ status_filter }}" 
          data-timestamp="{{ raw_date | date: '%s' }}"
-         data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.nivel_alerta }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }}" 
+         data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }}" 
          aria-label="Ocorrência: {{ post.especie }} em {{ post.localidade | default: 'localização desconhecida' }}">
         
         <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="row-img" loading="lazy">
         
         <div class="row-badge {{ badge_class }}">
-          {{ post.nivel_alerta | default: "ALERTA" | upcase }}
+          {{ post.triagem | default: "Indefinido" }}
         </div>
         
         <div class="row-details">
-          <div class="row-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
-          <div class="row-subtitle">📅 {{ raw_date | date: "%d/%m/%Y" }}</div>
+          <div class="row-title">
+            {{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}
+          </div>
+          <div class="row-subtitle">
+            📅 {{ raw_date | date: "%d/%m/%Y" }}{% if post.situacao %} • Situação: <strong>{{ post.situacao }}</strong>{% endif %}{% if post.sexo %} • Sexo: {{ post.sexo }}{% endif %}
+          </div>
         </div>
         
         <div class="row-location">
@@ -472,7 +485,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       </a>
     {% endfor %}
   </div>
-
 </div>
 
 <script>

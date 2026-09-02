@@ -6,7 +6,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
 ---
 
 <style>
-  /* Definição de Variáveis Globais de Cores para Suporte a Dark Mode */
   :root {
     --bg-main: #f8fafc;
     --card-bg: #ffffff;
@@ -15,42 +14,36 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     --border-color: #cbd5e1;
     --header-bg: #e0f2fe;
     --header-color: #0369a1;
-    --col-bg: #f8fafc;
-    --card-hover: #f1f5f9;
   }
 
-  /* Forçar variáveis quando a classe dark-mode estiver ativa no html ou body */
   html.dark-mode, body.dark-mode {
     --bg-main: #0b0f19;
-    --card-bg: #111827 !important;
-    --text-main: #f3f4f6 !important;
-    --text-muted: #9ca3af !important;
-    --border-color: #374151 !important;
-    --header-bg: #1f2937 !important;
-    --header-color: #38bdf8 !important;
-    --col-bg: #111827 !important;
-    --card-hover: #1f2937 !important;
+    --card-bg: #111827;
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --border-color: #374151;
+    --header-bg: #1f2937;
+    --header-color: #38bdf8;
   }
 
   .homebase-container {
     width: 100%;
-    max-width: 100%;
-    margin: 0;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: var(--text-main);
     box-sizing: border-box;
-    transition: background 0.3s, color 0.3s;
   }
   
   .HB-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--header-bg) !important;
-    color: var(--header-color) !important;
+    background: var(--header-bg);
+    color: var(--header-color);
     border: 1px solid var(--border-color);
-    padding: 10px 16px;
+    padding: 12px 16px;
     border-radius: 8px;
     margin-bottom: 16px;
     flex-wrap: wrap;
@@ -58,18 +51,19 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   }
   
   .HB-header h1 {
-    font-size: 16px !important;
-    font-weight: 800 !important;
-    margin: 0 !important;
-    color: var(--header-color) !important;
+    font-size: 16px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--header-color);
   }
 
   .HB-nav-links {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     font-size: 12px;
     font-weight: 600;
+    flex-wrap: wrap;
   }
 
   .HB-nav-links a {
@@ -77,153 +71,146 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     text-decoration: none;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    padding: 4px 10px;
+    padding: 6px 10px;
     border-radius: 4px;
     transition: background 0.2s;
   }
 
-  .HB-kanban {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-    align-items: start;
-  }
-
-  .HB-column {
-    background: var(--col-bg) !important;
-    border: 1px solid var(--border-color) !important;
+  .control-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 12px;
+    margin-bottom: 16px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 0;
-  }
-
-  .HB-col-header {
-    font-size: 12px;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding-bottom: 8px;
-    border-bottom: 2px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
+    gap: 12px;
     align-items: center;
-  }
-
-  .col-vermelho { border-top: 4px solid #ef4444; }
-  .col-laranja { border-top: 4px solid #f97316; }
-  .col-amarelo { border-top: 4px solid #eab308; }
-
-  .HB-card {
-    background: var(--card-bg) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: 6px !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    text-decoration: none !important;
-    color: var(--text-main) !important;
-    height: 66px !important;
-    min-height: 66px !important;
-    max-height: 66px !important;
-    overflow: hidden !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
-  }
-
-  .HB-card:hover {
-    border-color: var(--text-muted) !important;
-    background-color: var(--card-hover) !important;
-  }
-
-  .HB-card-img-wrap {
-    width: 66px !important;
-    min-width: 66px !important;
-    height: 66px !important;
-    background: var(--border-color);
-    flex-shrink: 0;
-  }
-
-  .HB-card-img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-
-  .HB-card-body {
-    padding: 6px 10px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    flex-grow: 1 !important;
-    min-width: 0 !important;
-  }
-
-  .HB-card-top {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    margin-bottom: 2px !important;
-  }
-
-  .HB-id {
-    font-size: 10px !important;
-    font-weight: 700 !important;
-    color: var(--text-muted) !important;
-  }
-
-  .HB-badge {
-    font-size: 9px !important;
-    font-weight: 800 !important;
-    text-transform: uppercase !important;
-    padding: 2px 5px !important;
-    border-radius: 3px !important;
-    line-height: 1 !important;
-    white-space: nowrap !important;
-  }
-
-  .badge-vermelho { background: #fee2e2 !important; color: #7f1d1d !important; border: 1px solid #fca5a5 !important; }
-  .badge-laranja  { background: #ffedd5 !important; color: #7c2d12 !important; border: 1px solid #fdba74 !important; }
-  .badge-amarelo  { background: #fef9c3 !important; color: #713f12 !important; border: 1px solid #fde047 !important; }
-
-  html.dark-mode .badge-vermelho { background: #450a0a !important; color: #fca5a5 !important; border-color: #7f1d1d !important; }
-  html.dark-mode .badge-laranja  { background: #431407 !important; color: #fdba74 !important; border-color: #7c2d12 !important; }
-  html.dark-mode .badge-amarelo  { background: #422006 !important; color: #fde047 !important; border-color: #713f12 !important; }
-
-  .HB-title {
-    font-size: 12px !important;
-    font-weight: 800 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1.3 !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    color: var(--text-main) !important;
-  }
-
-  .HB-subtitle {
-    font-size: 11px !important;
-    color: var(--text-muted) !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    margin: 0 !important;
-    line-height: 1.3 !important;
+    flex-wrap: wrap;
   }
 
   #searchBox {
-    background: var(--card-bg) !important;
-    color: var(--text-main) !important;
-    border: 1px solid var(--border-color) !important;
+    flex-grow: 1;
+    padding: 8px 12px;
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    min-width: 200px;
   }
 
-  #searchBox::placeholder {
+  .filter-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    background: var(--bg-main);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .filter-chip.active {
+    background: var(--header-color);
+    color: #ffffff;
+    border-color: var(--header-color);
+  }
+
+  .manifest-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .manifest-row {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: grid;
+    grid-template-columns: 80px 130px 1fr 140px;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    color: var(--text-main);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .manifest-row:hover {
+    border-color: var(--text-muted);
+  }
+
+  @media(max-width: 850px) {
+    .manifest-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+
+  .row-id {
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 700;
     color: var(--text-muted);
   }
 
-  @media(max-width: 1000px) {
-    .HB-kanban { grid-template-columns: 1fr !important; }
+  .row-badge {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    text-align: center;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    width: fit-content;
+  }
+
+  .badge-vermelho { background: #fee2e2; color: #7f1d1d; border-color: #fca5a5; }
+  .badge-laranja  { background: #ffedd5; color: #7c2d12; border-color: #fdba74; }
+  .badge-amarelo  { background: #fef9c3; color: #713f12; border-color: #fde047; }
+
+  html.dark-mode .badge-vermelho { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
+  html.dark-mode .badge-laranja  { background: #431407; color: #fdba74; border-color: #7c2d12; }
+  html.dark-mode .badge-amarelo  { background: #422006; color: #fde047; border-color: #713f12; }
+
+  .row-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .row-title {
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .row-subtitle {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .row-location {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>
 
@@ -231,144 +218,88 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   
   <div class="HB-header">
     <h1>🐾 Alerta Animal</h1>
-    
-    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-      <div class="HB-nav-links" style="margin: 0; border: none; background: transparent; padding: 0;">
-        <span>Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
-        <span>•</span>
-        <a href="{{ '/mapa.html' | relative_url }}">🗺️ Mapa</a>
-        <a href="{{ '/feed.xml' | relative_url }}">📡 RSS Feed</a>
-        <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" style="background: #22c55e !important; color: white !important; border-color: #16a34a !important;">➕ Reportar</a>
-      </div>
+    <div class="HB-nav-links">
+      <span>Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
+      <span>•</span>
+      <a href="{{ '/contactos-emergencia.html' | relative_url }}" style="background: #ef4444; color: white; border-color: #dc2626;">📞 Contactos de Emergência</a>
+      <a href="{{ '/mapa.html' | relative_url }}">🗺️ Mapa</a>
+      <a href="{{ '/feed.xml' | relative_url }}">📡 RSS</a>
+      <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" style="background: #22c55e; color: white; border-color: #16a34a;">➕ Reportar</a>
     </div>
   </div>
 
-  <div style="margin-bottom: 16px;">
-    <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho, estado ou ID..." onkeyup="filterCards()" style="width: 100%; padding: 10px; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+  <div class="control-panel">
+    <input type="text" id="searchBox" placeholder="🔍 Pesquisar por ID, espécie, local, concelho ou estado..." onkeyup="filterManifest()">
+    <div class="filter-group">
+      <button type="button" class="filter-chip active" onclick="filterStatus('all', this)">Todos</button>
+      <button type="button" class="filter-chip" onclick="filterStatus('vermelho', this)">Vermelho</button>
+      <button type="button" class="filter-chip" onclick="filterStatus('laranja', this)">Laranja</button>
+      <button type="button" class="filter-chip" onclick="filterStatus('amarelo', this)">Amarelo</button>
+    </div>
   </div>
 
-  <script>
-    function normalizeText(text) {
-      return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
-    }
-
-    function filterCards() {
-      let rawInput = document.getElementById('searchBox').value;
-      let input = normalizeText(rawInput);
-      let cards = document.querySelectorAll('.HB-card');
+  <div class="manifest-list" id="manifestList">
+    {% for post in site.ocorrencias reversed %}
+      {% assign t = post.triagem | upcase %}
       
-      cards.forEach(card => {
-        let visibleText = normalizeText(card.innerText);
-        let searchTags = normalizeText(card.getAttribute('data-search-tags') || '');
+      {% assign badge_class = "badge-amarelo" %}
+      {% assign status_filter = "amarelo" %}
+      {% if t contains 'VERM' %}
+        {% assign badge_class = "badge-vermelho" %}
+        {% assign status_filter = "vermelho" %}
+      {% elsif t contains 'LARANJA' %}
+        {% assign badge_class = "badge-laranja" %}
+        {% assign status_filter = "laranja" %}
+      {% endif %}
+
+      <a href="{{ post.url | relative_url }}" class="manifest-row" data-status="{{ status_filter }}" data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localizacao }} {{ post.concelho }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }} {{ post.observacoes | strip_html }} {{ post.descricao | strip_html }}">
         
-        let matches = visibleText.includes(input) || searchTags.includes(input);
-        card.style.display = matches ? "flex" : "none";
-      });
-    }
-  </script>
-
-  <div class="HB-kanban">
-
-    <!-- COLUNA 1: ALERTA VERMELHO -->
-    <div class="HB-column col-vermelho">
-      <div class="HB-col-header" style="color: #ef4444;">
-        <span>🔴 Vermelho</span>
-        {% assign count_red = 0 %}
-        {% for post in site.ocorrencias %}
-          {% assign t = post.triagem | upcase %}
-          {% if t contains 'VERM' %}{% assign count_red = count_red | plus: 1 %}{% endif %}
-        {% endfor %}
-        <span class="HB-badge badge-vermelho">{{ count_red }}</span>
-      </div>
-
-      {% assign has_reds = false %}
-      {% for post in site.ocorrencias reversed %}
-        {% assign t = post.triagem | upcase %}
-        {% if t contains 'VERM' %}
-          {% assign has_reds = true %}
-          <a href="{{ post.url | relative_url }}" class="HB-card" data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localizacao }} {{ post.concelho }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }} {{ post.observacoes | strip_html }} {{ post.descricao | strip_html }}">
-            {% if post.imagem %}
-              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
-            {% endif %}
-            <div class="HB-card-body">
-              <div class="HB-card-top" style="justify-content: flex-end;">
-                <span class="HB-badge badge-vermelho">{{ post.situacao | default: "REGISTO" | upcase }}</span>
-              </div>
-              <div class="HB-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
-              <div class="HB-subtitle">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
-            </div>
-          </a>
-        {% endif %}
-      {% endfor %}
-      {% unless has_reds %}<div style="text-align:center; font-size:11px; color:var(--text-muted); padding: 10px;">Sem registos.</div>{% endunless %}
-    </div>
-
-    <!-- COLUNA 2: ALERTA LARANJA -->
-    <div class="HB-column col-laranja">
-      <div class="HB-col-header" style="color: #f97316;">
-        <span>🟠 Laranja</span>
-        {% assign count_orange = 0 %}
-        {% for post in site.ocorrencias %}
-          {% assign t = post.triagem | upcase %}
-          {% if t contains 'LARANJA' %}{% assign count_orange = count_orange | plus: 1 %}{% endif %}
-        {% endfor %}
-        <span class="HB-badge badge-laranja">{{ count_orange }}</span>
-      </div>
-
-      {% assign has_orange = false %}
-      {% for post in site.ocorrencias reversed %}
-        {% assign t = post.triagem | upcase %}
-        {% if t contains 'LARANJA' %}
-          {% assign has_orange = true %}
-          <a href="{{ post.url | relative_url }}" class="HB-card" data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localizacao }} {{ post.concelho }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }} {{ post.observacoes | strip_html }} {{ post.descricao | strip_html }}">
-            {% if post.imagem %}
-              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
-            {% endif %}
-            <div class="HB-card-body">
-              <div class="HB-card-top" style="justify-content: flex-end;">
-                <span class="HB-badge badge-laranja">{{ post.situacao | default: "REGISTO" | upcase }}</span>
-              </div>
-              <div class="HB-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
-              <div class="HB-subtitle">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
-            </div>
-          </a>
-        {% endif %}
-      {% endfor %}
-      {% unless has_orange %}<div style="text-align:center; font-size:11px; color:var(--text-muted); padding: 10px;">Sem registos.</div>{% endunless %}
-    </div>
-
-    <!-- COLUNA 3: AMARELO / OUTROS -->
-    <div class="HB-column col-amarelo">
-      <div class="HB-col-header" style="color: #eab308;">
-        <span>🟡 Amarelo </span>
-        {% assign count_yellow = 0 %}
-        {% for post in site.ocorrencias %}
-          {% assign t = post.triagem | upcase %}
-          {% unless t contains 'VERM' or t contains 'LARANJA' %}{% assign count_yellow = count_yellow | plus: 1 %}{% endunless %}
-        {% endfor %}
-        <span class="HB-badge badge-amarelo">{{ count_yellow }}</span>
-      </div>
-
-      {% assign has_yellow = false %}
-      {% for post in site.ocorrencias reversed %}
-        {% assign t = post.triagem | upcase %}
-        {% unless t contains 'VERM' or t contains 'LARANJA' %}
-          {% assign has_yellow = true %}
-          <a href="{{ post.url | relative_url }}" class="HB-card" data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localizacao }} {{ post.concelho }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }} {{ post.observacoes | strip_html }} {{ post.descricao | strip_html }}">
-            {% if post.imagem %}
-              <div class="HB-card-img-wrap"><img src="{{ post.imagem }}" class="HB-card-img"></div>
-            {% endif %}
-            <div class="HB-card-body">
-              <div class="HB-card-top" style="justify-content: flex-end;">
-                <span class="HB-badge badge-amarelo">{{ post.situacao | default: "REGISTO" | upcase }}</span>
-              </div>
-              <div class="HB-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
-              <div class="HB-subtitle">📍 {{ post.localizacao | default: "Localização não indicada" }}</div>
-            </div>
-          </a>
-        {% endunless %}
-      {% endfor %}
-      {% unless has_yellow %}<div style="text-align:center; font-size:11px; color:var(--text-muted); padding: 10px;">Sem registos.</div>{% endunless %}
-    </div>
+        <div class="row-id">{{ post.id | default: "---" }}</div>
+        
+        <div class="row-badge {{ badge_class }}">
+          {{ post.situacao | default: "REGISTO" | upcase }}
+        </div>
+        
+        <div class="row-details">
+          <div class="row-title">{{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}</div>
+          <div class="row-subtitle">💬 {{ post.observacoes | default: post.descricao | strip_html | truncate: 60 }}</div>
+        </div>
+        
+        <div class="row-location">
+          📍 {{ post.localizacao | default: "Local não indicado" }}
+        </div>
+        
+      </a>
+    endfor %}
+  </div>
 
 </div>
+
+<script>
+  function normalizeText(text) {
+    return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+  }
+
+  function filterManifest() {
+    let query = normalizeText(document.getElementById('searchBox').value);
+    let rows = document.querySelectorAll('.manifest-row');
+    let activeChip = document.querySelector('.filter-chip.active');
+    let activeStatus = activeChip ? activeChip.getAttribute('onclick').match(/'([^']+)'/)[1] : 'all';
+    
+    rows.forEach(row => {
+      let tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
+      let matchesQuery = tags.includes(query);
+      let rowStatus = row.getAttribute('data-status');
+      
+      let matchesStatus = (activeStatus === 'all' || rowStatus === activeStatus);
+
+      row.style.display = (matchesQuery && matchesStatus) ? "grid" : "none";
+    });
+  }
+
+  function filterStatus(statusType, btn) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    filterManifest();
+  }
+</script>

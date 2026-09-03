@@ -39,7 +39,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     box-sizing: border-box;
   }
   
-  /* Cabeçalho Limpo e Funcional */
   .HB-header {
     display: flex;
     justify-content: space-between;
@@ -112,7 +111,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     padding: 0 4px;
   }
 
-  /* Painel de Controlo & Filtros */
   .control-panel {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -152,6 +150,11 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     box-shadow: 0 0 0 3px var(--focus-ring);
   }
 
+  .sort-group {
+    display: flex;
+    gap: 8px;
+  }
+
   .btn-sort {
     background: var(--bg-main);
     color: var(--text-main);
@@ -168,8 +171,10 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     transition: all 0.2s ease;
   }
 
-  .btn-sort:hover {
-    border-color: var(--text-muted);
+  .btn-sort:hover, .btn-sort.active {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: var(--header-bg);
   }
 
   .filter-group {
@@ -207,7 +212,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     border-color: var(--text-main);
   }
 
-  /* Grelha do Manifesto / Lista de Registos */
   .manifest-list {
     display: flex;
     flex-direction: column;
@@ -235,12 +239,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
 
-  .manifest-row:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px var(--focus-ring);
-    border-color: var(--primary-color);
-  }
-
   .row-img {
     width: 60px;
     height: 60px;
@@ -263,7 +261,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     letter-spacing: 0.03em;
   }
 
-  /* Cores de Triagem Clínicas baseadas nos novos valores exatos */
   .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; border-color: rgba(239, 68, 68, 0.3); }
   .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; border-color: rgba(249, 115, 22, 0.3); }
   .badge-amarelo  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; border-color: rgba(234, 179, 8, 0.3); }
@@ -312,79 +309,26 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     justify-content: flex-end;
   }
 
-  /* Responsividade fluida para Mobile (Ecrãs até 768px) */
   @media(max-width: 768px) {
-    .homebase-container {
-      padding: 10px;
-    }
-
-    .HB-header {
-      flex-direction: column;
-      align-items: stretch;
-      padding: 12px;
-      gap: 10px;
-    }
-    
-    .HB-header h1 {
-      justify-content: center;
-      font-size: 1.1rem;
-    }
-
-    .HB-nav-links {
-      justify-content: center;
-      width: 100%;
-      gap: 6px;
-    }
-
-    .HB-nav-pill {
-      flex: 1;
-      justify-content: center;
-      padding: 8px 10px;
-      font-size: 0.8rem;
-    }
-
-    .counter-badge {
-      display: none;
-    }
-
-    .control-panel-row {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    #searchBox {
-      width: 100%;
-    }
-
-    .btn-sort {
-      width: 100%;
-      justify-content: center;
-    }
-
+    .homebase-container { padding: 10px; }
+    .HB-header { flex-direction: column; align-items: stretch; padding: 12px; gap: 10px; }
+    .HB-header h1 { justify-content: center; font-size: 1.1rem; }
+    .HB-nav-links { justify-content: center; width: 100%; gap: 6px; }
+    .HB-nav-pill { flex: 1; justify-content: center; padding: 8px 10px; font-size: 0.8rem; }
+    .counter-badge { display: none; }
+    .control-panel-row { flex-direction: column; align-items: stretch; }
+    #searchBox { width: 100%; }
+    .sort-group { width: 100%; }
+    .btn-sort { flex: 1; justify-content: center; }
     .manifest-row {
       grid-template-columns: 56px 1fr;
       grid-template-rows: auto auto auto;
       gap: 10px;
       padding: 12px;
     }
-
-    .row-img {
-      grid-row: 1 / 2;
-    }
-
-    .row-badge {
-      grid-column: 2 / 3;
-      grid-row: 1 / 2;
-      align-self: start;
-      justify-self: start;
-      padding: 4px 8px;
-    }
-
-    .row-details {
-      grid-column: 1 / 3;
-      grid-row: 2 / 3;
-    }
-
+    .row-img { grid-row: 1 / 2; }
+    .row-badge { grid-column: 2 / 3; grid-row: 1 / 2; align-self: start; justify-self: start; padding: 4px 8px; }
+    .row-details { grid-column: 1 / 3; grid-row: 2 / 3; }
     .row-location {
       grid-column: 1 / 3;
       grid-row: 3 / 4;
@@ -393,10 +337,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       padding-top: 8px;
       margin-top: 2px;
     }
-
-    .row-title, .row-subtitle, .row-location {
-      white-space: normal;
-    }
+    .row-title, .row-subtitle, .row-location { white-space: normal; }
   }
 </style>
 
@@ -408,21 +349,24 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       <span class="counter-badge" aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
       <a href="{{ '/contactos-emergencia.html' | relative_url }}" class="HB-nav-pill btn-emergency" aria-label="Contactos de Emergência">📞 Emergência</a>
       <a href="{{ '/mapa.html' | relative_url }}" class="HB-nav-pill" aria-label="Ver Mapa de Ocorrências">🗺️ Mapa</a>
-      <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="HB-nav-pill btn-report" aria-label="Reportar nova ocorrência (abre num novo separador)">➕ Reportar</a>
+      <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="HB-nav-pill btn-report" aria-label="Reportar nova ocorrência">➕ Reportar</a>
     </nav>
   </header>
 
   <section class="control-panel" aria-label="Filtros de Pesquisa e Ordenação">
     <div class="control-panel-row">
-      <label for="searchBox" class="visually-hidden" style="display:none">Pesquisar ocorrências</label>
       <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
       
-      <button type="button" class="btn-sort" id="sortBtn" onclick="toggleSortOrder()">
-        📅 Ordenar por Data (Mais Recente)
-      </button>
+      <div class="sort-group">
+        <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">
+          ⚡ Por Nível de Alerta
+        </button>
+        <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">
+          📅 Por Data
+        </button>
+      </div>
     </div>
     
-    <!-- Filtros por Prioridade baseados nas categorias exatas de Triagem -->
     <div class="filter-group" role="group" aria-label="Filtrar por nível de triagem clínica">
       <button type="button" class="filter-chip active" onclick="filterStatus('all', this)" aria-pressed="true">Todos</button>
       <button type="button" class="filter-chip" onclick="filterStatus('vermelho', this)" aria-pressed="false">🔴 Vermelho</button>
@@ -434,24 +378,29 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   </section>
 
   <div class="manifest-list" id="manifestList" aria-live="polite">
-    {% for post in site.ocorrencias reversed %}
+    {% for post in site.ocorrencias %}
       {% assign triagem_val = post.triagem | strip | capitalize %}
       
       {% assign badge_class = "badge-indefinido" %}
       {% assign status_filter = "indefinido" %}
+      {% assign priority_weight = 5 %}
       
       {% if triagem_val == 'Vermelho' %}
         {% assign badge_class = "badge-vermelho" %}
         {% assign status_filter = "vermelho" %}
+        {% assign priority_weight = 1 %}
       {% elsif triagem_val == 'Laranja' %}
         {% assign badge_class = "badge-laranja" %}
         {% assign status_filter = "laranja" %}
+        {% assign priority_weight = 2 %}
       {% elsif triagem_val == 'Amarelo' %}
         {% assign badge_class = "badge-amarelo" %}
         {% assign status_filter = "amarelo" %}
+        {% assign priority_weight = 3 %}
       {% elsif triagem_val == 'Azul' %}
         {% assign badge_class = "badge-azul" %}
         {% assign status_filter = "azul" %}
+        {% assign priority_weight = 4 %}
       {% endif %}
 
       {% assign raw_date = post.data_ocorrencia_inicial | default: post.date %}
@@ -459,6 +408,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       <a href="{{ post.url | relative_url }}" 
          class="manifest-row" 
          data-status="{{ status_filter }}" 
+         data-priority="{{ priority_weight }}"
          data-timestamp="{{ raw_date | date: '%s' }}"
          data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }}" 
          aria-label="Ocorrência: {{ post.especie }} em {{ post.localidade | default: 'localização desconhecida' }}">
@@ -471,7 +421,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
         
         <div class="row-details">
           <div class="row-title">
-            {{ post.especie }}{% if post.estado_fisico and post.estado_fisico != "Desconhecido" %} — {{ post.estado_fisico }}{% endif %}
+            {{ post.especie | default: "Animal" }} — {{ post.triagem | default: "Indefinido" }}
           </div>
           <div class="row-subtitle">
             📅 {{ raw_date | date: "%d/%m/%Y" }}{% if post.situacao %} • Situação: <strong>{{ post.situacao }}</strong>{% endif %}{% if post.sexo %} • Sexo: {{ post.sexo }}{% endif %}
@@ -488,7 +438,13 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
 </div>
 
 <script>
-  let sortDescending = true;
+  let currentSortMode = 'priority'; // Predefinido por nível de alerta
+  let sortDateDescending = true;
+
+  // Ordenação inicial automática ao carregar a página (por nível de alerta: Vermelho primeiro)
+  document.addEventListener("DOMContentLoaded", () => {
+    sortManifestRows();
+  });
 
   function normalizeText(text) {
     return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
@@ -504,7 +460,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       let tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
       let matchesQuery = tags.includes(query);
       let rowStatus = row.getAttribute('data-status');
-      
       let matchesStatus = (activeStatus === 'all' || rowStatus === activeStatus);
 
       row.style.display = (matchesQuery && matchesStatus) ? "grid" : "none";
@@ -521,24 +476,52 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     filterManifest();
   }
 
-  function toggleSortOrder() {
-    sortDescending = !sortDescending;
+  function setSortMode(mode) {
+    let priorityBtn = document.getElementById('sortPriorityBtn');
+    let dateBtn = document.getElementById('sortDateBtn');
+
+    if (currentSortMode === mode && mode === 'date') {
+      sortDateDescending = !sortDateDescending;
+    } else {
+      currentSortMode = mode;
+      if (mode === 'date') sortDateDescending = true;
+    }
+
+    if (currentSortMode === 'priority') {
+      priorityBtn.classList.add('active');
+      dateBtn.classList.remove('active');
+      dateBtn.innerHTML = "📅 Por Data";
+    } else {
+      dateBtn.classList.add('active');
+      priorityBtn.classList.remove('active');
+      dateBtn.innerHTML = sortDateDescending ? "📅 Por Data (Mais Recente)" : "📅 Por Data (Mais Antiga)";
+    }
+
+    sortManifestRows();
+  }
+
+  function sortManifestRows() {
     let listContainer = document.getElementById('manifestList');
     let rows = Array.from(listContainer.querySelectorAll('.manifest-row'));
-    let sortBtn = document.getElementById('sortBtn');
 
     rows.sort((a, b) => {
-      let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
-      let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
-      return sortDescending ? (timeB - timeA) : (timeA - timeB);
+      if (currentSortMode === 'priority') {
+        let pA = parseInt(a.getAttribute('data-priority') || '5', 10);
+        let pB = parseInt(b.getAttribute('data-priority') || '5', 10);
+        if (pA !== pB) {
+          return pA - pB; // Menor peso = maior prioridade (Vermelho primeiro)
+        }
+        // Critério de desempate por data (mais recente primeiro)
+        let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
+        let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
+        return timeB - timeA;
+      } else {
+        let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
+        let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
+        return sortDateDescending ? (timeB - timeA) : (timeA - timeB);
+      }
     });
 
     rows.forEach(row => listContainer.appendChild(row));
-
-    if (sortDescending) {
-      sortBtn.innerHTML = "📅 Ordenar por Data (Mais Recente)";
-    } else {
-      sortBtn.innerHTML = "📅 Ordenar por Data (Mais Antiga)";
-    }
   }
 </script>

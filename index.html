@@ -236,7 +236,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     <h1>🐾 Sistema de Alerta Animal</h1>
     <nav class="fs-nav-links" aria-label="Navegação Principal">
       <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
-      <a href="{{ '/contactos-emergencia.html' | relative_url }}" class="fs-pill btn-emergency" aria-label="Contactos de Emergência">📞 Emergência</a>
+      <a href="{{ '/contactos-emergencia.html' | relative_url }}" class="fs-pill btn-emergency" aria-label="Contactos de Emergência">📞 Contactos</a>
       <a href="{{ '/mapa.html' | relative_url }}" class="fs-pill" aria-label="Ver Mapa de Ocorrências">🗺️ Mapa</a>
       <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report" aria-label="Reportar nova ocorrência">➕ Reportar</a>
     </nav>
@@ -246,17 +246,13 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
     
     <div class="sort-group">
-      <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">⚡ Por Nível</button>
-      <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">📅 Por Data</button>
+      <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">Por Prioridade</button>
+      <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
     </div>
 
-    <div class="fs-chips-group" role="group" aria-label="Filtrar por nível de triagem clínica">
-      <button type="button" class="fs-chip active" onclick="filterStatus('all', this)" aria-pressed="true">Todos</button>
-      <button type="button" class="fs-chip" onclick="filterStatus('vermelho', this)" aria-pressed="false">🔴 Vermelho</button>
-      <button type="button" class="fs-chip" onclick="filterStatus('laranja', this)" aria-pressed="false">🟠 Laranja</button>
-      <button type="button" class="fs-chip" onclick="filterStatus('amarelo', this)" aria-pressed="false">🟡 Amarelo</button>
-      <button type="button" class="fs-chip" onclick="filterStatus('azul', this)" aria-pressed="false">🔵 Azul</button>
-      <button type="button" class="fs-chip" onclick="filterStatus('indefinido', this)" aria-pressed="false">⚪ Indefinido</button>
+    <!-- Botão Único para Casos Urgentes -->
+    <div class="fs-chips-group" role="group" aria-label="Filtrar casos urgentes">
+      <button type="button" class="fs-chip" id="btnUrgentes" onclick="toggleUrgentes(this)" aria-pressed="false">🚨 Urgentes (Vermelho, Laranja, Feridos)</button>
     </div>
   </div>
 
@@ -273,38 +269,41 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       </thead>
       <tbody id="manifestList" aria-live="polite">
         {% for post in site.ocorrencias %}
-          {% assign triagem_val = post.triagem | strip | capitalize %}
+          {% assign triagem_val = post.triagem | strip | downcase %}
+          {% assign estado_val = post.estado_fisico | strip | downcase %}
           
           {% assign badge_class = "badge-indefinido" %}
-          {% assign status_filter = "indefinido" %}
           {% assign priority_weight = 5 %}
+          {% assign is_urgente = false %}
           
-          {% if triagem_val == 'Vermelho' %}
+          {% if triagem_val == 'vermelho' %}
             {% assign badge_class = "badge-vermelho" %}
-            {% assign status_filter = "vermelho" %}
             {% assign priority_weight = 1 %}
-          {% elsif triagem_val == 'Laranja' %}
+            {% assign is_urgente = true %}
+          {% elsif triagem_val == 'laranja' %}
             {% assign badge_class = "badge-laranja" %}
-            {% assign status_filter = "laranja" %}
             {% assign priority_weight = 2 %}
-          {% elsif triagem_val == 'Amarelo' %}
+            {% assign is_urgente = true %}
+          {% elsif triagem_val == 'amarelo' %}
             {% assign badge_class = "badge-amarelo" %}
-            {% assign status_filter = "amarelo" %}
             {% assign priority_weight = 3 %}
-          {% elsif triagem_val == 'Azul' %}
+          {% elsif triagem_val == 'azul' %}
             {% assign badge_class = "badge-azul" %}
-            {% assign status_filter = "azul" %}
             {% assign priority_weight = 4 %}
+          {% endif %}
+
+          {% if estado_val contains 'ferido' or estado_val contains 'critico' or estado_val contains 'vulneravel' %}
+            {% assign is_urgente = true %}
           {% endif %}
 
           {% assign raw_date = post.data_ocorrencia_inicial | default: post.date %}
           
           <tr class="fs-row" 
               onclick="window.location='{{ post.url | relative_url }}'"
-              data-status="{{ status_filter }}" 
+              data-urgente="{{ is_urgente }}" 
               data-priority="{{ priority_weight }}"
               data-timestamp="{{ raw_date | date: '%s' }}"
-              data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }}">
+              data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }}">
             
             <td>
               <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="fs-img" loading="lazy">
@@ -316,7 +315,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
               <strong>{{ post.especie | default: "Animal" }}</strong>{% if post.situacao %} — Situação: {{ post.situacao }}{% endif %}
             </td>
             <td>{{ raw_date | date: "%d/%m/%Y" }}</td>
-            <td>📍 {{ post.localidade | default: "Local não indicado" }}</td>
+            <td>📍 {{ post.localidade | default: post.concelho | default: post.distrito | default: "Local não indicado" }}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -327,6 +326,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
 <script>
   let currentSortMode = 'priority';
   let sortDateDescending = true;
+  let filtroUrgenteAtivo = false;
 
   document.addEventListener("DOMContentLoaded", () => {
     sortManifestRows();
@@ -336,30 +336,33 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
   }
 
+  function toggleUrgentes(btn) {
+    filtroUrgenteAtivo = !filtroUrgenteAtivo;
+    
+    if (filtroUrgenteAtivo) {
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+    } else {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-pressed', 'false');
+    }
+    
+    filterManifest();
+  }
+
   function filterManifest() {
     let query = normalizeText(document.getElementById('searchBox').value);
     let rows = document.querySelectorAll('.fs-row');
-    let activeChip = document.querySelector('.fs-chip.active');
-    let activeStatus = activeChip ? activeChip.getAttribute('onclick').match(/'([^']+)'/)[1] : 'all';
     
     rows.forEach(row => {
       let tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
       let matchesQuery = tags.includes(query);
-      let rowStatus = row.getAttribute('data-status');
-      let matchesStatus = (activeStatus === 'all' || rowStatus === activeStatus);
+      
+      let isUrgenteRow = row.getAttribute('data-urgente') === 'true';
+      let matchesUrgente = (!filtroUrgenteAtivo || isUrgenteRow);
 
-      row.style.display = (matchesQuery && matchesStatus) ? "" : "none";
+      row.style.display = (matchesQuery && matchesUrgente) ? "" : "none";
     });
-  }
-
-  function filterStatus(statusType, btn) {
-    document.querySelectorAll('.fs-chip').forEach(c => {
-      c.classList.remove('active');
-      c.setAttribute('aria-pressed', 'false');
-    });
-    btn.classList.add('active');
-    btn.setAttribute('aria-pressed', 'true');
-    filterManifest();
   }
 
   function setSortMode(mode) {
@@ -398,7 +401,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
           return pA - pB;
         }
         let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
-        let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
+        let timeB = parseInt(a.getAttribute('data-timestamp') || '0', 10);
         return timeB - timeA;
       } else {
         let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);

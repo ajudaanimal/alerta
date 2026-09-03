@@ -245,69 +245,73 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   .badge-indefinido { background: rgba(100, 116, 139, 0.15); color: #64748b; border-color: rgba(100, 116, 139, 0.3); }
 
   /* PAINEL DO MAPA */
-  .fs-map-panel {
-    display: none;
-    flex: 1;
-    height: 100%;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-    flex-direction: column;
-  }
+.fs-map-panel {
+  display: none;
+  flex: 1;
+  /* Substituído height: 100% por min-height: 0 para o Flexbox controlar a altura real */
+  min-height: 0;
+  min-width: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  flex-direction: column;
+}
 
+.fs-map-panel.visible {
+  display: flex;
+}
+
+.fs-map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  font-weight: bold;
+  flex-shrink: 0; /* Impede que o cabeçalho do mapa encolha ou seja cortado */
+}
+
+.btn-close-map {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+#full-map {
+  width: 100%;
+  flex: 1;
+  min-height: 0; /* Permite que a div do mapa ocupe exatamente o espaço restante */
+  z-index: 1;
+}
+
+/* Estilos do Popup do Leaflet */
+.map-popup-card { display: flex; gap: 8px; width: 200px; }
+.map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+.map-popup-info { font-size: 11px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.map-popup-title { font-weight: bold; margin-bottom: 2px; }
+.map-popup-desc { color: #64748b; font-size: 10px; margin-top: 4px; }
+.map-popup-link { font-size: 10px; font-weight: bold; text-decoration: none; margin-top: 6px; display: inline-block; }
+
+/* RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS */
+@media (max-width: 768px) {
   .fs-map-panel.visible {
-    display: flex;
-  }
-
-  .fs-map-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    font-size: 0.85rem;
-    font-weight: bold;
-  }
-
-  .btn-close-map {
-    background: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    border-radius: 0;
     border: none;
-    color: var(--text-main);
-    font-size: 1.2rem;
-    cursor: pointer;
-    line-height: 1;
   }
-
-  #full-map {
-    width: 100%;
-    flex: 1;
-    z-index: 1;
-  }
-
-  /* Estilos do Popup do Leaflet */
-  .map-popup-card { display: flex; gap: 8px; width: 200px; }
-  .map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
-  .map-popup-info { font-size: 11px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-  .map-popup-title { font-weight: bold; margin-bottom: 2px; }
-  .map-popup-desc { color: #64748b; font-size: 10px; margin-top: 4px; }
-  .map-popup-link { font-size: 10px; font-weight: bold; text-decoration: none; margin-top: 6px; display: inline-block; }
-
-  /* RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS */
-  @media (max-width: 768px) {
-    .fs-map-panel.visible {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 9999;
-      border-radius: 0;
-      border: none;
-    }
-  }
+}
 </style>
 
 <div class="fs-container" role="main">

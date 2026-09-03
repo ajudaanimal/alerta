@@ -4,8 +4,13 @@ title: "Alerta Animal"
 description: "Plataforma de monitorização e alerta de ocorrências de animais em formato de tabela de ecrã completo."
 image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg"
 ---
+<!-- Leaflet & Leaflet.markercluster CSS/JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <style>
   :root {
@@ -95,13 +100,32 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     cursor: pointer;
   }
   .fs-pill:hover { border-color: var(--text-muted); }
-  .fs-pill.btn-emergency { background: #ef4444; color: #fff; border-color: #dc2626; }
-  .fs-pill.btn-report { background: #10b981; color: #fff; border-color: #059669; }
+  .fs-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+
+  /* Content Wrapper para split view */
+  .fs-content-wrapper {
+    display: flex;
+    flex: 1;
+    gap: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .fs-main-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 0;
+    transition: flex 0.3s ease;
+  }
 
   .fs-control-bar {
     padding: 12px;
     background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
     display: flex;
     gap: 8px;
     align-items: center;
@@ -121,11 +145,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   }
   #searchBox:focus { border-color: var(--primary-color); }
 
-  .fs-chips-group {
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
-  }
+  .fs-chips-group { display: flex; gap: 4px; overflow-x: auto; }
 
   .fs-chip {
     background: var(--card-bg);
@@ -142,10 +162,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   .fs-chip:hover { color: var(--text-main); }
   .fs-chip.active { background: var(--text-main); color: var(--card-bg); border-color: var(--text-main); }
 
-  .sort-group {
-    display: flex;
-    gap: 4px;
-  }
+  .sort-group { display: flex; gap: 4px; }
 
   .btn-sort {
     background: var(--card-bg);
@@ -165,7 +182,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     overflow-x: auto;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 0 0 8px 8px;
   }
 
   .fs-table {
@@ -200,9 +217,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     text-decoration: none;
     color: var(--text-main);
   }
-  .fs-row:hover {
-    background: var(--header-bg);
-  }
+  .fs-row:hover { background: var(--header-bg); }
 
   .fs-img {
     width: 36px;
@@ -228,6 +243,71 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   .badge-amarelo  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; border-color: rgba(234, 179, 8, 0.3); }
   .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; border-color: rgba(59, 130, 246, 0.3); }
   .badge-indefinido { background: rgba(100, 116, 139, 0.15); color: #64748b; border-color: rgba(100, 116, 139, 0.3); }
+
+  /* PAINEL DO MAPA */
+  .fs-map-panel {
+    display: none;
+    flex: 1;
+    height: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    flex-direction: column;
+  }
+
+  .fs-map-panel.visible {
+    display: flex;
+  }
+
+  .fs-map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    font-weight: bold;
+  }
+
+  .btn-close-map {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  #full-map {
+    width: 100%;
+    flex: 1;
+    z-index: 1;
+  }
+
+  /* Estilos do Popup do Leaflet */
+  .map-popup-card { display: flex; gap: 8px; width: 200px; }
+  .map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+  .map-popup-info { font-size: 11px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .map-popup-title { font-weight: bold; margin-bottom: 2px; }
+  .map-popup-desc { color: #64748b; font-size: 10px; margin-top: 4px; }
+  .map-popup-link { font-size: 10px; font-weight: bold; text-decoration: none; margin-top: 6px; display: inline-block; }
+
+  /* RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS */
+  @media (max-width: 768px) {
+    .fs-map-panel.visible {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      border-radius: 0;
+      border: none;
+    }
+  }
 </style>
 
 <div class="fs-container" role="main">
@@ -235,88 +315,102 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   <header class="fs-header">
     <h1>🐾 Alerta Animal</h1>
     <nav class="fs-nav-links" aria-label="Navegação Principal">
+      <button type="button" class="fs-pill" id="btnToggleMap" onclick="toggleMap()">🗺️ Mapa</button>
       <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
-  </nav>
+    </nav>
   </header>
 
-  <div class="fs-control-bar">
-    <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
-    
-    <div class="sort-group">
-      <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">Por Prioridade</button>
-      <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
+  <div class="fs-content-wrapper">
+    <!-- Painel da Tabela -->
+    <div class="fs-main-panel">
+      <div class="fs-control-bar">
+        <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
+        
+        <div class="sort-group">
+          <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">Por Prioridade</button>
+          <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
+        </div>
+
+        <div class="fs-chips-group" role="group" aria-label="Filtrar casos urgentes">
+          <button type="button" class="fs-chip" id="btnUrgentes" onclick="toggleUrgentes(this)" aria-pressed="false">🚨 Urgentes</button>
+        </div>
+      </div>
+
+      <div class="fs-table-wrapper">
+        <table class="fs-table">
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Triagem</th>
+              <th>Espécie / Detalhes</th>
+              <th>Data</th>
+              <th>Localidade</th>
+            </tr>
+          </thead>
+          <tbody id="manifestList" aria-live="polite">
+            {% for post in site.ocorrencias %}
+              {% assign triagem_val = post.triagem | strip | downcase %}
+              {% assign estado_val = post.estado_fisico | strip | downcase %}
+              
+              {% assign badge_class = "badge-indefinido" %}
+              {% assign priority_weight = 5 %}
+              {% assign is_urgente = false %}
+              
+              {% if triagem_val == 'vermelho' %}
+                {% assign badge_class = "badge-vermelho" %}
+                {% assign priority_weight = 1 %}
+                {% assign is_urgente = true %}
+              {% elsif triagem_val == 'laranja' %}
+                {% assign badge_class = "badge-laranja" %}
+                {% assign priority_weight = 2 %}
+                {% assign is_urgente = true %}
+              {% elsif triagem_val == 'amarelo' %}
+                {% assign badge_class = "badge-amarelo" %}
+                {% assign priority_weight = 3 %}
+              {% elsif triagem_val == 'azul' %}
+                {% assign badge_class = "badge-azul" %}
+                {% assign priority_weight = 4 %}
+              {% endif %}
+
+              {% if estado_val contains 'ferido' or estado_val contains 'critico' or estado_val contains 'vulneravel' %}
+                {% assign is_urgente = true %}
+              {% endif %}
+
+              {% assign raw_date = post.data_ocorrencia_inicial | default: post.date %}
+              
+              <tr class="fs-row" 
+                  onclick="window.location='{{ post.url | relative_url }}'"
+                  data-urgente="{{ is_urgente }}" 
+                  data-priority="{{ priority_weight }}"
+                  data-timestamp="{{ raw_date | date: '%s' }}"
+                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }}">
+                
+                <td>
+                  <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="fs-img" loading="lazy">
+                </td>
+                <td>
+                  <span class="fs-badge {{ badge_class }}">{{ post.triagem | default: "Indefinido" }}</span>
+                </td>
+                <td>
+                  <strong>{{ post.especie | default: "Animal" }}</strong>{% if post.situacao %} — Situação: {{ post.situacao }}{% endif %}
+                </td>
+                <td>{{ raw_date | date: "%d/%m/%Y" }}</td>
+                <td>📍 {{ post.localidade | default: post.concelho | default: post.distrito | default: "Local não indicado" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- Botão Único para Casos Urgentes -->
-    <div class="fs-chips-group" role="group" aria-label="Filtrar casos urgentes">
-      <button type="button" class="fs-chip" id="btnUrgentes" onclick="toggleUrgentes(this)" aria-pressed="false">🚨 Urgentes</button>
+    <!-- Painel do Mapa -->
+    <div class="fs-map-panel" id="mapPanel">
+      <div class="fs-map-header">
+        <span>🗺️ Mapa Geral de Ocorrências</span>
+        <button type="button" class="btn-close-map" onclick="toggleMap()" aria-label="Fechar mapa">&times;</button>
+      </div>
+      <div id="full-map"></div>
     </div>
-  </div>
-
-  <div class="fs-table-wrapper">
-    <table class="fs-table">
-      <thead>
-        <tr>
-          <th>Foto</th>
-          <th>Triagem</th>
-          <th>Espécie / Detalhes</th>
-          <th>Data</th>
-          <th>Localidade</th>
-        </tr>
-      </thead>
-      <tbody id="manifestList" aria-live="polite">
-        {% for post in site.ocorrencias %}
-          {% assign triagem_val = post.triagem | strip | downcase %}
-          {% assign estado_val = post.estado_fisico | strip | downcase %}
-          
-          {% assign badge_class = "badge-indefinido" %}
-          {% assign priority_weight = 5 %}
-          {% assign is_urgente = false %}
-          
-          {% if triagem_val == 'vermelho' %}
-            {% assign badge_class = "badge-vermelho" %}
-            {% assign priority_weight = 1 %}
-            {% assign is_urgente = true %}
-          {% elsif triagem_val == 'laranja' %}
-            {% assign badge_class = "badge-laranja" %}
-            {% assign priority_weight = 2 %}
-            {% assign is_urgente = true %}
-          {% elsif triagem_val == 'amarelo' %}
-            {% assign badge_class = "badge-amarelo" %}
-            {% assign priority_weight = 3 %}
-          {% elsif triagem_val == 'azul' %}
-            {% assign badge_class = "badge-azul" %}
-            {% assign priority_weight = 4 %}
-          {% endif %}
-
-          {% if estado_val contains 'ferido' or estado_val contains 'critico' or estado_val contains 'vulneravel' %}
-            {% assign is_urgente = true %}
-          {% endif %}
-
-          {% assign raw_date = post.data_ocorrencia_inicial | default: post.date %}
-          
-          <tr class="fs-row" 
-              onclick="window.location='{{ post.url | relative_url }}'"
-              data-urgente="{{ is_urgente }}" 
-              data-priority="{{ priority_weight }}"
-              data-timestamp="{{ raw_date | date: '%s' }}"
-              data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }}">
-            
-            <td>
-              <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="fs-img" loading="lazy">
-            </td>
-            <td>
-              <span class="fs-badge {{ badge_class }}">{{ post.triagem | default: "Indefinido" }}</span>
-            </td>
-            <td>
-              <strong>{{ post.especie | default: "Animal" }}</strong>{% if post.situacao %} — Situação: {{ post.situacao }}{% endif %}
-            </td>
-            <td>{{ raw_date | date: "%d/%m/%Y" }}</td>
-            <td>📍 {{ post.localidade | default: post.concelho | default: post.distrito | default: "Local não indicado" }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
   </div>
 </div>
 
@@ -324,26 +418,166 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   let currentSortMode = 'priority';
   let sortDateDescending = true;
   let filtroUrgenteAtivo = false;
+  let mapInitialized = false;
+  let map;
 
   document.addEventListener("DOMContentLoaded", () => {
     sortManifestRows();
   });
 
+  /* LÓGICA DO MAPA */
+  function toggleMap() {
+    const mapPanel = document.getElementById('mapPanel');
+    const btnToggle = document.getElementById('btnToggleMap');
+    
+    mapPanel.classList.toggle('visible');
+    btnToggle.classList.toggle('active');
+
+    if (mapPanel.classList.contains('visible')) {
+      if (!mapInitialized) {
+        initMap();
+        mapInitialized = true;
+      } else {
+        setTimeout(() => map.invalidateSize(), 300);
+      }
+    }
+  }
+
+  function initMap() {
+    map = L.map('full-map', { attributionControl: false }).setView([39.5572, -7.8537], 7);
+
+    L.control.attribution({ prefix: false })
+      .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | 🇵🇸')
+      .addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+    var markersClusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 38,
+      disableClusteringAtZoom: 9,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true
+    });
+    map.addLayer(markersClusterGroup);
+
+    var ocorrencias = [
+      {% for post in site.ocorrencias %}
+        {% assign t = post.triagem | upcase %}
+        {% assign est_caso = post.estado_caso | upcase %}
+        {% assign est_fisico = post.estado_fisico | upcase %}
+        {% assign theme_color = "#2563eb" %}
+
+        {% if est_caso contains 'RESOLVIDO' %}
+          {% assign theme_color = "#16a34a" %}
+        {% elsif t contains 'VERM' or est_fisico contains 'FERIDO' or est_fisico contains 'CRÍTICO' %}
+          {% assign theme_color = "#dc2626" %}
+        {% elsif t contains 'LARANJA' or est_fisico contains 'URGENTE' %}
+          {% assign theme_color = "#f97316" %}
+        {% else %}
+          {% assign theme_color = "#ca8a04" %}
+        {% endif %}
+
+        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 90 | escape %}
+
+        {
+          id: {{ post.id | default: post.slug | jsonify }},
+          especie: {{ post.especie | default: "Animal" | jsonify }},
+          estado: {{ post.estado_fisico | default: 'N/D' | jsonify }},
+          local: {{ post.localizacao | default: post.localidade | default: post.concelho | jsonify }},
+          url: {{ post.url | relative_url | jsonify }},
+          color: {{ theme_color | jsonify }},
+          imagem: {{ post.imagem | default: '' | jsonify }},
+          descricao: {{ descricao_limpa | jsonify }}
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ];
+
+    function adicionarMarcadorAoMapa(lat, lon, item) {
+      var customPinIcon = L.divIcon({
+        className: 'custom-map-pin',
+        html: '<div style="background-color: ' + item.color + '; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 6px rgba(0,0,0,0.4);"></div>',
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+        popupAnchor: [0, -10]
+      });
+
+      var marker = L.marker([lat, lon], { icon: customPinIcon });
+
+      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="Foto">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:9px; color:#94a3b8; background:#f1f5f9;">Sem Foto</div>';
+      
+      marker.bindPopup(
+        '<div class="map-popup-card">' +
+          imgHtml +
+          '<div class="map-popup-info">' +
+            '<div>' +
+              '<div class="map-popup-title" style="color: ' + item.color + ';">' + item.id + '</div>' +
+              '<div style="font-size: 11px; font-weight: bold;">' + item.especie + ' (' + item.estado + ')</div>' +
+              '<div class="map-popup-desc">' + (item.descricao || 'Sem descrição detalhada.') + '</div>' +
+            '</div>' +
+            '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + ';">Ver detalhes →</a>' +
+          '</div>' +
+        '</div>'
+      );
+
+      markersClusterGroup.addLayer(marker);
+    }
+
+    var locaisValidos = ocorrencias.filter(function(item) {
+      return item.local && item.local !== "Não indicada" && item.local.trim() !== "";
+    });
+
+    var indexFila = 0;
+
+    function processarProximoLocal() {
+      if (indexFila >= locaisValidos.length) return;
+
+      var item = locaisValidos[indexFila];
+      var cacheKey = "geo_" + item.local.toLowerCase().trim();
+      var cachedCoords = localStorage.getItem(cacheKey);
+
+      if (cachedCoords) {
+        var coords = JSON.parse(cachedCoords);
+        adicionarMarcadorAoMapa(coords.lat, coords.lon, item);
+        indexFila++;
+        processarProximoLocal();
+      } else {
+        var query = encodeURIComponent(item.local + ", Portugal");
+        
+        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
+          .then(function(response) { return response.json(); })
+          .then(function(data) {
+            if (data && data.length > 0) {
+              var lat = parseFloat(data[0].lat);
+              var lon = parseFloat(data[0].lon);
+              localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
+              adicionarMarcadorAoMapa(lat, lon, item);
+            }
+          })
+          .catch(function(err) { console.error("Erro ao geocodificar:", err); })
+          .finally(function() {
+            indexFila++;
+            setTimeout(processarProximoLocal, 1100);
+          });
+      }
+    }
+
+    if (locaisValidos.length > 0) {
+      processarProximoLocal();
+    }
+    
+    setTimeout(() => map.invalidateSize(), 300);
+  }
+
+  /* FILTROS E ORDENAÇÃO */
   function normalizeText(text) {
     return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
   }
 
   function toggleUrgentes(btn) {
     filtroUrgenteAtivo = !filtroUrgenteAtivo;
-    
-    if (filtroUrgenteAtivo) {
-      btn.classList.add('active');
-      btn.setAttribute('aria-pressed', 'true');
-    } else {
-      btn.classList.remove('active');
-      btn.setAttribute('aria-pressed', 'false');
-    }
-    
+    btn.classList.toggle('active', filtroUrgenteAtivo);
+    btn.setAttribute('aria-pressed', filtroUrgenteAtivo ? 'true' : 'false');
     filterManifest();
   }
 
@@ -354,7 +588,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     rows.forEach(row => {
       let tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
       let matchesQuery = tags.includes(query);
-      
       let isUrgenteRow = row.getAttribute('data-urgente') === 'true';
       let matchesUrgente = (!filtroUrgenteAtivo || isUrgenteRow);
 
@@ -394,11 +627,9 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       if (currentSortMode === 'priority') {
         let pA = parseInt(a.getAttribute('data-priority') || '5', 10);
         let pB = parseInt(b.getAttribute('data-priority') || '5', 10);
-        if (pA !== pB) {
-          return pA - pB;
-        }
+        if (pA !== pB) return pA - pB;
         let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
-        let timeB = parseInt(a.getAttribute('data-timestamp') || '0', 10);
+        let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
         return timeB - timeA;
       } else {
         let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);

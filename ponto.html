@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veterinários em Portugal</title>
+  <style>
+    :root {
+      --primary-color: #0d9488;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-color: #1e293b;
+      --border-radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.5;
+    }
+
+    /* Header */
+    header {
+      background-color: var(--card-bg);
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Layout Container */
+    .main-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Map Card */
+    .map-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .map-wrapper {
+      position: relative;
+      width: 100%;
+      height: 75vh;
+      min-height: 500px;
+    }
+
+    .map-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .map-footer {
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .map-footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .map-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Sidebar Info Panel */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .info-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .info-card p {
+      font-size: 0.95rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🐾 Veterinários em Portugal</h1>
+  </header>
+
+  <main class="main-container">
+    <!-- Immersive Map Section -->
+    <section class="map-card">
+      <div class="map-wrapper">
+        <iframe 
+          src="https://umap.openstreetmap.fr/en/map/veterinarios-em-portugal_1453528?scaleControl=true&miniMapControl=false&scrollWheelZoom=true&zoomControl=true&editMode=disabled&moreControl=true&searchControl=true&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=none&captionBar=false&captionMenus=false" 
+          allowfullscreen 
+          allow="geolocation">
+        </iframe>
+      </div>
+      <div class="map-footer">
+        <span>Utilize o mapa para explorar clínicas e hospitais.</span>
+        <a href="https://umap.openstreetmap.fr/en/map/veterinarios-em-portugal_1453528" target="_blank" rel="noopener noreferrer">
+          Ecrã Inteiro ↗
+        </a>
+      </div>
+    </section>
+
+    <!-- Sidebar Panel -->
+    <aside class="sidebar">
+      <div class="info-card">
+        <h2>Como Usar</h2>
+        <p>Navegue pelo mapa com o rato ou ecrã tátil. Utilize a barra de pesquisa integrada no canto do mapa para procurar por cidade ou localidade.</p>
+      </div>
+
+      <div class="info-card">
+        <h2>Urgências</h2>
+        <p>Em caso de emergência, verifique os marcadores no mapa para confirmar o horário de funcionamento de 24 horas.</p>
+      </div>
+    </aside>
+  </main>
+
+</body>
+</html>

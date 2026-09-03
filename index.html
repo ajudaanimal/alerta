@@ -417,13 +417,13 @@ body {
                   <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="fs-img" loading="lazy">
                 </td>
                 <td>
-                  <span class="fs-badge {{ badge_class }}">{{ post.triagem | default: "Indefinido" }}</span>
+                  <span class="fs-badge {{ badge_class }}">{{ post.nivel_alerta | default: "" }}</span>
                 </td>
                 <td>
-                  <strong>{{ post.especie | default: "Animal" }}</strong>{% if post.situacao %} — Situação: {{ post.situacao }}{% endif %}
+                  <strong>{{ post.especie | default: "Animal" }}</strong>{% if post.estado_fisico %} — {{ post.estado_fisico }}{% endif %}
                 </td>
                 <td>{{ raw_date | date: "%d/%m/%Y" }}</td>
-                <td>📍 {{ post.localidade | default: post.concelho | default: post.distrito | default: "Local não indicado" }}</td>
+                <td>📍 {{ post.localidade | default: post.concelho | default: post.distrito | default: post.localizacao  | default: "Local não indicado" }}</td>
               </tr>
             {% endfor %}
           </tbody>

@@ -370,10 +370,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     <div class="filter-group" role="group" aria-label="Filtrar por nível de triagem clínica">
       <button type="button" class="filter-chip active" onclick="filterStatus('all', this)" aria-pressed="true">Todos</button>
       <button type="button" class="filter-chip" onclick="filterStatus('vermelho', this)" aria-pressed="false">🔴 Vermelho</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('laranja', this)" aria-pressed="false">🟠 Laranja</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('amarelo', this)" aria-pressed="false">🟡 Amarelo</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('azul', this)" aria-pressed="false">🔵 Azul</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('indefinido', this)" aria-pressed="false">⚪ Indefinido</button>
     </div>
   </section>
 
@@ -424,12 +420,12 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
             {{ post.especie | default: "Animal" }} — {{ post.triagem | default: "Indefinido" }}
           </div>
           <div class="row-subtitle">
-            📅 {{ raw_date | date: "%d/%m/%Y" }}{% if post.situacao %} • Situação: <strong>{{ post.situacao }}</strong>{% endif %}{% if post.sexo %} • Sexo: {{ post.sexo }}{% endif %}
+            📅 {{ raw_date | date: "%d/%m/%Y" }}{% if post.situacao %} • Situação: <strong>{{ post.situacao }}</strong>{% endif %}{% endif %}
           </div>
         </div>
         
         <div class="row-location">
-          <span>📍</span> {{ post.localidade | default: "Local não indicado" }}
+          <span>📍</span> {{ post.distrito | default: "Local não indicado" }}
         </div>
         
       </a>

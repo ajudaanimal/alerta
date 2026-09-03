@@ -26,6 +26,3 @@ permalink: /emergencia/
 * **Serviços Veterinários Municipais / CRO**
   * Para animais errantes ou recolha urgente na tua zona, deves contactar diretamente a **Câmara Municipal** ou os serviços do **Centro de Recolha Oficial (Canil/Gatil Municipal)** correspondente ao teu concelho.
  
-## Veterinários
-
-<iframe style="width: 100%; height: 500px; border: 0;" allowfullscreen allow="geolocation" src="//umap.openstreetmap.fr/en/map/veterinarios-em-portugal_1453528?scaleControl=false&miniMapControl=false&scrollWheelZoom=false&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=none&captionBar=false&captionMenus=true"></iframe><p><a href="//umap.openstreetmap.fr/en/map/veterinarios-em-portugal_1453528?scaleControl=false&miniMapControl=false&scrollWheelZoom=true&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=none&captionBar=false&captionMenus=true">See full screen</a></p>

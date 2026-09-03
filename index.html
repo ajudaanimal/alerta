@@ -36,7 +36,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     background: var(--bg-main);
   }
 
-  /* Fullscreen layout wrapper */
   .fs-container {
     width: 100vw;
     height: 100vh;
@@ -99,47 +98,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   .fs-pill.btn-emergency { background: #ef4444; color: #fff; border-color: #dc2626; }
   .fs-pill.btn-report { background: #10b981; color: #fff; border-color: #059669; }
 
-  /* Split View Workspace */
-  .fs-workspace {
-    display: flex;
-    flex: 1;
-    gap: 12px;
-    min-height: 0;
-    position: relative;
-    transition: all 0.3s ease;
-  }
-
-  .fs-table-pane {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    min-width: 0;
-  }
-
-  .fs-map-pane {
-    width: 0%;
-    opacity: 0;
-    visibility: hidden;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .fs-workspace.split-active .fs-map-pane {
-    width: 50%;
-    opacity: 1;
-    visibility: visible;
-  }
-
-  /* Control bar inside table pane */
   .fs-control-bar {
     padding: 12px;
     background: var(--header-bg);
@@ -184,11 +142,30 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   .fs-chip:hover { color: var(--text-main); }
   .fs-chip.active { background: var(--text-main); color: var(--card-bg); border-color: var(--text-main); }
 
-  /* Full Screen Table layout */
+  .sort-group {
+    display: flex;
+    gap: 4px;
+  }
+
+  .btn-sort {
+    background: var(--card-bg);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-sort.active { background: var(--text-main); color: var(--card-bg); border-color: var(--text-main); }
+
   .fs-table-wrapper {
     flex: 1;
     overflow-y: auto;
     overflow-x: auto;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
   }
 
   .fs-table {
@@ -246,137 +223,111 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     border: 1px solid transparent;
   }
 
-  .badge-emergencia { background: rgba(239, 68, 68, 0.15); color: #dc2626; border-color: rgba(239, 68, 68, 0.3); }
-  .badge-urgente    { background: rgba(249, 115, 22, 0.15); color: #ea580c; border-color: rgba(249, 115, 22, 0.3); }
-  .badge-risco      { background: rgba(234, 179, 8, 0.15); color: #ca8a04; border-color: rgba(234, 179, 8, 0.3); }
-  .badge-monitorizacao { background: rgba(59, 130, 246, 0.15); color: #2563eb; border-color: rgba(59, 130, 246, 0.3); }
-  .badge-busca      { background: rgba(100, 116, 139, 0.15); color: #64748b; border-color: rgba(100, 116, 139, 0.3); }
-
-  #mapContainer {
-    flex: 1;
-    width: 100%;
-    height: 100%;
-  }
-
-  .map-header-bar {
-    padding: 10px 12px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 700;
-    font-size: 0.9rem;
-  }
-
-  @media(max-width: 900px) {
-    .fs-workspace.split-active { flex-direction: column; }
-    .fs-workspace.split-active .fs-map-pane { width: 100%; height: 50%; }
-    .fs-workspace.split-active .fs-table-pane { height: 50%; }
-  }
+  .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; border-color: rgba(239, 68, 68, 0.3); }
+  .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; border-color: rgba(249, 115, 22, 0.3); }
+  .badge-amarelo  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; border-color: rgba(234, 179, 8, 0.3); }
+  .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; border-color: rgba(59, 130, 246, 0.3); }
+  .badge-indefinido { background: rgba(100, 116, 139, 0.15); color: #64748b; border-color: rgba(100, 116, 139, 0.3); }
 </style>
 
-<div class="homebase-container" role="main">
+<div class="fs-container" role="main">
   
-  <header class="HB-header">
+  <header class="fs-header">
     <h1>🐾 Sistema de Alerta Animal</h1>
-    <nav class="HB-nav-links" aria-label="Navegação Principal">
-      <span class="counter-badge" aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
-      <a href="{{ '/contactos-emergencia.html' | relative_url }}" class="HB-nav-pill btn-emergency" aria-label="Contactos de Emergência">📞 Emergência</a>
-      <a href="{{ '/mapa.html' | relative_url }}" class="HB-nav-pill" aria-label="Ver Mapa de Ocorrências">🗺️ Mapa</a>
-      <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="HB-nav-pill btn-report" aria-label="Reportar nova ocorrência">➕ Reportar</a>
+    <nav class="fs-nav-links" aria-label="Navegação Principal">
+      <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
+      <a href="{{ '/contactos-emergencia.html' | relative_url }}" class="fs-pill btn-emergency" aria-label="Contactos de Emergência">📞 Emergência</a>
+      <a href="{{ '/mapa.html' | relative_url }}" class="fs-pill" aria-label="Ver Mapa de Ocorrências">🗺️ Mapa</a>
+      <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report" aria-label="Reportar nova ocorrência">➕ Reportar</a>
     </nav>
   </header>
 
-  <section class="control-panel" aria-label="Filtros de Pesquisa e Ordenação">
-    <div class="control-panel-row">
-      <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
-      
-      <div class="sort-group">
-        <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">
-          ⚡ Por Nível de Alerta
-        </button>
-        <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">
-          📅 Por Data
-        </button>
-      </div>
-    </div>
+  <div class="fs-control-bar">
+    <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
     
-    <div class="filter-group" role="group" aria-label="Filtrar por nível de triagem clínica">
-      <button type="button" class="filter-chip active" onclick="filterStatus('all', this)" aria-pressed="true">Todos</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('vermelho', this)" aria-pressed="false">🔴 Vermelho</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('laranja', this)" aria-pressed="false">🟠 Laranja</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('amarelo', this)" aria-pressed="false">🟡 Amarelo</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('azul', this)" aria-pressed="false">🔵 Azul</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('indefinido', this)" aria-pressed="false">⚪ Indefinido</button>
+    <div class="sort-group">
+      <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">⚡ Por Nível</button>
+      <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">📅 Por Data</button>
     </div>
-  </section>
 
-  <div class="manifest-list" id="manifestList" aria-live="polite">
-    {% for post in site.ocorrencias %}
-      {% assign triagem_val = post.triagem | strip | capitalize %}
-      
-      {% assign badge_class = "badge-indefinido" %}
-      {% assign status_filter = "indefinido" %}
-      {% assign priority_weight = 5 %}
-      
-      {% if triagem_val == 'Vermelho' %}
-        {% assign badge_class = "badge-vermelho" %}
-        {% assign status_filter = "vermelho" %}
-        {% assign priority_weight = 1 %}
-      {% elsif triagem_val == 'Laranja' %}
-        {% assign badge_class = "badge-laranja" %}
-        {% assign status_filter = "laranja" %}
-        {% assign priority_weight = 2 %}
-      {% elsif triagem_val == 'Amarelo' %}
-        {% assign badge_class = "badge-amarelo" %}
-        {% assign status_filter = "amarelo" %}
-        {% assign priority_weight = 3 %}
-      {% elsif triagem_val == 'Azul' %}
-        {% assign badge_class = "badge-azul" %}
-        {% assign status_filter = "azul" %}
-        {% assign priority_weight = 4 %}
-      {% endif %}
+    <div class="fs-chips-group" role="group" aria-label="Filtrar por nível de triagem clínica">
+      <button type="button" class="fs-chip active" onclick="filterStatus('all', this)" aria-pressed="true">Todos</button>
+      <button type="button" class="fs-chip" onclick="filterStatus('vermelho', this)" aria-pressed="false">🔴 Vermelho</button>
+      <button type="button" class="fs-chip" onclick="filterStatus('laranja', this)" aria-pressed="false">🟠 Laranja</button>
+      <button type="button" class="fs-chip" onclick="filterStatus('amarelo', this)" aria-pressed="false">🟡 Amarelo</button>
+      <button type="button" class="fs-chip" onclick="filterStatus('azul', this)" aria-pressed="false">🔵 Azul</button>
+      <button type="button" class="fs-chip" onclick="filterStatus('indefinido', this)" aria-pressed="false">⚪ Indefinido</button>
+    </div>
+  </div>
 
-      {% assign raw_date = post.data_ocorrencia_inicial | default: post.date %}
-      
-      <a href="{{ post.url | relative_url }}" 
-         class="manifest-row" 
-         data-status="{{ status_filter }}" 
-         data-priority="{{ priority_weight }}"
-         data-timestamp="{{ raw_date | date: '%s' }}"
-         data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }}" 
-         aria-label="Ocorrência: {{ post.especie }} em {{ post.localidade | default: 'localização desconhecida' }}">
-        
-        <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="row-img" loading="lazy">
-        
-        <div class="row-badge {{ badge_class }}">
-          {{ post.triagem | default: "Indefinido" }}
-        </div>
-        
-        <div class="row-details">
-          <div class="row-title">
-            {{ post.especie | default: "Animal" }} — {{ post.triagem | default: "Indefinido" }}
-          </div>
-          <div class="row-subtitle">
-            📅 {{ raw_date | date: "%d/%m/%Y" }}{% if post.situacao %} • Situação: <strong>{{ post.situacao }}</strong>{% endif %}{% if post.sexo %} • Sexo: {{ post.sexo }}{% endif %}
-          </div>
-        </div>
-        
-        <div class="row-location">
-          <span>📍</span> {{ post.localidade | default: "Local não indicado" }}
-        </div>
-        
-      </a>
-    {% endfor %}
+  <div class="fs-table-wrapper">
+    <table class="fs-table">
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>Triagem</th>
+          <th>Espécie / Detalhes</th>
+          <th>Data</th>
+          <th>Localidade</th>
+        </tr>
+      </thead>
+      <tbody id="manifestList" aria-live="polite">
+        {% for post in site.ocorrencias %}
+          {% assign triagem_val = post.triagem | strip | capitalize %}
+          
+          {% assign badge_class = "badge-indefinido" %}
+          {% assign status_filter = "indefinido" %}
+          {% assign priority_weight = 5 %}
+          
+          {% if triagem_val == 'Vermelho' %}
+            {% assign badge_class = "badge-vermelho" %}
+            {% assign status_filter = "vermelho" %}
+            {% assign priority_weight = 1 %}
+          {% elsif triagem_val == 'Laranja' %}
+            {% assign badge_class = "badge-laranja" %}
+            {% assign status_filter = "laranja" %}
+            {% assign priority_weight = 2 %}
+          {% elsif triagem_val == 'Amarelo' %}
+            {% assign badge_class = "badge-amarelo" %}
+            {% assign status_filter = "amarelo" %}
+            {% assign priority_weight = 3 %}
+          {% elsif triagem_val == 'Azul' %}
+            {% assign badge_class = "badge-azul" %}
+            {% assign status_filter = "azul" %}
+            {% assign priority_weight = 4 %}
+          {% endif %}
+
+          {% assign raw_date = post.data_ocorrencia_inicial | default: post.date %}
+          
+          <tr class="fs-row" 
+              onclick="window.location='{{ post.url | relative_url }}'"
+              data-status="{{ status_filter }}" 
+              data-priority="{{ priority_weight }}"
+              data-timestamp="{{ raw_date | date: '%s' }}"
+              data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }}">
+            
+            <td>
+              <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="fs-img" loading="lazy">
+            </td>
+            <td>
+              <span class="fs-badge {{ badge_class }}">{{ post.triagem | default: "Indefinido" }}</span>
+            </td>
+            <td>
+              <strong>{{ post.especie | default: "Animal" }}</strong>{% if post.situacao %} — Situação: {{ post.situacao }}{% endif %}
+            </td>
+            <td>{{ raw_date | date: "%d/%m/%Y" }}</td>
+            <td>📍 {{ post.localidade | default: "Local não indicado" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
 
 <script>
-  let currentSortMode = 'priority'; // Predefinido por nível de alerta
+  let currentSortMode = 'priority';
   let sortDateDescending = true;
 
-  // Ordenação inicial automática ao carregar a página (por nível de alerta: Vermelho primeiro)
   document.addEventListener("DOMContentLoaded", () => {
     sortManifestRows();
   });
@@ -387,8 +338,8 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
 
   function filterManifest() {
     let query = normalizeText(document.getElementById('searchBox').value);
-    let rows = document.querySelectorAll('.manifest-row');
-    let activeChip = document.querySelector('.filter-chip.active');
+    let rows = document.querySelectorAll('.fs-row');
+    let activeChip = document.querySelector('.fs-chip.active');
     let activeStatus = activeChip ? activeChip.getAttribute('onclick').match(/'([^']+)'/)[1] : 'all';
     
     rows.forEach(row => {
@@ -397,12 +348,12 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       let rowStatus = row.getAttribute('data-status');
       let matchesStatus = (activeStatus === 'all' || rowStatus === activeStatus);
 
-      row.style.display = (matchesQuery && matchesStatus) ? "grid" : "none";
+      row.style.display = (matchesQuery && matchesStatus) ? "" : "none";
     });
   }
 
   function filterStatus(statusType, btn) {
-    document.querySelectorAll('.filter-chip').forEach(c => {
+    document.querySelectorAll('.fs-chip').forEach(c => {
       c.classList.remove('active');
       c.setAttribute('aria-pressed', 'false');
     });
@@ -437,16 +388,15 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
 
   function sortManifestRows() {
     let listContainer = document.getElementById('manifestList');
-    let rows = Array.from(listContainer.querySelectorAll('.manifest-row'));
+    let rows = Array.from(listContainer.querySelectorAll('.fs-row'));
 
     rows.sort((a, b) => {
       if (currentSortMode === 'priority') {
         let pA = parseInt(a.getAttribute('data-priority') || '5', 10);
         let pB = parseInt(b.getAttribute('data-priority') || '5', 10);
         if (pA !== pB) {
-          return pA - pB; // Menor peso = maior prioridade (Vermelho primeiro)
+          return pA - pB;
         }
-        // Critério de desempate por data (mais recente primeiro)
         let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
         let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
         return timeB - timeA;

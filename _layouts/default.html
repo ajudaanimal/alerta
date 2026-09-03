@@ -32,6 +32,10 @@
             --text-main: #0f172a;
             --card-bg: #ffffff;
             --border-color: #cbd5e1;
+            --accent-emergency: #ef4444;
+            --accent-report: #10b981;
+            --pill-bg: #f1f5f9;
+            --pill-text: #334155;
         }
 
         html.dark-mode {
@@ -39,6 +43,8 @@
             --text-main: #f1f5f9;
             --card-bg: #1e293b;
             --border-color: #334155;
+            --pill-bg: #334155;
+            --pill-text: #f1f5f9;
         }
 
         body {
@@ -50,7 +56,7 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Cabeçalho Global Fixo */
+        /* Cabeçalho Global Fixo / Integrado */
         .site-global-header {
             display: flex;
             justify-content: space-between;
@@ -58,6 +64,8 @@
             padding: 12px 20px;
             background: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .site-title {
@@ -65,6 +73,64 @@
             font-weight: 800;
             text-decoration: none;
             color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Navegação e Pílulas */
+        .fs-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .fs-nav-links span {
+            font-size: 13px;
+            color: var(--text-main);
+            opacity: 0.8;
+            margin-right: 4px;
+        }
+
+        .fs-pill {
+            background: var(--pill-bg);
+            color: var(--pill-text);
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            transition: opacity 0.2s;
+        }
+
+        .fs-pill:hover {
+            opacity: 0.85;
+        }
+
+        .btn-emergency {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-color: #fca5a5;
+        }
+
+        html.dark-mode .btn-emergency {
+            background-color: #450a0a;
+            color: #fca5a5;
+            border-color: #7f1d1d;
+        }
+
+        .btn-report {
+            background-color: #d1fae5;
+            color: #065f46;
+            border-color: #6ee7b7;
+        }
+
+        html.dark-mode .btn-report {
+            background-color: #022c22;
+            color: #6ee7b7;
+            border-color: #065f46;
         }
 
         .theme-toggle-btn {
@@ -79,14 +145,24 @@
 
         .site-main-content {
             padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
     </style>
 </head>
 <body>
 
-    <!-- Cabeçalho Global: Título à esquerda, Botão de Tema à direita -->
+    <!-- Cabeçalho Global com Título, Menu e Alternador de Tema -->
     <header class="site-global-header">
         <a href="{{ '/' | relative_url }}" class="site-title">🐾 Alerta Animal</a>
+        
+        <nav class="fs-nav-links" aria-label="Navegação Principal">
+            <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
+            <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill btn-emergency" aria-label="Contactos de Emergência">📞 Contactos</a>
+            <a href="{{ '/mapa.html' | relative_url }}" class="fs-pill" aria-label="Ver Mapa de Ocorrências">🗺️ Mapa</a>
+            <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report" aria-label="Reportar nova ocorrência">➕ Reportar</a>
+        </nav>
+
         <button type="button" class="theme-toggle-btn" onclick="toggleGlobalDarkMode()" title="Alternar Tema">🌓</button>
     </header>
 

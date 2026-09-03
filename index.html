@@ -317,6 +317,13 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     <nav class="fs-nav-links" aria-label="Navegação Principal">
       <button type="button" class="fs-pill" id="btnToggleMap" onclick="toggleMap()">🗺️ Mapa</button>
       <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
+        <div class="sort-group">
+          <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">Por Prioridade</button>
+          <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
+        </div>
+        <div class="fs-chips-group" role="group" aria-label="Filtrar casos urgentes">
+          <button type="button" class="fs-chip" id="btnUrgentes" onclick="toggleUrgentes(this)" aria-pressed="false">🚨 Urgentes</button>
+        </div>
     </nav>
   </header>
 
@@ -325,17 +332,8 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     <div class="fs-main-panel">
       <div class="fs-control-bar">
         <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
-        
-        <div class="sort-group">
-          <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">Por Prioridade</button>
-          <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
-        </div>
-
-        <div class="fs-chips-group" role="group" aria-label="Filtrar casos urgentes">
-          <button type="button" class="fs-chip" id="btnUrgentes" onclick="toggleUrgentes(this)" aria-pressed="false">🚨 Urgentes</button>
-        </div>
-      </div>
-
+      </div>   
+      
       <div class="fs-table-wrapper">
         <table class="fs-table">
           <thead>

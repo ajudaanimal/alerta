@@ -35,26 +35,38 @@ layout: default
         --box-bg: #1f2937;
     }
 
-    body {
-        background-color: var(--bg-color);
-        color: var(--text-main);
-        margin: 0;
-        padding: 12px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        transition: background 0.3s, color 0.3s;
-    }
+    /* 1. Garante que o body ocupa toda a largura sem margens */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: background 0.3s, color 0.3s;
+}
 
-    .page-wrapper {
-        max-width: 720px;
-        margin: 0 auto;
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-        font-size: 11.5px;
-        overflow: hidden;
-        transition: background 0.3s, border-color 0.3s;
-    }
+/* 2. Força o cabeçalho global a expandir de ponta a ponta */
+header, .fs-header, .navbar {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 16px 0;
+    border-radius: 0; /* Remove cantos arredondados se a barra for colada ao topo */
+}
+
+/* 3. Mantém a ficha de ocorrência isolada e centrada */
+.page-wrapper {
+    max-width: 720px;
+    margin: 16px auto;
+    padding: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    font-size: 11.5px;
+    overflow: hidden;
+    transition: background 0.3s, border-color 0.3s;
+}
 
     .report-header {
         color: #0f172a; /* Letras normalizadas a preto para legibilidade perfeita sobre a cor do banner */

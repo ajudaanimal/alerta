@@ -56,7 +56,7 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Cabeçalho Global Fixo / Integrado */
+        /* Cabeçalho Global: Título à esquerda, Menu e Ferramentas à direita */
         .site-global-header {
             display: flex;
             justify-content: space-between;
@@ -76,6 +76,15 @@
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        /* Contentor do lado direito (Menu + Alternador de Tema) */
+        .header-right-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-left: auto;
         }
 
         /* Navegação e Pílulas */
@@ -107,6 +116,18 @@
 
         .fs-pill:hover {
             opacity: 0.85;
+        }
+
+        .btn-home {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border-color: #bae6fd;
+        }
+
+        html.dark-mode .btn-home {
+            background-color: #082f49;
+            color: #bae6fd;
+            border-color: #0369a1;
         }
 
         .btn-emergency {
@@ -143,29 +164,37 @@
             font-size: 14px;
         }
 
+        /* Conteúdo a ocupar 100% da largura do ecrã */
         .site-main-content {
             padding: 20px;
-            max-width: 100%;
-            box-sizing: border-box;        }
+            width: 100%;
+            max-width: none !important;
+            margin: 0;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Cabeçalho Global com Título, Menu e Alternador de Tema -->
+    <!-- Cabeçalho Global -->
     <header class="site-global-header">
         <a href="{{ '/' | relative_url }}" class="site-title">🐾 Alerta Animal</a>
         
-        <nav class="fs-nav-links" aria-label="Navegação Principal">
-            <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
-            <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill btn-emergency" aria-label="Contactos de Emergência">📞 Contactos</a>
-            <a href="{{ '/mapa.html' | relative_url }}" class="fs-pill" aria-label="Ver Mapa de Ocorrências">🗺️ Mapa</a>
-            <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report" aria-label="Reportar nova ocorrência">➕ Reportar</a>
-        </nav>
+        <!-- Grupo alinhado à direita: Menu e Modo Escuro -->
+        <div class="header-right-group">
+            <nav class="fs-nav-links" aria-label="Navegação Principal">
+                <a href="{{ '/' | relative_url }}" class="fs-pill btn-home" aria-label="Página Principal">🏠 Início</a>
+                <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
+                <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill btn-emergency" aria-label="Contactos de Emergência">📞 Contactos</a>
+                <a href="{{ '/mapa.html' | relative_url }}" class="fs-pill" aria-label="Ver Mapa de Ocorrências">🗺️ Mapa</a>
+                <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report" aria-label="Reportar nova ocorrência">➕ Reportar</a>
+            </nav>
 
-        <button type="button" class="theme-toggle-btn" onclick="toggleGlobalDarkMode()" title="Alternar Tema">🌓</button>
+            <button type="button" class="theme-toggle-btn" onclick="toggleGlobalDarkMode()" title="Alternar Tema">🌓</button>
+        </div>
     </header>
 
-    <!-- O conteúdo de cada página específica entra aqui -->
+    <!-- O conteúdo de cada página estica agora a 100% do ecrã -->
     <main class="site-main-content">
         {{ content }}
     </main>

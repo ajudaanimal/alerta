@@ -1,9 +1,12 @@
 ---
 layout: default
 title: "Sistema de Alerta Animal"
-description: "Plataforma de monitorização e alerta de ocorrências de animais. Consulte o estado dos registos em tempo real."
+description: "Plataforma de monitorização e alerta de ocorrências de animais em formato de tabela de ecrã completo."
 image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg"
 ---
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <style>
   :root {
     --bg-main: #f8fafc;
@@ -12,7 +15,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     --text-muted: #64748b;
     --border-color: #e2e8f0;
     --header-bg: #f1f5f9;
-    --header-color: #0284c7;
     --primary-color: #0284c7;
     --focus-ring: rgba(2, 132, 199, 0.4);
   }
@@ -24,56 +26,62 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     --text-muted: #94a3b8;
     --border-color: #1f2937;
     --header-bg: #1f2937;
-    --header-color: #38bdf8;
     --primary-color: #38bdf8;
     --focus-ring: rgba(56, 189, 248, 0.4);
   }
 
-  .homebase-container {
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 16px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    color: var(--text-main);
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-main);
+  }
+
+  /* Fullscreen layout wrapper */
+  .fs-container {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100%;
+    margin: 0;
+    padding: 12px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-main);
+    overflow: hidden;
   }
   
-  .HB-header {
+  .fs-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    padding: 16px 20px;
-    border-radius: 12px;
-    margin-bottom: 16px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
     gap: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    flex-shrink: 0;
   }
   
-  .HB-header h1 {
-    font-size: 1.15rem;
+  .fs-header h1 {
+    font-size: 1.1rem;
     font-weight: 700;
     margin: 0;
-    color: var(--text-main);
     display: flex;
     align-items: center;
     gap: 8px;
-    letter-spacing: -0.01em;
   }
 
-  .HB-nav-links {
+  .fs-nav-links {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 0.85rem;
     font-weight: 500;
-    flex-wrap: wrap;
-    justify-content: flex-end;
   }
 
-  .HB-nav-pill {
+  .fs-pill {
     padding: 6px 12px;
     border-radius: 6px;
     text-decoration: none;
@@ -81,432 +89,206 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: all 0.2s ease;
     border: 1px solid var(--border-color);
     background: var(--bg-main);
     color: var(--text-main);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .fs-pill:hover { border-color: var(--text-muted); }
+  .fs-pill.btn-emergency { background: #ef4444; color: #fff; border-color: #dc2626; }
+  .fs-pill.btn-report { background: #10b981; color: #fff; border-color: #059669; }
+
+  /* Split View Workspace */
+  .fs-workspace {
+    display: flex;
+    flex: 1;
+    gap: 12px;
+    min-height: 0;
+    position: relative;
+    transition: all 0.3s ease;
   }
 
-  .HB-nav-pill:hover {
-    border-color: var(--text-muted);
-  }
-
-  .HB-nav-pill.btn-emergency {
-    background: #ef4444;
-    color: #ffffff;
-    border-color: #dc2626;
-  }
-  .HB-nav-pill.btn-emergency:hover { background: #dc2626; }
-
-  .HB-nav-pill.btn-report {
-    background: #10b981;
-    color: #ffffff;
-    border-color: #059669;
-  }
-  .HB-nav-pill.btn-report:hover { background: #059669; }
-
-  .counter-badge {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    padding: 0 4px;
-  }
-
-  .control-panel {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
+  .fs-table-pane {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    min-width: 0;
   }
 
-  .control-panel-row {
+  .fs-map-pane {
+    width: 0%;
+    opacity: 0;
+    visibility: hidden;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fs-workspace.split-active .fs-map-pane {
+    width: 50%;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Control bar inside table pane */
+  .fs-control-bar {
+    padding: 12px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     gap: 8px;
     align-items: center;
     flex-wrap: wrap;
-    justify-content: space-between;
   }
 
   #searchBox {
     flex: 1;
-    min-width: 220px;
-    padding: 12px 14px;
-    background: var(--bg-main);
+    min-width: 200px;
+    padding: 8px 12px;
+    background: var(--card-bg);
     color: var(--text-main);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 0.95rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
     outline: none;
-    box-sizing: border-box;
-    transition: border-color 0.2s, box-shadow 0.2s;
   }
+  #searchBox:focus { border-color: var(--primary-color); }
 
-  #searchBox:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px var(--focus-ring);
-  }
-
-  .sort-group {
+  .fs-chips-group {
     display: flex;
-    gap: 8px;
+    gap: 4px;
+    overflow-x: auto;
   }
 
-  .btn-sort {
-    background: var(--bg-main);
-    color: var(--text-main);
+  .fs-chip {
+    background: var(--card-bg);
+    color: var(--text-muted);
     border: 1px solid var(--border-color);
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    text-transform: uppercase;
     white-space: nowrap;
-    transition: all 0.2s ease;
+  }
+  .fs-chip:hover { color: var(--text-main); }
+  .fs-chip.active { background: var(--text-main); color: var(--card-bg); border-color: var(--text-main); }
+
+  /* Full Screen Table layout */
+  .fs-table-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
   }
 
-  .btn-sort:hover, .btn-sort.active {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
+  .fs-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.85rem;
+  }
+
+  .fs-table th {
+    background: var(--header-bg);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 10px 12px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .fs-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .fs-row {
+    cursor: pointer;
+    transition: background 0.1s;
+    text-decoration: none;
+    color: var(--text-main);
+  }
+  .fs-row:hover {
     background: var(--header-bg);
   }
 
-  .filter-group {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    width: 100%;
-    scrollbar-width: thin;
-  }
-
-  .filter-chip {
-    background: var(--bg-main);
-    color: var(--text-muted);
-    border: 1px solid var(--border-color);
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-transform: uppercase;
-    white-space: nowrap;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-  }
-
-  .filter-chip:hover {
-    color: var(--text-main);
-    border-color: var(--text-muted);
-  }
-
-  .filter-chip.active {
-    background: var(--text-main);
-    color: var(--card-bg);
-    border-color: var(--text-main);
-  }
-
-  .manifest-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .manifest-row {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px 16px;
-    display: grid;
-    grid-template-columns: 60px 160px 1fr 180px;
-    align-items: center;
-    gap: 16px;
-    text-decoration: none;
-    color: var(--text-main);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.01);
-    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .manifest-row:hover {
-    border-color: var(--primary-color);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  }
-
-  .row-img {
-    width: 60px;
-    height: 60px;
+  .fs-img {
+    width: 36px;
+    height: 36px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 4px;
     border: 1px solid var(--border-color);
-    background: var(--bg-main);
+    display: block;
   }
 
-  .row-badge {
-    font-size: 0.75rem;
+  .fs-badge {
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 6px 10px;
-    text-align: center;
-    border-radius: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
     border: 1px solid transparent;
-    width: fit-content;
-    white-space: nowrap;
-    letter-spacing: 0.03em;
   }
 
-  .row-details {
+  .badge-emergencia { background: rgba(239, 68, 68, 0.15); color: #dc2626; border-color: rgba(239, 68, 68, 0.3); }
+  .badge-urgente    { background: rgba(249, 115, 22, 0.15); color: #ea580c; border-color: rgba(249, 115, 22, 0.3); }
+  .badge-risco      { background: rgba(234, 179, 8, 0.15); color: #ca8a04; border-color: rgba(234, 179, 8, 0.3); }
+  .badge-monitorizacao { background: rgba(59, 130, 246, 0.15); color: #2563eb; border-color: rgba(59, 130, 246, 0.3); }
+  .badge-busca      { background: rgba(100, 116, 139, 0.15); color: #64748b; border-color: rgba(100, 116, 139, 0.3); }
+
+  #mapContainer {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+  }
+
+  .map-header-bar {
+    padding: 10px 12px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-  }
-
-  .row-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .row-subtitle {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .row-location {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-main);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 4px;
-    justify-content: flex-end;
+    font-weight: 700;
+    font-size: 0.9rem;
   }
 
-  @media(max-width: 768px) {
-    .homebase-container { padding: 10px; }
-    .HB-header { flex-direction: column; align-items: stretch; padding: 12px; gap: 10px; }
-    .HB-header h1 { justify-content: center; font-size: 1.1rem; }
-    .HB-nav-links { justify-content: center; width: 100%; gap: 6px; }
-    .HB-nav-pill { flex: 1; justify-content: center; padding: 8px 10px; font-size: 0.8rem; }
-    .counter-badge { display: none; }
-    .control-panel-row { flex-direction: column; align-items: stretch; }
-    #searchBox { width: 100%; }
-    .sort-group { width: 100%; }
-    .btn-sort { flex: 1; justify-content: center; }
-    .manifest-row {
-      grid-template-columns: 56px 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 10px;
-      padding: 12px;
-    }
-    .row-img { grid-row: 1 / 2; }
-    .row-badge { grid-column: 2 / 3; grid-row: 1 / 2; align-self: start; justify-self: start; padding: 4px 8px; }
-    .row-details { grid-column: 1 / 3; grid-row: 2 / 3; }
-    .row-location {
-      grid-column: 1 / 3;
-      grid-row: 3 / 4;
-      justify-content: flex-start;
-      border-top: 1px solid var(--border-color);
-      padding-top: 8px;
-      margin-top: 2px;
-    }
-    .row-title, .row-subtitle, .row-location { white-space: normal; }
+  @media(max-width: 900px) {
+    .fs-workspace.split-active { flex-direction: column; }
+    .fs-workspace.split-active .fs-map-pane { width: 100%; height: 50%; }
+    .fs-workspace.split-active .fs-table-pane { height: 50%; }
   }
 </style>
 
-<div class="homebase-container" role="main">
+<div class="fs-container">
   
-  <header class="HB-header">
-    <h1>🐾 Sistema de Alerta Animal</h1>
-    <nav class="HB-nav-links" aria-label="Navegação Principal">
-      <span class="counter-badge" aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
-      <a href="{{ '/contactos-emergencia.html' | relative_url }}" class="HB-nav-pill btn-emergency" aria-label="Contactos de Emergência">📞 Emergência</a>
-      <a href="{{ '/mapa.html' | relative_url }}" class="HB-nav-pill" aria-label="Ver Mapa de Ocorrências">🗺️ Mapa</a>
-      <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="HB-nav-pill btn-report" aria-label="Reportar nova ocorrência">➕ Reportar</a>
+  <header class="fs-header">
+    <h1>🐾 Sistema de Alerta Animal — Ecrã Completo</h1>
+    <nav class="fs-nav-links">
+      <button type="button" class="fs-pill" id="mapToggleBtn" onclick="toggleSplitMap()">🗺️ Abrir no Mapa</button>
+      <a href="{{ '/contactos-emergencia.html' | relative_url }}" class="fs-pill btn-emergency">📞 Emergência</a>
+      <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report">➕ Reportar</a>
     </nav>
   </header>
 
-  <section class="control-panel" aria-label="Filtros de Pesquisa e Ordenação">
-    <div class="control-panel-row">
-      <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
-      
-      <div class="sort-group">
-        <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">
-          ⚡ Por Nível de Alerta
-        </button>
-        <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">
-          📅 Por Data
-        </button>
-      </div>
-    </div>
+  <div class="fs-workspace" id="workspace">
     
-    <div class="filter-group" role="group" aria-label="Filtrar por nível de triagem clínica">
-      <button type="button" class="filter-chip active" onclick="filterStatus('all', this)" aria-pressed="true">Todos</button>
-      <button type="button" class="filter-chip" onclick="filterStatus('vermelho', this)" aria-pressed="false">Vermelho</button>
-    </div>
-  </section>
-
-  <div class="manifest-list" id="manifestList" aria-live="polite">
-    {% for post in site.ocorrencias %}
-      {% assign triagem_val = post.triagem | strip | capitalize %}
-      
-      {% assign badge_class = "badge-indefinido" %}
-      {% assign status_filter = "indefinido" %}
-      {% assign priority_weight = 5 %}
-      
-      {% if triagem_val == 'Vermelho' %}
-        {% assign badge_class = "badge-vermelho" %}
-        {% assign status_filter = "vermelho" %}
-        {% assign priority_weight = 1 %}
-      {% elsif triagem_val == 'Laranja' %}
-        {% assign badge_class = "badge-laranja" %}
-        {% assign status_filter = "laranja" %}
-        {% assign priority_weight = 2 %}
-      {% elsif triagem_val == 'Amarelo' %}
-        {% assign badge_class = "badge-amarelo" %}
-        {% assign status_filter = "amarelo" %}
-        {% assign priority_weight = 3 %}
-      {% elsif triagem_val == 'Azul' %}
-        {% assign badge_class = "badge-azul" %}
-        {% assign status_filter = "azul" %}
-        {% assign priority_weight = 4 %}
-      {% endif %}
-
-      {% assign raw_date = post.data_ocorrencia_inicial | default: post.date %}
-      
-      <a href="{{ post.url | relative_url }}" 
-         class="manifest-row" 
-         data-status="{{ status_filter }}" 
-         data-priority="{{ priority_weight }}"
-         data-timestamp="{{ raw_date | date: '%s' }}"
-         data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }} {{ post.nome }} {{ post.esterilizado }} {{ post.identificacao }} {{ post.caracteristicas }}" 
-         aria-label="Ocorrência: {{ post.especie }} em {{ post.localidade | default: 'localização desconhecida' }}">
-        
-        <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="row-img" loading="lazy">
-        
-        <div class="row-badge {{ badge_class }}">
-          {{ post.triagem | default: "Indefinido" }}
-        </div>
-        
-        <div class="row-details">
-          <div class="row-title">
-            {{ post.especie | default: "Animal" }} — {{ post.estado_fisico | default: "" }}
-          </div>
-          <div class="row-subtitle">
-            <strong>{{ post.situacao }}</strong>{% endif %}{% endif %}
-            <span>📍</span> {{ post.distrito | default: "Local não indicado" }
-          </div>
-        </div>
-        
-        <div class="row-date">
-         📅 {{ raw_date | date: "%d/%m/%Y" }}{% if post.situacao %}
-        </div>
-        
-      </a>
-    {% endfor %}
-  </div>
-</div>
-
-<script>
-  let currentSortMode = 'priority'; // Predefinido por nível de alerta
-  let sortDateDescending = true;
-
-  // Ordenação inicial automática ao carregar a página (por nível de alerta: Vermelho primeiro)
-  document.addEventListener("DOMContentLoaded", () => {
-    sortManifestRows();
-  });
-
-  function normalizeText(text) {
-    return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
-  }
-
-  function filterManifest() {
-    let query = normalizeText(document.getElementById('searchBox').value);
-    let rows = document.querySelectorAll('.manifest-row');
-    let activeChip = document.querySelector('.filter-chip.active');
-    let activeStatus = activeChip ? activeChip.getAttribute('onclick').match(/'([^']+)'/)[1] : 'all';
-    
-    rows.forEach(row => {
-      let tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
-      let matchesQuery = tags.includes(query);
-      let rowStatus = row.getAttribute('data-status');
-      let matchesStatus = (activeStatus === 'all' || rowStatus === activeStatus);
-
-      row.style.display = (matchesQuery && matchesStatus) ? "grid" : "none";
-    });
-  }
-
-  function filterStatus(statusType, btn) {
-    document.querySelectorAll('.filter-chip').forEach(c => {
-      c.classList.remove('active');
-      c.setAttribute('aria-pressed', 'false');
-    });
-    btn.classList.add('active');
-    btn.setAttribute('aria-pressed', 'true');
-    filterManifest();
-  }
-
-  function setSortMode(mode) {
-    let priorityBtn = document.getElementById('sortPriorityBtn');
-    let dateBtn = document.getElementById('sortDateBtn');
-
-    if (currentSortMode === mode && mode === 'date') {
-      sortDateDescending = !sortDateDescending;
-    } else {
-      currentSortMode = mode;
-      if (mode === 'date') sortDateDescending = true;
-    }
-
-    if (currentSortMode === 'priority') {
-      priorityBtn.classList.add('active');
-      dateBtn.classList.remove('active');
-      dateBtn.innerHTML = "📅 Por Data";
-    } else {
-      dateBtn.classList.add('active');
-      priorityBtn.classList.remove('active');
-      dateBtn.innerHTML = sortDateDescending ? "📅 Por Data (Mais Recente)" : "📅 Por Data (Mais Antiga)";
-    }
-
-    sortManifestRows();
-  }
-
-  function sortManifestRows() {
-    let listContainer = document.getElementById('manifestList');
-    let rows = Array.from(listContainer.querySelectorAll('.manifest-row'));
-
-    rows.sort((a, b) => {
-      if (currentSortMode === 'priority') {
-        let pA = parseInt(a.getAttribute('data-priority') || '5', 10);
-        let pB = parseInt(b.getAttribute('data-priority') || '5', 10);
-        if (pA !== pB) {
-          return pA - pB; // Menor peso = maior prioridade (Vermelho primeiro)
-        }
-        // Critério de desempate por data (mais recente primeiro)
-        let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
-        let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
-        return timeB - timeA;
-      } else {
-        let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
-        let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
-        return sortDateDescending ? (timeB - timeA) : (timeA - timeB);
-      }
-    });
-
-    rows.forEach(row => listContainer.appendChild(row));
-  }
-</script>
+    <div class="fs-table-pane">
+      <div class="fs-control-bar">
+        <input type="text" id="searchBox" placeholder="🔍 Filtrar por espécie, localidade, situação..." onkeyup="filterTable

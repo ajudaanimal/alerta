@@ -11,24 +11,30 @@ layout: null
   <title type="html">{{ site.title | xml_escape }}</title>
   <subtitle>{{ site.description | xml_escape }}</subtitle>
 
-  {% for post in site.ocorrencias reversed limit:20 %}
+  {% for post in site.ocorrencias reversed limit:1 %}
   <entry>
-    <title>[{{ post.id }}] {{ post.especie }} - {{ post.localizacao }}</title>
+    <title>{{ post.especie | default: "Animal" }} - {% if post.localidade %}{{ post.localidade }}{% elsif post.concelho %}{{ post.concelho }}{% elsif post.distrito %}{{ post.distrito }}{% else %}{{ post.localizacao }}{% endif %}</title>
     <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}" rel="alternate" type="text/html"/>
-    <published>{{ post.date | date_to_xmlschema }}</published>
+    <published>{% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}{{ post.data_ocorrencia_inicial }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</published>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
     <id>{{ site.url }}{{ site.baseurl }}{{ post.url }}</id>
+    <summary type="html"><![CDATA[Alerta Animal - {% if post.distrito %}{{ post.distrito }}{% elsif post.concelho %}{{ post.concelho }}{% else %}{{ post.localizacao }}{% endif %} | Nível de Alerta: {{ post.nivel_alerta | default: "Desconhecido" }} | {{ post.especie }} - {{ post.situacao }} - {{ post.estado_fisico }} | Detalhes: {{ post.observacoes | strip_html | truncate: 120 }}]]></summary>
     <content type="html"><![CDATA[
-      <p><strong>ID:</strong> {{ post.id }}</p>
-      <p><strong>Espécie:</strong> {{ post.especie }}</p>
-      <p><strong>Estado Físico:</strong> {{ post.estado_fisico }}</p>
-      <p><strong>Situação:</strong> {{ post.situacao }}</p>
-      <p><strong>Localização:</strong> {{ post.localizacao }}</p>
-      {% if post.imagem != "" %}
-        <p><img src="{{ post.imagem }}" alt="Imagem" /></p>
+      <p><strong>Alerta Animal - {% if post.distrito %}{{ post.distrito }}{% elsif post.concelho %}{{ post.concelho }}{% else %}{{ post.localizacao }}{% endif %}</strong><br />
+      <strong>Nível de Alerta:</strong> {{ post.nivel_alerta | default: "Desconhecido" }}<br />
+      <strong>Espécie:</strong> {{ post.especie }} — <strong>Situação:</strong> {{ post.situacao }} — <strong>Estado Físico:</strong> {{ post.estado_fisico }}</p>
+      
+      {% if post.observacoes != "" and post.observacoes != nil %}
+      <p><strong>Detalhes:</strong><br />
+      {{ post.observacoes }}</p>
       {% endif %}
-      <p><strong>Observações:</strong> {{ post.observacoes }}</p>
-      <p><a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">Ver ocorrência completa no site</a></p>
+
+      {% if post.imagem != "" and post.imagem != nil %}
+      <p><img src="{{ post.imagem }}" alt="Imagem da Ocorrência" /></p>
+      {% endif %}
+
+      <p><a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">Ver ocorrência completa no site</a><br />
+      <em>Publicado a {{ post.date | date: "%d/%m/%Y" }}</em></p>
     ]]></content>
   </entry>
   {% endfor %}

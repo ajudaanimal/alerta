@@ -20,7 +20,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --primary-color: #0284c7;
   }
 
-  /* Correção robusta para o Dark Mode (assegura compatibilidade com classes do site) */
   html.dark-mode, body.dark-mode, [data-theme="dark"] {
     --bg-main: #090d16;
     --card-bg: #111827;
@@ -29,6 +28,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --border-color: #1f2937;
     --header-bg: #1f2937;
     --primary-color: #38bdf8;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
   .map-page-wrapper {
@@ -84,7 +92,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     background: var(--header-bg);
   }
 
-  /* Layout principal: Mapa à esquerda (fixo/compatível mobile em cima), Tabela à direita */
+  /* Layout principal: Mapa à esquerda, Tabela à direita */
   .map-content-layout {
     display: grid;
     grid-template-columns: 360px 1fr;
@@ -102,6 +110,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   .map-display-panel {
+    position: relative;
     display: flex;
     flex-direction: column;
     background: var(--card-bg);
@@ -111,30 +120,37 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     min-height: 350px;
   }
 
-  .map-display-header {
+  /* Filtro flutuante "on top" do mapa para poupar espaço em mobile/desktop */
+  .map-floating-filter {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 6px 10px;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    padding: 8px 12px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    font-size: 11px;
-    font-weight: bold;
-    flex-shrink: 0;
-    gap: 6px;
-    color: var(--text-main);
+    gap: 4px;
+    backdrop-filter: blur(4px);
   }
 
-  .map-header-top {
+  .map-floating-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--text-main);
   }
 
   .map-filter-pills {
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
-    margin-top: 4px;
   }
 
   .filter-pill {
@@ -156,7 +172,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   #full-map {
     width: 100%;
     flex: 1;
-    min-height: 300px;
+    min-height: 350px;
   }
 
   .map-sidebar-panel {
@@ -249,7 +265,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  /* Ícones pequenos e elegantes por espécie */
+  /* Ícones limpos por espécie */
   .species-pin {
     width: 24px;
     height: 24px;
@@ -263,37 +279,39 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     font-size: 11px;
   }
 
-  /* Popups limpos e seguros */
+  /* Popups limpos sem duplicar textos e com cores adaptadas ao dark/light mode */
   .leaflet-popup-content-wrapper {
-    background: var(--card-bg);
-    color: var(--text-main);
+    background: var(--card-bg) !important;
+    color: var(--text-main) !important;
     border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 0;
   }
+  .leaflet-popup-tip {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color);
+  }
   .leaflet-popup-content {
     margin: 8px;
     line-height: 1.3;
+    color: var(--text-main) !important;
   }
-  .map-popup-card { display: flex; gap: 8px; width: 210px; align-items: center; }
-  .map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; background: var(--header-bg); flex-shrink: 0; border: 1px solid var(--border-color); }
+  .map-popup-card { display: flex; gap: 8px; width: 200px; align-items: center; }
+  .map-popup-img { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; background: var(--header-bg); flex-shrink: 0; border: 1px solid var(--border-color); }
   .map-popup-info { display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; font-size: 10px; width: 100%; }
-  .map-popup-title { font-weight: 800; font-size: 11px; }
+  .map-popup-title { font-weight: 800; font-size: 11px; color: var(--text-main); }
   .map-popup-desc { color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 2px 0; }
-  .map-popup-btn { display: inline-block; background: var(--primary-color); color: #ffffff; padding: 2px 6px; border-radius: 3px; font-weight: bold; text-decoration: none; margin-top: 3px; text-align: center; }
+  .map-popup-btn { display: inline-block; background: var(--primary-color); color: #ffffff !important; padding: 2px 6px; border-radius: 3px; font-weight: bold; text-decoration: none; margin-top: 3px; text-align: center; }
 
-  /* Mobile: Mapa em cima fixo à esquerda do layout, tabela em baixo */
+  /* Mobile: Layout vertical, mapa em cima com altura generosa */
   @media (max-width: 1023px) {
     .map-content-layout {
       grid-template-columns: 1fr !important;
-      grid-template-rows: 280px 1fr;
+      grid-template-rows: 350px 1fr;
     }
     .map-display-panel {
-      height: 280px;
-      min-height: 280px;
-    }
-    .map-content-layout.mobile-map-collapsed .map-display-panel {
-      display: none;
+      height: 350px;
+      min-height: 350px;
     }
   }
 </style>
@@ -307,12 +325,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   </div>
 
   <div class="map-content-layout" id="mapContentLayout">
-    <!-- Painel do Mapa (Fica sempre à esquerda no desktop / em cima no mobile) -->
+    <!-- Painel do Mapa com Filtro Flutuante "On Top" -->
     <div class="map-display-panel" id="mapDisplayPanel">
-      <div class="map-display-header">
-        <div class="map-header-top">
-          <span>Filtro Rápido por Triagem</span>
-          <button type="button" class="map-nav-link" style="padding: 2px 6px; font-size: 9px;" onclick="toggleMapDisplay()">Ocultar</button>
+      <div class="map-floating-filter">
+        <div class="map-floating-header">
+          <span>FILTRAR POR TRIAGEM</span>
+          <button type="button" class="map-nav-link" style="padding: 1px 4px; font-size: 8px;" onclick="toggleMapDisplay()">Ocultar</button>
         </div>
         <div class="map-filter-pills">
           <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
@@ -401,7 +419,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapInstance);
 
-    // Usamos um LayerGroup normal em vez de Cluster para evitar comportamento agressivo ou ocultação de pontos
     allMarkersLayerGroup = L.layerGroup().addTo(mapInstance);
 
     var ocorrencias = [
@@ -427,22 +444,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% assign color_key = "amarelo" %}
         {% endif %}
 
-        {% comment %} Escolha de ícone baseado na espécie {% endcomment %}
+        {% comment %} Ícones específicos por espécie solicitados {% endcomment %}
         {% assign icon_symbol = "🐾" %}
         {% if esp contains 'gato' or esp contains 'felino' %}
           {% assign icon_symbol = "🐱" %}
-        {% elsif esp contains 'cão' or esp contains 'cao' or esp contains 'cão' or esp contains 'canídeo' %}
+        {% elsif esp contains 'cão' or esp contains 'cao' or esp contains 'canídeo' %}
           {% assign icon_symbol = "🐶" %}
-        {% elsif esp contains 'ave' or esp contains 'pássaro' or esp contains 'gaivota' or esp contains 'pombo' %}
+        {% elsif esp contains 'ave' or esp contains 'pássaro' or esp contains 'passaro' or esp contains 'gaivota' or esp contains 'pombo' %}
           {% assign icon_symbol = "🐦" %}
         {% endif %}
 
-        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 60 | escape %}
+        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 50 | escape %}
 
         {
           index: {{ forloop.index0 }},
           especie: {{ post.especie | default: "Animal" | jsonify }},
-          estado: {{ post.estado_fisico | default: 'N/D' | jsonify }},
           local: {{ post.localidade | default: post.concelho | default: post.distrito | default: '' | jsonify }},
           url: {{ post.url | relative_url | jsonify }},
           color: {{ theme_color | jsonify }},
@@ -469,21 +485,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       marker.options.colorKey = item.colorKey;
       marker.options.itemIndex = item.index;
 
-      marker.bindTooltip("<strong>" + item.especie + "</strong> (" + item.local + ")", {
+      marker.bindTooltip("<strong>" + item.especie + "</strong>", {
         direction: 'top',
         offset: [0, -8]
       });
 
       var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:8px; color:#94a3b8;">Sem Foto</div>';
       
+      // Popup simplificado e limpo (sem duplicar título/detalhes)
       marker.bindPopup(
         '<div class="map-popup-card">' +
           imgHtml +
           '<div class="map-popup-info">' +
             '<div>' +
               '<div class="map-popup-title" style="color: ' + item.color + ';">' + item.especie + '</div>' +
-              '<div style="font-size: 9px; font-weight:600;">' + item.estado + '</div>' +
-              '<div class="map-popup-desc">' + item.descricao + '</div>' +
+              '<div class="map-popup-desc">📍 ' + item.local + '</div>' +
             '</div>' +
             '<a href="' + item.url + '" class="map-popup-btn">Ver Detalhes</a>' +
           '</div>' +
@@ -556,6 +572,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     allMarkersData.forEach(function(marker) {
       if (colorKey === 'all' || marker.options.colorKey === colorKey) {
+        allMarkersLayerGroup.addLayer(mapInstance.hasLayer(allMarkersLayerGroup) ? marker : marker);
         allMarkersLayerGroup.addLayer(marker);
       }
     });

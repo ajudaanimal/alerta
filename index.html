@@ -55,8 +55,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     grid-template-columns: 420px 1fr;
     gap: 12px;
     flex: 1;
-    min-height: 600px;
+    min-height: 500px;
     width: 100%;
+    align-items: stretch;
   }
 
   /* Botão de Expansão do Mapa para Mobile / Acessibilidade */
@@ -123,6 +124,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     flex-direction: column;
     gap: 8px;
     flex: 1;
+    min-height: 500px;
   }
 
   .map-display-panel {
@@ -133,7 +135,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    height: 350px;
+    height: 100%;
+    min-height: 500px;
+    flex: 1;
   }
   
   .map-display-panel.expanded {
@@ -154,6 +158,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-radius: 8px;
     overflow: hidden;
     min-height: 500px;
+    height: 100%;
   }
 
   .map-search-bar {

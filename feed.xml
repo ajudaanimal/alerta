@@ -12,31 +12,32 @@ layout: null
   <subtitle>{{ site.description | xml_escape }}</subtitle>
 
   {% assign ocorrencias_ordenadas = site.ocorrencias | sort: "date" | reverse %}
-  {% for post in ocorrencias_ordenadas limit:1 %}
+  {% assign ultimo_post = ocorrencias_ordenadas | first %}
+  {% if ultimo_post %}
   <entry>
-    <title>{{ post.especie | default: "Animal" }} - {% if post.localidade %}{{ post.localidade }}{% elsif post.concelho %}{{ post.concelho }}{% elsif post.distrito %}{{ post.distrito }}{% else %}{{ post.localizacao }}{% endif %}</title>
-    <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}" rel="alternate" type="text/html"/>
-    <published>{% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}{{ post.data_ocorrencia_inicial | date: "%Y-%m-%d" }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</published>
-    <updated>{{ post.date | date_to_xmlschema }}</updated>
-    <id>{{ site.url }}{{ site.baseurl }}{{ post.url }}</id>
-    <summary type="html"><![CDATA[Alerta Animal - {% if post.distrito %}{{ post.distrito }}{% elsif post.concelho %}{{ post.concelho }}{% else %}{{ post.localizacao }}{% endif %} | Nível de Alerta: {{ post.nivel_alerta | default: "Desconhecido" }} | {{ post.especie }} - {{ post.situacao }} - {{ post.estado_fisico }} | Detalhes: {{ post.observacoes | strip_html | truncate: 120 }}]]></summary>
+    <title>{{ ultimo_post.especie | default: "Animal" }} - {% if ultimo_post.localidade %}{{ ultimo_post.localidade }}{% elsif ultimo_post.concelho %}{{ ultimo_post.concelho }}{% elsif ultimo_post.distrito %}{{ ultimo_post.distrito }}{% else %}{{ ultimo_post.localizacao }}{% endif %}</title>
+    <link href="{{ site.url }}{{ site.baseurl }}{{ ultimo_post.url }}" rel="alternate" type="text/html"/>
+    <published>{% if ultimo_post.data_ocorrencia_inicial != "" and ultimo_post.data_ocorrencia_inicial != nil %}{{ ultimo_post.data_ocorrencia_inicial | date: "%Y-%m-%d" }}{% else %}{{ ultimo_post.date | date_to_xmlschema }}{% endif %}</published>
+    <updated>{{ ultimo_post.date | date_to_xmlschema }}</updated>
+    <id>{{ site.url }}{{ site.baseurl }}{{ ultimo_post.url }}</id>
+    <summary type="html"><![CDATA[Alerta Animal - {% if ultimo_post.distrito %}{{ ultimo_post.distrito }}{% elsif ultimo_post.concelho %}{{ ultimo_post.concelho }}{% else %}{{ ultimo_post.localizacao }}{% endif %} | Nível de Alerta: {{ ultimo_post.nivel_alerta | default: "Desconhecido" }} | {{ ultimo_post.especie }} - {{ ultimo_post.situacao }} - {{ ultimo_post.estado_fisico }} | Detalhes: {{ ultimo_post.observacoes | strip_html | truncate: 120 }}]]></summary>
     <content type="html"><![CDATA[
-      <p><strong>Alerta Animal - {% if post.distrito %}{{ post.distrito }}{% elsif post.concelho %}{{ post.concelho }}{% else %}{{ post.localizacao }}{% endif %}</strong><br />
-      <strong>Nível de Alerta:</strong> {{ post.nivel_alerta | default: "Desconhecido" }}<br />
-      <strong>Espécie:</strong> {{ post.especie }} — <strong>Situação:</strong> {{ post.situacao }} — <strong>Estado Físico:</strong> {{ post.estado_fisico }}</p>
+      <p><strong>Alerta Animal - {% if ultimo_post.distrito %}{{ ultimo_post.distrito }}{% elsif ultimo_post.concelho %}{{ ultimo_post.concelho }}{% else %}{{ ultimo_post.localizacao }}{% endif %}</strong><br />
+      <strong>Nível de Alerta:</strong> {{ ultimo_post.nivel_alerta | default: "Desconhecido" }}<br />
+      <strong>Espécie:</strong> {{ ultimo_post.especie }} — <strong>Situação:</strong> {{ ultimo_post.situacao }} — <strong>Estado Físico:</strong> {{ ultimo_post.estado_fisico }}</p>
       
-      {% if post.observacoes != "" and post.observacoes != nil %}
+      {% if ultimo_post.observacoes != "" and ultimo_post.observacoes != nil %}
       <p><strong>Detalhes:</strong><br />
-      {{ post.observacoes }}</p>
+      {{ ultimo_post.observacoes }}</p>
       {% endif %}
 
-      {% if post.imagem != "" and post.imagem != nil %}
-      <p><img src="{{ post.imagem }}" alt="Imagem da Ocorrência" /></p>
+      {% if ultimo_post.imagem != "" and ultimo_post.imagem != nil %}
+      <p><img src="{{ ultimo_post.imagem }}" alt="Imagem da Ocorrência" /></p>
       {% endif %}
 
-      <p><a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">Ver ocorrência completa no site</a><br />
-      <em>Publicado a {{ post.date | date: "%d/%m/%Y" }}</em></p>
+      <p><a href="{{ site.url }}{{ site.baseurl }}{{ ultimo_post.url }}">Ver ocorrência completa no site</a><br />
+      <em>Publicado a {{ ultimo_post.date | date: "%d/%m/%Y" }}</em></p>
     ]]></content>
   </entry>
-  {% endfor %}
+  {% endif %}
 </feed>

@@ -1,396 +1,340 @@
 ---
 layout: default
 title: "Alerta Animal"
-description: "Plataforma de monitorização e alerta de ocorrências de animais"
-image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg"
 ---
-<!-- Leaflet & Leaflet.markercluster CSS/JS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<!-- Leaflet MarkerCluster CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 
+<!-- Leaflet JavaScript -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- Leaflet MarkerCluster JavaScript -->
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <style>
-:root {
-  --bg-main: #f8fafc;
-  --card-bg: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-  --header-bg: #f1f5f9;
-  --primary-color: #0284c7;
-}
-
-html.dark-mode, body.dark-mode {
-  --bg-main: #090d16;
-  --card-bg: #111827;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --border-color: #1f2937;
-  --header-bg: #1f2937;
-  --primary-color: #38bdf8;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg-main);
-}
-
-.fs-container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 12px;
-  box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: var(--text-main);
-}
-
-.fs-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  padding: 10px 16px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.fs-header h1 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.fs-nav-links {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  flex-wrap: wrap;
-}
-
-.fs-pill {
-  padding: 6px 12px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-main);
-  color: var(--text-main);
-  cursor: pointer;
-}
-.fs-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
-
-.fs-content-wrapper {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-@media (min-width: 1024px) {
-  .fs-content-wrapper {
-    grid-template-columns: 1fr 450px;
-    height: calc(100vh - 100px);
-  }
-}
-
-.fs-main-panel {
-  display: flex;
-  flex-direction: column;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-  min-height: 400px;
-}
-
-.fs-control-bar {
-  padding: 10px;
-  background: var(--header-bg);
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-#searchBox {
-  flex: 1;
-  padding: 8px 12px;
-  background: var(--card-bg);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 0.85rem;
-  outline: none;
-}
-
-.sort-group { display: flex; gap: 6px; }
-
-.btn-sort {
-  background: var(--card-bg);
-  color: var(--text-muted);
-  border: 1px solid var(--border-color);
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-transform: uppercase;
-}
-.btn-sort.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
-#sortUrgentesBtn.active { background: #dc2626; border-color: #dc2626; }
-
-.fs-table-wrapper {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: auto;
-}
-
-.fs-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 0.85rem;
-}
-
-.fs-table th {
-  background: var(--header-bg);
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  padding: 10px 12px;
-  font-weight: 700;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-
-.fs-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border-color);
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-.fs-row { cursor: pointer; transition: background 0.1s; color: var(--text-main); }
-.fs-row:hover { background: var(--header-bg); }
-
-.fs-img {
-  width: 36px;
-  height: 36px;
-  object-fit: cover;
-  border-radius: 4px;
-  border: 1px solid var(--border-color);
-}
-
-.fs-badge {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 3px 6px;
-  border-radius: 4px;
-  display: inline-block;
-  border: 1px solid transparent;
-}
-.badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; border-color: rgba(239, 68, 68, 0.3); }
-.badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; border-color: rgba(249, 115, 22, 0.3); }
-.badge-amarelo  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; border-color: rgba(234, 179, 8, 0.3); }
-.badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; border-color: rgba(59, 130, 246, 0.3); }
-.badge-indefinido { background: rgba(100, 116, 139, 0.15); color: #64748b; border-color: rgba(100, 116, 139, 0.3); }
-
-.fs-map-panel {
-  display: none;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-  flex-direction: column;
-  height: 450px;
-}
-
-@media (min-width: 1024px) {
-  .fs-map-panel {
-    display: flex;
+  html, body {
     height: 100%;
+    margin: 0;
+    overflow-x: hidden;
   }
-}
 
-.fs-map-panel.visible {
-  display: flex;
-}
+  .map-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 70px);
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px 16px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-main, #0f172a);
+  }
 
-.fs-map-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  background: var(--header-bg);
-  border-bottom: 1px solid var(--border-color);
-  font-size: 0.85rem;
-  font-weight: bold;
-}
+  .map-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #cbd5e1);
+    padding: 8px 14px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
 
-.btn-close-map {
-  background: transparent;
-  border: none;
-  color: var(--text-main);
-  font-size: 1.2rem;
-  cursor: pointer;
-}
+  .map-toolbar h1 {
+    font-size: 14px;
+    font-weight: 800;
+    margin: 0;
+  }
 
-#full-map {
-  width: 100%;
-  flex: 1;
-}
+  .map-nav-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
 
-.map-popup-card { display: flex; gap: 8px; width: 200px; }
-.map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
-.map-popup-info { font-size: 11px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-.map-popup-title { font-weight: bold; margin-bottom: 2px; }
-.map-popup-desc { color: #64748b; font-size: 10px; margin-top: 4px; }
-.map-popup-link { font-size: 10px; font-weight: bold; text-decoration: none; margin-top: 6px; display: inline-block; }
+  .map-nav-link {
+    color: var(--text-main, #0369a1);
+    text-decoration: none;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #cbd5e1);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .map-nav-link:hover {
+    background: var(--border-color, #f0f9ff);
+  }
 
-@media (max-width: 1023px) {
-  .fs-map-panel.visible {
-    position: fixed;
+  /* Layout principal do conteúdo (Desktop: Grid dinâmico) */
+  .map-content-layout {
+    display: grid;
+    grid-template-columns: 1fr 450px;
+    gap: 10px;
+    flex: 1;
+    min-height: 550px;
+    transition: grid-template-columns 0.3s ease;
+  }
+
+  /* Quando o utilizador oculta o mapa no desktop */
+  .map-content-layout.map-hidden {
+    grid-template-columns: 1fr !important;
+  }
+  .map-content-layout.map-hidden .map-display-panel {
+    display: none;
+  }
+
+  .map-sidebar-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #cbd5e1);
+    border-radius: 6px;
+    overflow: hidden;
+    min-height: 400px;
+  }
+
+  .map-search-bar {
+    padding: 8px;
+    background: var(--header-bg, #f1f5f9);
+    border-bottom: 1px solid var(--border-color, #cbd5e1);
+    flex-shrink: 0;
+  }
+
+  .map-search-input {
+    width: 100%;
+    padding: 6px 10px;
+    background: var(--card-bg, #ffffff);
+    color: var(--text-main, #0f172a);
+    border: 1px solid var(--border-color, #cbd5e1);
+    border-radius: 4px;
+    font-size: 12px;
+    box-sizing: border-box;
+    outline: none;
+  }
+
+  .map-list-wrapper {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .map-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 11px;
+  }
+
+  .map-table th {
+    background: var(--header-bg, #f1f5f9);
+    position: sticky;
     top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 9999;
-    border-radius: 0;
+    z-index: 2;
+    padding: 8px 10px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--border-color, #cbd5e1);
+    color: var(--text-muted, #475569);
   }
-}
+
+  .map-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-color, #cbd5e1);
+    vertical-align: middle;
+  }
+
+  .map-row {
+    cursor: pointer;
+    transition: background 0.1s;
+    color: var(--text-main, #0f172a);
+  }
+  .map-row:hover {
+    background: var(--border-color, #f1f5f9);
+  }
+
+  .map-row-img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--border-color, #cbd5e1);
+    display: block;
+  }
+
+  .map-badge {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+  .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
+  .badge-amarelo  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; }
+  .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+  .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
+
+  /* Painel do Mapa Lateral / Superior */
+  .map-display-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #cbd5e1);
+    border-radius: 6px;
+    overflow: hidden;
+    min-height: 300px;
+    transition: all 0.3s ease;
+  }
+
+  .map-display-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    background: var(--header-bg, #f1f5f9);
+    border-bottom: 1px solid var(--border-color, #cbd5e1);
+    font-size: 11px;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  #full-map {
+    width: 100%;
+    flex: 1;
+    min-height: 250px;
+  }
+
+  /* Versão Mobile: Divisão Vertical (Mapa em cima quadrado, Tabela em baixo) */
+  @media (max-width: 1023px) {
+    .map-content-layout {
+      grid-template-columns: 1fr !important;
+      grid-template-rows: auto 1fr;
+    }
+    .map-display-panel {
+      height: 280px; /* Quadrado/ retângulo fixo em cima no mobile */
+      min-height: 280px;
+    }
+    /* Se o utilizador fechar o mapa no mobile, recolhe para uma barra limpa */
+    .map-content-layout.mobile-map-collapsed .map-display-panel {
+      display: none;
+    }
+  }
+
+  /* Popups do Leaflet */
+  .leaflet-popup-content-wrapper {
+    background: var(--card-bg, #ffffff);
+    color: var(--text-main, #0f172a);
+    border: 1px solid var(--border-color, #cbd5e1);
+    border-radius: 4px;
+    padding: 0;
+  }
+  .leaflet-popup-content {
+    margin: 10px;
+    line-height: 1.3;
+  }
+  .map-popup-card { display: flex; gap: 8px; width: 210px; }
+  .map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 3px; background: #f1f5f9; flex-shrink: 0; }
+  .map-popup-info { display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; font-size: 10px; }
+  .map-popup-title { font-weight: 700; }
+  .map-popup-desc { color: var(--text-muted, #475569); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 2px 0; }
+  .map-popup-link { font-weight: bold; text-decoration: underline; margin-top: 2px; }
 </style>
 
-<div class="fs-container" role="main">
-  <header class="fs-header">
-    <h1>🐾 Alertas e Mapa</h1>
-    <nav class="fs-nav-links" aria-label="Navegação Principal">
-      <button type="button" class="fs-pill" id="btnToggleMap" onclick="toggleMap()">🗺️ Alternar Mapa</button>
-      <span>Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
-      <div class="sort-group">
-        <button type="button" class="btn-sort active" id="sortDateBtn" onclick="setSortMode('date')">Data</button>
-        <button type="button" class="btn-sort" id="sortUrgentesBtn" onclick="setSortMode('urgency')">🚨 Urgentes</button>
-      </div>
-    </nav>
-  </header>
+<div class="map-page-wrapper">
+  <div class="map-toolbar">
+    <h1>🗺️ Mapa e Lista de Ocorrências</h1>
+    <div class="map-nav-actions">
+      <button type="button" class="map-nav-link" onclick="toggleMapDisplay()">📍 Ver/Ocultar Mapa</button>
+      <a href="{{ '/' | relative_url }}" class="map-nav-link">← Início</a>
+    </div>
+  </div>
 
-  <div class="fs-content-wrapper">
-    <div class="fs-main-panel">
-      <div class="fs-control-bar">
-        <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, estado..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
-      </div>   
-      
-      <div class="fs-table-wrapper">
-        <table class="fs-table">
+  <div class="map-content-layout" id="mapContentLayout">
+    <!-- Painel do Mapa (Fica em cima no mobile, à direita no desktop) -->
+    <div class="map-display-panel" id="mapDisplayPanel">
+      <div class="map-display-header">
+        <span>📍 Visualização Geográfica</span>
+        <button type="button" class="map-nav-link" style="padding: 2px 6px; font-size: 10px;" onclick="toggleMapDisplay()">Ocultar Mapa</button>
+      </div>
+      <div id="full-map"></div>
+    </div>
+
+    <!-- Lista de Ocorrências com Pesquisa -->
+    <div class="map-sidebar-panel">
+      <div class="map-search-bar">
+        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, localidade ou triagem..." onkeyup="filterMapManifest()" aria-label="Pesquisar ocorrências">
+      </div>
+      <div class="map-list-wrapper">
+        <table class="map-table">
           <thead>
             <tr>
               <th>Foto</th>
               <th>Triagem</th>
               <th>Espécie</th>
-              <th>Estado Físico</th>
-              <th>Data</th>
-              <th>Concelho</th>
+              <th>Localidade</th>
             </tr>
           </thead>
-          <tbody id="manifestList">
+          <tbody id="mapManifestList">
             {% for post in site.ocorrencias %}
-              {% assign nivel_val = post.nivel_alerta | strip | downcase %}
-              {% assign estado_val = post.estado_fisico | strip | downcase %}
-              {% assign triagem_val = post.triagem | strip | downcase %}
+              {% assign t = post.triagem | strip | downcase %}
+              {% assign est_caso = post.estado_caso | strip | downcase %}
+              {% assign est_fisico = post.estado_fisico | strip | downcase %}
               
-              {% assign nivel_score = 600 %}
-              {% if nivel_val contains 'emergência' or nivel_val contains 'emergencia' %}{% assign nivel_score = 100 %}
-              {% elsif nivel_val contains 'urgente' %}{% assign nivel_score = 200 %}
-              {% elsif nivel_val contains 'risco' %}{% assign nivel_score = 300 %}
+              {% assign badge_class = "badge-default" %}
+              {% if est_caso contains 'resolvido' %}
+                {% assign badge_class = "badge-azul" %}
+              {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
+                {% assign badge_class = "badge-vermelho" %}
+              {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
+                {% assign badge_class = "badge-laranja" %}
+              {% elsif t contains 'amarelo' %}
+                {% assign badge_class = "badge-amarelo" %}
+              {% elsif t contains 'azul' %}
+                {% assign badge_class = "badge-azul" %}
               {% endif %}
 
-              {% assign estado_score = 70 %}
-              {% if estado_val contains 'crítico' or estado_val contains 'critico' %}{% assign estado_score = 10 %}
-              {% elsif estado_val contains 'ferido' %}{% assign estado_score = 30 %}
-              {% endif %}
+              {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 80 | escape %}
 
-              {% assign triagem_score = 4 %}
-              {% assign badge_class = "badge-indefinido" %}
-              {% if triagem_val contains 'vermelho' %}{% assign badge_class = "badge-vermelho" %}{% assign triagem_score = 1 %}
-              {% elsif triagem_val contains 'laranja' %}{% assign badge_class = "badge-laranja" %}{% assign triagem_score = 2 %}
-              {% elsif triagem_val contains 'amarelo' %}{% assign badge_class = "badge-amarelo" %}{% assign triagem_score = 3 %}
-              {% elsif triagem_val contains 'azul' %}{% assign badge_class = "badge-azul" %}{% assign triagem_score = 4 %}
-              {% endif %}
-
-              {% assign sar_score = nivel_score | plus: estado_score | plus: triagem_score %}
-              
-              <tr class="fs-row" 
+              <tr class="map-row" 
                   onclick="window.location='{{ post.url | relative_url }}'"
-                  data-sar-score="{{ sar_score }}"
-                  data-timestamp="{{ post.date | date: '%s' }}"
-                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
-                <td><img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="fs-img" loading="lazy"></td>
-                <td><span class="fs-badge {{ badge_class }}">{{ post.nivel_alerta | default: "N/D" }}</span></td>
+                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
+                <td>
+                  <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-row-img" loading="lazy">
+                </td>
+                <td>
+                  <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
+                </td>
                 <td><strong>{{ post.especie | default: "Animal" }}</strong></td>
-                <td>{{ post.estado_fisico | default: "Não especificado" }}</td>
-                <td>{{ post.date | date: "%d/%m/%Y" }}</td>
-                <td>📍 {{ post.concelho | default: post.distrito | default: "Local não indicado" }}</td>
+                <td>📍 {{ post.localidade | default: post.concelho | default: post.distrito | default: "Indefinido" }}</td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
-
-    <div class="fs-map-panel" id="mapPanel">
-      <div class="fs-map-header">
-        <span>🗺️ Mapa de Ocorrências</span>
-        <button type="button" class="btn-close-map" onclick="toggleMap()" aria-label="Fechar mapa">&times;</button>
-      </div>
-      <div id="full-map"></div>
-    </div>
   </div>
 </div>
 
 <script>
-  let currentSortMode = 'date';
-  let sortDateDescending = true;
-  let mapInitialized = false;
-  let map;
+  let mapInstance;
 
-  document.addEventListener("DOMContentLoaded", () => {
-    sortManifestRows();
-    initMap(); // Inicializa o mapa logo em segundo plano
-    mapInitialized = true;
-  });
-
-  function toggleMap() {
-    const mapPanel = document.getElementById('mapPanel');
-    mapPanel.classList.toggle('visible');
-    if (map && mapInitialized) {
-      setTimeout(() => map.invalidateSize(), 300);
-    }
-  }
-
-  function initMap() {
-    map = L.map('full-map', { attributionControl: false }).setView([39.5572, -7.8537], 7);
+  document.addEventListener("DOMContentLoaded", function() {
+    mapInstance = L.map('full-map', { attributionControl: false }).setView([39.5572, -7.8537], 7);
 
     L.control.attribution({ prefix: false })
       .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors')
-      .addTo(map);
+      .addTo(mapInstance);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapInstance);
 
     var markersClusterGroup = L.markerClusterGroup({
       maxClusterRadius: 38,
@@ -398,42 +342,32 @@ body {
       spiderfyOnMaxZoom: true,
       showCoverageOnHover: false
     });
-    map.addLayer(markersClusterGroup);
+    mapInstance.addLayer(markersClusterGroup);
 
     var ocorrencias = [
       {% for post in site.ocorrencias %}
-        {% assign est_caso = post.estado_caso | upcase %}
-        {% assign p_nivel = post.nivel_alerta | strip | downcase %}
-        {% assign p_estado = post.estado_fisico | strip | downcase %}
-        {% assign score_mapa = 600 %}
-        
-        {% if p_nivel contains 'emergência' or p_nivel contains 'emergencia' %}{% assign score_mapa = 100 %}
-        {% elsif p_nivel contains 'urgente' %}{% assign score_mapa = 200 %}
-        {% elsif p_nivel contains 'risco' %}{% assign score_mapa = 300 %}
-        {% endif %}
-        
-        {% if p_estado contains 'crítico' or p_estado contains 'critico' %}{% assign score_mapa = score_mapa | plus: 10 %}
-        {% elsif p_estado contains 'ferido' %}{% assign score_mapa = score_mapa | plus: 30 %}
-        {% endif %}
-
+        {% assign t = post.triagem | strip | downcase %}
+        {% assign est_caso = post.estado_caso | strip | downcase %}
+        {% assign est_fisico = post.estado_fisico | strip | downcase %}
         {% assign theme_color = "#2563eb" %}
-        {% if est_caso contains 'RESOLVIDO' %}
+
+        {% if est_caso contains 'resolvido' %}
           {% assign theme_color = "#16a34a" %}
-        {% elsif score_mapa < 200 %} 
+        {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
           {% assign theme_color = "#dc2626" %}
-        {% elsif score_mapa < 400 %} 
+        {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
           {% assign theme_color = "#f97316" %}
-        {% else %}
+        {% elsif t contains 'amarelo' %}
           {% assign theme_color = "#ca8a04" %}
         {% endif %}
 
-        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 90 | escape %}
+        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 80 | escape %}
 
         {
           id: {{ post.id | default: post.slug | jsonify }},
           especie: {{ post.especie | default: "Animal" | jsonify }},
           estado: {{ post.estado_fisico | default: 'N/D' | jsonify }},
-          local: {{ post.concelho | default: post.distrito | default: post.localizacao | jsonify }},
+          local: {{ post.localidade | default: post.concelho | default: post.distrito | default: '' | jsonify }},
           url: {{ post.url | relative_url | jsonify }},
           color: {{ theme_color | jsonify }},
           imagem: {{ post.imagem | default: '' | jsonify }},
@@ -445,13 +379,13 @@ body {
     function adicionarMarcadorAoMapa(lat, lon, item) {
       var customPinIcon = L.divIcon({
         className: 'custom-map-pin',
-        html: '<div style="background-color: ' + item.color + '; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 4px rgba(0,0,0,0.5);"></div>',
+        html: '<div style="background-color: ' + item.color + '; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 4px rgba(0,0,0,0.4);"></div>',
         iconSize: [14, 14],
         iconAnchor: [7, 7]
       });
 
       var marker = L.marker([lat, lon], { icon: customPinIcon });
-      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:8px;">Sem Foto</div>';
+      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:8px; color:#94a3b8;">Sem Foto</div>';
       
       marker.bindPopup(
         '<div class="map-popup-card">' +
@@ -459,19 +393,22 @@ body {
           '<div class="map-popup-info">' +
             '<div>' +
               '<div class="map-popup-title" style="color: ' + item.color + ';">' + item.especie + '</div>' +
-              '<div style="font-size: 10px;">' + item.estado + '</div>' +
+              '<div style="font-size: 9px; font-weight:600;">' + item.estado + '</div>' +
               '<div class="map-popup-desc">' + item.descricao + '</div>' +
             '</div>' +
             '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + ';">Ver detalhes →</a>' +
           '</div>' +
         '</div>'
       );
+
       markersClusterGroup.addLayer(marker);
     }
 
-    var locaisValidos = ocorrencias.filter(item => item.local && item.local !== "Não indicada" && item.local.trim() !== "");
-    var indexFila = 0;
+    var locaisValidos = ocorrencias.filter(function(item) {
+      return item.local && item.local !== "Não indicada" && item.local.trim() !== "";
+    });
 
+    var indexFila = 0;
     function processarProximoLocal() {
       if (indexFila >= locaisValidos.length) return;
       var item = locaisValidos[indexFila];
@@ -479,61 +416,57 @@ body {
       var cachedCoords = localStorage.getItem(cacheKey);
 
       if (cachedCoords) {
-        let coords = JSON.parse(cachedCoords);
+        var coords = JSON.parse(cachedCoords);
         adicionarMarcadorAoMapa(coords.lat, coords.lon, item);
         indexFila++;
         processarProximoLocal();
       } else {
-        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(item.local + ", Portugal") + '&limit=1')
-          .then(res => res.json())
-          .then(data => {
+        var query = encodeURIComponent(item.local + ", Portugal");
+        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
+          .then(function(response) { return response.json(); })
+          .then(function(data) {
             if (data && data.length > 0) {
-              let lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
-              localStorage.setItem(cacheKey, JSON.stringify({ lat, lon }));
+              var lat = parseFloat(data[0].lat);
+              var lon = parseFloat(data[0].lon);
+              localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
               adicionarMarcadorAoMapa(lat, lon, item);
             }
           })
-          .finally(() => {
+          .catch(function(err) { console.error("Erro geocoding:", err); })
+          .finally(function() {
             indexFila++;
             setTimeout(processarProximoLocal, 1100);
           });
       }
     }
-    if (locaisValidos.length > 0) processarProximoLocal();
+
+    if (locaisValidos.length > 0) {
+      processarProximoLocal();
+    }
+  });
+
+  function toggleMapDisplay() {
+    var layout = document.getElementById('mapContentLayout');
+    if (window.innerWidth <= 1023) {
+      layout.classList.toggle('mobile-map-collapsed');
+    } else {
+      layout.classList.toggle('map-hidden');
+    }
+    if (mapInstance) {
+      setTimeout(function() { mapInstance.invalidateSize(); }, 300);
+    }
   }
 
   function normalizeText(text) {
     return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
   }
 
-  function filterManifest() {
-    let query = normalizeText(document.getElementById('searchBox').value);
-    document.querySelectorAll('.fs-row').forEach(row => {
-      let tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
+  function filterMapManifest() {
+    var query = normalizeText(document.getElementById('mapSearchInput').value);
+    var rows = document.querySelectorAll('.map-row');
+    rows.forEach(function(row) {
+      var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
       row.style.display = tags.includes(query) ? "" : "none";
     });
-  }
-
-  function setSortMode(mode) {
-    currentSortMode = mode;
-    document.getElementById('sortDateBtn').classList.toggle('active', mode === 'date');
-    document.getElementById('sortUrgentesBtn').classList.toggle('active', mode === 'urgency');
-    sortManifestRows();
-  }
-
-  function sortManifestRows() {
-    let listContainer = document.getElementById('manifestList');
-    let rows = Array.from(listContainer.querySelectorAll('.fs-row'));
-
-    rows.sort((a, b) => {
-      if (currentSortMode === 'urgency') {
-        let scoreA = parseInt(a.getAttribute('data-sar-score') || '999', 10);
-        let scoreB = parseInt(b.getAttribute('data-sar-score') || '999', 10);
-        return scoreA !== scoreB ? scoreA - scoreB : parseInt(b.getAttribute('data-timestamp')) - parseInt(a.getAttribute('data-timestamp'));
-      } else {
-        return parseInt(b.getAttribute('data-timestamp')) - parseInt(a.getAttribute('data-timestamp'));
-      }
-    });
-    rows.forEach(row => listContainer.appendChild(row));
   }
 </script>

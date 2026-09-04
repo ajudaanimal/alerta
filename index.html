@@ -81,7 +81,7 @@ body {
 .fs-nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -152,13 +152,7 @@ body {
   box-shadow: 0 0 0 1px var(--text-main);
 }
 
-.fs-chips-group { 
-  display: flex; 
-  gap: 6px; 
-  overflow-x: auto; 
-}
-
-.fs-chip, .btn-sort {
+.btn-sort {
   background: var(--btn-bg);
   color: var(--btn-text);
   border: 1px solid var(--border-color);
@@ -168,17 +162,20 @@ body {
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-}
-
-.fs-chip {
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
 
-.fs-chip.active, .btn-sort.active {
+.btn-sort.active {
   background: var(--primary-color);
   color: #ffffff;
   border-color: var(--primary-color);
+}
+
+#sortUrgentesBtn.active {
+  background: #dc2626; /* Destacar botão de urgência com vermelho quando ativo */
+  border-color: #dc2626;
+  color: #ffffff;
 }
 
 .sort-group { 
@@ -327,12 +324,11 @@ body {
     <nav class="fs-nav-links" aria-label="Navegação Principal">
       <button type="button" class="fs-pill" id="btnToggleMap" onclick="toggleMap()">🗺️ Mapa</button>
       <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
+      
+      <!-- Agrupamento limpo apenas com as ordenações necessárias -->
       <div class="sort-group">
-        <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">Por Prioridade</button>
-        <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
-      </div>
-      <div class="fs-chips-group" role="group" aria-label="Filtrar casos urgentes">
-        <button type="button" class="fs-chip" id="btnUrgentes" onclick="toggleUrgentes(this)" aria-pressed="false">🚨 Urgentes</button>
+        <button type="button" class="btn-sort active" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
+        <button type="button" class="btn-sort" id="sortUrgentesBtn" onclick="setSortMode('urgency')">🚨 Urgentes</button>
       </div>
     </nav>
   </header>
@@ -357,37 +353,57 @@ body {
           </thead>
           <tbody id="manifestList" aria-live="polite">
             {% for post in site.ocorrencias %}
-              {% assign triagem_val = post.triagem | strip | downcase %}
+              <!-- Processamento das Variáveis para Minúsculas -->
+              {% assign nivel_val = post.nivel_alerta | strip | downcase %}
               {% assign estado_val = post.estado_fisico | strip | downcase %}
+              {% assign triagem_val = post.triagem | strip | downcase %}
               
-              {% assign badge_class = "badge-indefinido" %}
-              {% assign priority_weight = 5 %}
-              {% assign is_urgente = false %}
-              
-              {% if triagem_val == 'vermelho' %}
-                {% assign badge_class = "badge-vermelho" %}
-                {% assign priority_weight = 1 %}
-                {% assign is_urgente = true %}
-              {% elsif triagem_val == 'laranja' %}
-                {% assign badge_class = "badge-laranja" %}
-                {% assign priority_weight = 2 %}
-                {% assign is_urgente = true %}
-              {% elsif triagem_val == 'amarelo' %}
-                {% assign badge_class = "badge-amarelo" %}
-                {% assign priority_weight = 3 %}
-              {% elsif triagem_val == 'azul' %}
-                {% assign badge_class = "badge-azul" %}
-                {% assign priority_weight = 4 %}
+              <!-- 1. SCORE DO NÍVEL DE ALERTA (Peso Máximo) -->
+              {% assign nivel_score = 600 %}
+              {% if nivel_val contains 'emergência' or nivel_val contains 'emergencia' %}
+                {% assign nivel_score = 100 %}
+              {% elsif nivel_val contains 'urgente' %}
+                {% assign nivel_score = 200 %}
+              {% elsif nivel_val contains 'risco' %}
+                {% assign nivel_score = 300 %}
+              {% elsif nivel_val contains 'monitorização' or nivel_val contains 'monitorizacao' %}
+                {% assign nivel_score = 400 %}
+              {% elsif nivel_val contains 'busca' %}
+                {% assign nivel_score = 500 %}
               {% endif %}
 
-              {% if estado_val contains 'ferido' or estado_val contains 'critico' or estado_val contains 'vulneravel' %}
-                {% assign is_urgente = true %}
+              <!-- 2. SCORE DO ESTADO FÍSICO (Peso Alto) -->
+              {% assign estado_score = 70 %}
+              {% if estado_val contains 'crítico' or estado_val contains 'critico' %}
+                {% assign estado_score = 10 %}
+              {% elsif estado_val contains 'ferido' %}
+                {% assign estado_score = 30 %}
+              {% elsif estado_val contains 'vulnerável' or estado_val contains 'vulneravel' %}
+                {% assign estado_score = 50 %}
               {% endif %}
+
+              <!-- 3. SCORE DA TRIAGEM (Fator de Desempate / Cor) -->
+              {% assign triagem_score = 4 %}
+              {% assign badge_class = "badge-indefinido" %}
+              {% if triagem_val contains 'vermelho' %}
+                {% assign triagem_score = 1 %}
+                {% assign badge_class = "badge-vermelho" %}
+              {% elsif triagem_val contains 'laranja' %}
+                {% assign triagem_score = 2 %}
+                {% assign badge_class = "badge-laranja" %}
+              {% elsif triagem_val contains 'amarelo' %}
+                {% assign triagem_score = 3 %}
+                {% assign badge_class = "badge-amarelo" %}
+              {% elsif triagem_val contains 'azul' %}
+                {% assign badge_class = "badge-azul" %}
+              {% endif %}
+
+              <!-- MATRIZ SAR: Cálculo do Score Final -->
+              {% assign sar_score = nivel_score | plus: estado_score | plus: triagem_score %}
               
               <tr class="fs-row" 
                   onclick="window.location='{{ post.url | relative_url }}'"
-                  data-urgente="{{ is_urgente }}" 
-                  data-priority="{{ priority_weight }}"
+                  data-sar-score="{{ sar_score }}"
                   data-timestamp="{{ post.date | date: '%s' }}"
                   data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }}">
                 
@@ -427,9 +443,9 @@ body {
 </div>
 
 <script>
-  let currentSortMode = 'priority';
+  // Ordenação por defeito estabelecida em 'date'
+  let currentSortMode = 'date';
   let sortDateDescending = true;
-  let filtroUrgenteAtivo = false;
   let mapInitialized = false;
   let map;
 
@@ -474,19 +490,32 @@ body {
 
     var ocorrencias = [
       {% for post in site.ocorrencias %}
-        {% assign t = post.triagem | upcase %}
         {% assign est_caso = post.estado_caso | upcase %}
-        {% assign est_fisico = post.estado_fisico | upcase %}
-        {% assign theme_color = "#2563eb" %}
+        
+        <!-- Recalcular o Score SAR para pintar os pinos do mapa corretamente -->
+        {% assign p_nivel = post.nivel_alerta | strip | downcase %}
+        {% assign p_estado = post.estado_fisico | strip | downcase %}
+        {% assign score_mapa = 600 %}
+        
+        {% if p_nivel contains 'emergência' or p_nivel contains 'emergencia' %}{% assign score_mapa = 100 %}
+        {% elsif p_nivel contains 'urgente' %}{% assign score_mapa = 200 %}
+        {% elsif p_nivel contains 'risco' %}{% assign score_mapa = 300 %}
+        {% endif %}
+        
+        {% if p_estado contains 'crítico' or p_estado contains 'critico' %}{% assign score_mapa = score_mapa | plus: 10 %}
+        {% elsif p_estado contains 'ferido' %}{% assign score_mapa = score_mapa | plus: 30 %}
+        {% endif %}
+
+        {% assign theme_color = "#2563eb" %} <!-- Azul por Defeito -->
 
         {% if est_caso contains 'RESOLVIDO' %}
-          {% assign theme_color = "#16a34a" %}
-        {% elsif t contains 'VERM' or est_fisico contains 'FERIDO' or est_fisico contains 'CRÍTICO' %}
-          {% assign theme_color = "#dc2626" %}
-        {% elsif t contains 'LARANJA' or est_fisico contains 'URGENTE' %}
-          {% assign theme_color = "#f97316" %}
+          {% assign theme_color = "#16a34a" %} <!-- Verde -->
+        {% elsif score_mapa < 200 %} 
+          {% assign theme_color = "#dc2626" %} <!-- Vermelho (Emergências e Críticos) -->
+        {% elsif score_mapa < 400 %} 
+          {% assign theme_color = "#f97316" %} <!-- Laranja (Urgentes e Em Risco) -->
         {% else %}
-          {% assign theme_color = "#ca8a04" %}
+          {% assign theme_color = "#ca8a04" %} <!-- Amarelo (Outros) -->
         {% endif %}
 
         {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 90 | escape %}
@@ -583,29 +612,18 @@ body {
     return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
   }
 
-  function toggleUrgentes(btn) {
-    filtroUrgenteAtivo = !filtroUrgenteAtivo;
-    btn.classList.toggle('active', filtroUrgenteAtivo);
-    btn.setAttribute('aria-pressed', filtroUrgenteAtivo ? 'true' : 'false');
-    filterManifest();
-  }
-
   function filterManifest() {
     let query = normalizeText(document.getElementById('searchBox').value);
     let rows = document.querySelectorAll('.fs-row');
     
     rows.forEach(row => {
       let tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
-      let matchesQuery = tags.includes(query);
-      let isUrgenteRow = row.getAttribute('data-urgente') === 'true';
-      let matchesUrgente = (!filtroUrgenteAtivo || isUrgenteRow);
-
-      row.style.display = (matchesQuery && matchesUrgente) ? "" : "none";
+      row.style.display = tags.includes(query) ? "" : "none";
     });
   }
 
   function setSortMode(mode) {
-    let priorityBtn = document.getElementById('sortPriorityBtn');
+    let urgentesBtn = document.getElementById('sortUrgentesBtn');
     let dateBtn = document.getElementById('sortDateBtn');
 
     if (currentSortMode === mode && mode === 'date') {
@@ -615,13 +633,13 @@ body {
       if (mode === 'date') sortDateDescending = true;
     }
 
-    if (currentSortMode === 'priority') {
-      priorityBtn.classList.add('active');
+    if (currentSortMode === 'urgency') {
+      urgentesBtn.classList.add('active');
       dateBtn.classList.remove('active');
       dateBtn.innerHTML = "Por Data";
     } else {
       dateBtn.classList.add('active');
-      priorityBtn.classList.remove('active');
+      urgentesBtn.classList.remove('active');
       dateBtn.innerHTML = sortDateDescending ? "Por Data (Mais Recente)" : "Por Data (Mais Antiga)";
     }
 
@@ -633,14 +651,22 @@ body {
     let rows = Array.from(listContainer.querySelectorAll('.fs-row'));
 
     rows.sort((a, b) => {
-      if (currentSortMode === 'priority') {
-        let pA = parseInt(a.getAttribute('data-priority') || '5', 10);
-        let pB = parseInt(b.getAttribute('data-priority') || '5', 10);
-        if (pA !== pB) return pA - pB;
+      if (currentSortMode === 'urgency') {
+        // Ordena por SAR Score do menor (mais grave) para o maior
+        let scoreA = parseInt(a.getAttribute('data-sar-score') || '999', 10);
+        let scoreB = parseInt(b.getAttribute('data-sar-score') || '999', 10);
+        
+        if (scoreA !== scoreB) {
+          return scoreA - scoreB;
+        }
+        
+        // Em caso de empate absoluto de gravidade, o mais recente ganha
         let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
         let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
         return timeB - timeA;
+        
       } else {
+        // Ordenação clássica por data
         let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
         let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
         return sortDateDescending ? (timeB - timeA) : (timeA - timeB);

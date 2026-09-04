@@ -1,254 +1,684 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
+---
+layout: default
+title: "Alerta Animal — Mapa de Ocorrências"
+description: "Plataforma de monitorização e alerta de ocorrências de animais"
+---
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<style>
+  .site-main-content {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  :root {
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #cbd5e1;
+    --header-bg: #f1f5f9;
+    --primary-color: #0284c7;
+  }
+
+  html.dark-mode, body.dark-mode, [data-theme="dark"] {
+    --bg-main: #090d16;
+    --card-bg: #111827;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #1f2937;
+    --header-bg: #1f2937;
+    --primary-color: #38bdf8;
+  }
+
+  .map-page-wrapper {
+    width: 100%;
+    background: var(--bg-main);
+    box-sizing: border-box;
+    padding: 12px;
+  }
+
+  .map-content-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .map-display-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    min-width: 200px;
+  }
+
+  .map-external-filter {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 10px 14px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .map-filter-header { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
+  .map-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-pill { font-size: 11px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-weight: 600; color: var(--text-main); }
+  .filter-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+
+  .map-display-panel {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    height: 350px;
+  }
+
+  #full-map {
+    width: 100%;
+    height: 100%;
+    touch-action: pan-x pan-y;
+  }
+
+  .map-sidebar-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .map-search-bar {
+    padding: 10px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+  }
+  .map-search-input {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+    outline: none;
+  }
+
+  .map-list-wrapper { width: 100%; overflow-y: auto; flex: 1; }
+
+  .map-card-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--card-bg);
+    transition: background 0.15s ease;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .map-card-item:hover { background: var(--header-bg); }
+
+  .map-card-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+  }
+
+  .map-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .map-card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .map-card-title { 
+    font-size: 14px; 
+    font-weight: 800; 
+    color: var(--text-main); 
+    margin: 0; 
+    line-height: 1.2; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+  }
+
+  .map-card-tags { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+  .priority-badge { font-size: 8px; font-weight: 700; padding: 1px 4px; border-radius: 3px; background: var(--header-bg); color: var(--text-muted); }
+  .map-badge { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 1px 5px; border-radius: 3px; }
+  
+  .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+  .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
+  .badge-amarelo  { background: rgba(217, 119, 6, 0.2); color: #d97706; }
+  .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+  .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
+
+  .map-card-details-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    gap: 8px;
+  }
+
+  .map-card-sub { font-weight: 600; color: var(--text-main); }
+  .map-card-location { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .map-card-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  
+  .map-card-actions a {
+    color: var(--primary-color);
+    text-decoration: none;
+    pointer-events: auto;
+  }
+  .map-card-actions a:hover {
+    text-decoration: underline;
+  }
+
+  .split-resizer {
+    width: 8px;
+    background: var(--border-color);
+    cursor: col-resize;
+    border-radius: 4px;
+    transition: background 0.2s;
+    display: none;
+    flex-shrink: 0;
+  }
+  .split-resizer:hover { background: var(--primary-color); }
+
+  .mobile-tab-nav {
+    display: none;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  .mobile-tab-btn {
+    flex: 1;
+    padding: 7px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--header-bg);
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .mobile-tab-btn.active {
+    background: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+  }
+
+  @media (min-width: 1024px) {
+    .map-page-wrapper { height: calc(100vh - 75px); overflow: hidden; }
+    .map-content-layout { display: flex; flex-direction: row; height: 100%; flex-wrap: nowrap; }
+    .split-resizer { display: block; }
+    .map-display-container { width: 35% !important; height: 100%; flex: 0 0 auto; }
+    .map-display-panel { height: calc(100% - 75px); flex: 1; }
+    .map-sidebar-panel { height: 100%; flex: 1 1 auto; width: auto; }
+    .mobile-tab-nav { display: none !important; }
+  }
+
+  @media (max-width: 1023px) {
+    .map-page-wrapper { height: calc(100vh - 60px); display: flex; flex-direction: column; padding: 0; }
+    .mobile-tab-nav { display: flex; }
+    .map-content-layout { flex: 1; display: flex; flex-direction: column; height: calc(100% - 44px); overflow: hidden; position: relative; }
+    .split-resizer { display: none !important; }
+    .map-sidebar-panel, .map-display-container { position: absolute; top: 0; left: 0; width: 100% !important; height: 100%; background: var(--bg-main); transition: opacity 0.2s ease; max-width: 100% !important; }
+    .map-sidebar-panel { display: flex; z-index: 2; }
+    .map-display-container { display: flex; z-index: 1; opacity: 0; pointer-events: none; }
+    .map-page-wrapper.show-map .map-sidebar-panel { opacity: 0; pointer-events: none; z-index: 1; }
+    .map-page-wrapper.show-map .map-display-container { opacity: 1; pointer-events: auto; z-index: 2; }
+    .map-display-container { padding: 8px; box-sizing: border-box; }
+    .map-display-panel { height: calc(100% - 70px); }
+  }
+
+  .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3); border: 2px solid #ffffff; }
+  .leaflet-popup-content-wrapper { background: var(--card-bg) !important; color: var(--text-main) !important; border: 1px solid var(--border-color); border-radius: 10px; padding: 0; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+  .leaflet-popup-tip { background: var(--card-bg) !important; border: 1px solid var(--border-color); }
+  .leaflet-popup-content { margin: 0 !important; line-height: normal; }
+  
+  .map-popup-card { display: flex; flex-direction: column; width: 240px; background: var(--card-bg); }
+  .map-popup-img { width: 100%; height: 140px; object-fit: contain; object-position: center; background: var(--header-bg); border-bottom: 1px solid var(--border-color); }
+  .map-popup-body { padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+</style>
+
+<div class="map-page-wrapper" id="mapPageWrapper">
+  
+  <div class="mobile-tab-nav">
+    <button type="button" class="mobile-tab-btn active" id="tabBtnList" onclick="switchMobileTab('list')">📋 Lista & Fichas</button>
+    <button type="button" class="mobile-tab-btn" id="tabBtnMap" onclick="switchMobileTab('map')">🗺️ Ver no Mapa</button>
+  </div>
+
+  <div class="map-content-layout" id="mapContentLayout">
     
-    <!-- SEO & Open Graph / Redes Sociais -->
-    {% if page.description %}
-    <meta name="description" content="{{ page.description }}">
-    <meta property="og:description" content="{{ page.description }}">
-    {% endif %}
-    
-    <meta property="og:title" content="{{ page.title | default: site.title }}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ page.url | absolute_url }}">
-    
-    {% if page.image %}
-    <meta property="og:image" content="{{ page.image }}">
-    {% endif %}
+    <div class="map-display-container" id="mapDisplayContainer">
+      <div class="map-external-filter">
+        <div class="map-filter-header">FILTRAR POR TRIAGEM / URGÊNCIA</div>
+        <div class="map-filter-pills">
+          <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
+          <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)">🔴 Vermelho</button>
+          <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)">🟠 Laranja</button>
+          <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)">🟡 Amarelo</button>
+        </div>
+      </div>
+      
+      <div class="map-display-panel">
+        <div id="full-map"></div>
+      </div>
+    </div>
 
-    <!-- Script para carregar o modo escuro sem piscar a página -->
-    <script>
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.documentElement.classList.add('dark-mode');
-        }
-    </script>
+    <div class="split-resizer" id="splitResizer"></div>
 
-    <style>
-        :root {
-            --bg-color: #f8fafc;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --card-bg: #ffffff;
-            --border-color: #cbd5e1;
-            --pill-bg: #f1f5f9;
-            --pill-text: #334155;
-        }
+    <div class="map-sidebar-panel" id="mapSidebarPanel">
+      <div class="map-search-bar">
+        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, concelho..." onkeyup="filterMapManifest()">
+      </div>
 
-        html.dark-mode {
-            --bg-color: #0f172a;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --card-bg: #1e293b;
-            --border-color: #334155;
-            --pill-bg: #334155;
-            --pill-text: #f1f5f9;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        /* Cabeçalho Global */
-        .site-global-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 16px;
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .site-title {
-            font-size: 15px;
-            font-weight: 800;
-            text-decoration: none;
-            color: var(--text-main);
-            white-space: nowrap;
-        }
-
-        .header-right-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-left: auto;
-            flex-wrap: wrap;
-        }
-
-        .fs-nav-links {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .fs-pill {
-            background: var(--pill-bg);
-            color: var(--pill-text);
-            padding: 5px 10px;
-            border-radius: 16px;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 600;
-            border: 1px solid var(--border-color);
-            white-space: nowrap;
-        }
-
-        .btn-emergency { background-color: #fee2e2; color: #991b1b; border-color: #fca5a5; }
-        html.dark-mode .btn-emergency { background-color: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
-
-        .btn-report { background-color: #d1fae5; color: #065f46; border-color: #6ee7b7; }
-        html.dark-mode .btn-report { background-color: #022c22; color: #6ee7b7; border-color: #065f46; }
-
-        .theme-toggle-btn {
-            background: var(--pill-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 5px 8px;
-            border-radius: 16px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        /* COMPORTAMENTO PADRÃO (Páginas normais como Emergência, Textos, etc.) */
-        .site-main-content {
-            padding: 24px 16px;
-            max-width: 900px;
-            width: 100%;
-            margin: 0 auto;
-            box-sizing: border-box;
-            flex: 1;
-        }
-
-        /* COMPORTAMENTO FULLSCREEN (Aplicado apenas quando a página pede layout de mapa/ecrã inteiro) */
-        body.layout-fullscreen .site-main-content {
-            max-width: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100% !important;
-        }
-
-        /* Rodapé Global */
-        .site-global-footer {
-            background: var(--card-bg);
-            border-top: 1px solid var(--border-color);
-            padding: 20px 16px;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: auto;
-        }
-
-        .footer-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .footer-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: var(--text-main);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .footer-links a:hover {
-            text-decoration: underline;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid var(--border-color);
-            padding-top: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            font-size: 12px;
-        }
-
-        @media (max-width: 600px) {
-            .site-global-header {
-                padding: 8px 10px;
-            }
-            .fs-pill {
-                font-size: 11px;
-                padding: 4px 8px;
-            }
-        }
-    </style>
-</head>
-<body class="{% if page.layout_fullscreen or page.url == '/' or page.url == '/index.html' %}layout-fullscreen{% endif %}">
-
-    <!-- Cabeçalho Global -->
-    <header class="site-global-header">
-        <a href="{{ '/' | relative_url }}" class="site-title">🐾 Alerta Animal</a>
+      <div class="map-list-wrapper" id="mapManifestList">
+        {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
+        {% assign scored_posts = "" | split: "" %}
         
-        <div class="header-right-group">
-            <nav class="fs-nav-links" aria-label="Navegação Principal">
-                <a href="{{ '/' | relative_url }}" class="fs-pill">🏠 Alertas</a>
-                <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill btn-emergency">📞 Contactos</a>
-                <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report">➕ Reportar</a>
-            </nav>
+        {% for post in sorted_posts %}
+          {% assign t = post.triagem | strip | downcase %}
+          {% assign est_fisico = post.estado_fisico | strip | downcase %}
+          {% assign t_score = 10 %}
+          {% assign ef_score = 10 %}
+
+          {% if t contains 'vermelho' %}{% assign t_score = 1 %}
+          {% elsif t contains 'laranja' %}{% assign t_score = 2 %}
+          {% elsif t contains 'amarelo' %}{% assign t_score = 3 %}
+          {% elsif t contains 'azul' %}{% assign t_score = 4 %}
+          {% endif %}
+
+          {% if est_fisico contains 'crítico' or est_fisico contains 'critico' %}{% assign ef_score = 1 %}
+          {% elsif est_fisico contains 'ferido' %}{% assign ef_score = 2 %}
+          {% elsif est_fisico contains 'vulnerável' or est_fisico contains 'vulneravel' %}{% assign ef_score = 3 %}
+          {% else %}{% assign ef_score = 4 %}
+          {% endif %}
+
+          {% assign sar_score = t_score | times: 100 | plus: ef_score %}
+          {% assign scored_post = sar_score | append: "___" | append: forloop.index0 %}
+          {% assign scored_posts = scored_posts | push: scored_post %}
+        {% endfor %}
+
+        {% assign sorted_scored = scored_posts | sort %}
+
+        {% for item in sorted_scored %}
+          {% assign parts = item | split: "___" %}
+          {% assign sar_score = parts[0] | times: 1 %}
+          {% assign original_index = parts[1] | times: 1 %}
+          {% assign post = sorted_posts[original_index] %}
+
+          {% assign t = post.triagem | strip | downcase %}
+          {% assign est_fisico = post.estado_fisico | strip | downcase %}
+          {% assign est_caso = post.estado_caso | strip | downcase %}
+
+          {% assign badge_class = "badge-default" %}
+          {% assign color_key = "default" %}
+          {% if est_caso contains 'resolvido' %}
+            {% assign badge_class = "badge-azul" %}
+            {% assign color_key = "azul" %}
+          {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
+            {% assign badge_class = "badge-vermelho" %}
+            {% assign color_key = "vermelho" %}
+          {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
+            {% assign badge_class = "badge-laranja" %}
+            {% assign color_key = "laranja" %}
+          {% elsif t contains 'amarelo' %}
+            {% assign badge_class = "badge-amarelo" %}
+            {% assign color_key = "amarelo" %}
+          {% endif %}
+
+          <div class="map-card-item map-row"
+               onclick="handleCardClick(event, {{ original_index }}, '{{ post.url | relative_url }}')"
+               data-color="{{ color_key }}"
+               data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
-            <button type="button" class="theme-toggle-btn" onclick="toggleGlobalDarkMode()" title="Alternar Tema">🌓</button>
-        </div>
-    </header>
-
-    <!-- Conteúdo da Página -->
-    <main class="site-main-content">
-        {{ content }}
-    </main>
-
-    <!-- Rodapé Global -->
-    <footer class="site-global-footer">
-        <div class="footer-container">
-            <div class="footer-top">
-                <span><strong>🐾 Ajuda Animal Portugal</strong> — Plataforma comunitária de sinalização e apoio.</span>
-                <div class="footer-links">
-                    <a href="{{ '/emergencia/' | relative_url }}">Contactos Úteis</a>
-                    <a href="{{ '/mapa.html' | relative_url }}">Mapa</a>
-                    <a href="https://github.com/ajudaanimal/alerta" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
+            
+            <div class="map-card-body">
+              <div class="map-card-top-row">
+                <div class="map-card-title">{{ post.especie | default: "Animal" }}</div>
+                <div class="map-card-tags">
+                  <span class="priority-badge">SAR: {{ sar_score }}</span>
+                  <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
                 </div>
-            </div>
-            <div class="footer-bottom">
-                <p>Este site não substitui os serviços oficiais de emergência (112, SEPNA/GNR, PSP).</p>
-                <p>&copy; {{ 'now' | date: "%Y" }} Ajuda Animal.</p>
-            </div>
-        </div>
-    </footer>
+              </div>
 
-    <script>
-        function toggleGlobalDarkMode() {
-            let isDark = document.documentElement.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+              <div class="map-card-details-row">
+                <span class="map-card-sub">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</span>
+                <span class="map-card-location">📍 {{ post.concelho | default: post.localidade | default: post.distrito | default: "N/D" }}</span>
+              </div>
+              
+              <div class="map-card-actions">
+                <a href="javascript:void(0);" onclick="focusOnMarker({{ original_index }}); event.stopPropagation();">Ver Mapa</a>
+                <span>•</span>
+                <a href="{{ post.url | relative_url }}" onclick="event.stopPropagation();">Ver Ficha</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let mapInstance;
+  let allMarkersLayerGroup;
+  let allMarkersData = [];
+  let markersByIndex = {};
+  let activeColorFilter = 'all';
+  let cardClickTimer = null;
+
+  document.addEventListener("DOMContentLoaded", function() {
+    initMap();
+    initSplitPane();
+    setTimeout(function() {
+      if (mapInstance) mapInstance.invalidateSize();
+    }, 400);
+  });
+
+  function handleCardClick(event, originalIndex, url) {
+    if (event.target.tagName === 'A' || event.target.closest('a')) return;
+
+    if (cardClickTimer === null) {
+      cardClickTimer = setTimeout(function() {
+        cardClickTimer = null;
+        focusOnMarker(originalIndex);
+      }, 300);
+    } else {
+      clearTimeout(cardClickTimer);
+      cardClickTimer = null;
+      window.location.href = url;
+    }
+  }
+
+  function switchMobileTab(tab) {
+    const wrapper = document.getElementById('mapPageWrapper');
+    const btnList = document.getElementById('tabBtnList');
+    const btnMap = document.getElementById('tabBtnMap');
+
+    if (tab === 'map') {
+      wrapper.classList.add('show-map');
+      btnMap.classList.add('active');
+      btnList.classList.remove('active');
+      setTimeout(function() {
+        if (mapInstance) mapInstance.invalidateSize();
+      }, 200);
+    } else {
+      wrapper.classList.remove('show-map');
+      btnList.classList.add('active');
+      btnMap.classList.remove('active');
+    }
+  }
+
+  function initSplitPane() {
+    const resizer = document.getElementById('splitResizer');
+    const mapContainer = document.getElementById('mapDisplayContainer');
+    const container = document.getElementById('mapContentLayout');
+
+    if (!resizer || !mapContainer) return;
+
+    let isResizing = false;
+
+    resizer.addEventListener('mousedown', function(e) {
+      isResizing = true;
+      document.body.style.cursor = 'col-resize';
+      e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', function(e) {
+      if (!isResizing) return;
+      const containerRect = container.getBoundingClientRect();
+      let newLeftWidth = e.clientX - containerRect.left;
+      
+      if (newLeftWidth > 200 && newLeftWidth < containerRect.width - 250) {
+        mapContainer.style.width = newLeftWidth + 'px';
+        mapContainer.style.flex = '0 0 auto';
+        if (mapInstance) mapInstance.invalidateSize();
+      }
+    });
+
+    window.addEventListener('mouseup', function() {
+      if (isResizing) {
+        isResizing = false;
+        document.body.style.cursor = 'default';
+        if (mapInstance) mapInstance.invalidateSize();
+      }
+    });
+  }
+
+  function getSpeciesEmoji(especieStr) {
+    const esp = especieStr ? especieStr.toLowerCase() : '';
+    if (esp.includes('gato') || esp.includes('felino')) return '🐱';
+    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
+    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('passaro') || esp.includes('gaivota')) return '🐦';
+    return '🐾';
+  }
+
+  function initMap() {
+    if (mapInstance) return;
+
+    mapInstance = L.map('full-map', { 
+      attributionControl: false,
+      tap: false,
+      touchZoom: true,
+      scrollWheelZoom: true
+    });
+
+    var portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
+    mapInstance.fitBounds(portugalBounds);
+
+    L.control.attribution({ prefix: false })
+      .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>')
+      .addTo(mapInstance);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapInstance);
+
+    allMarkersLayerGroup = L.layerGroup().addTo(mapInstance);
+
+    var ocorrencias = [
+      {% for post in sorted_posts %}
+        {% assign t = post.triagem | strip | downcase %}
+        {% assign est_caso = post.estado_caso | strip | downcase %}
+        {% assign est_fisico = post.estado_fisico | strip | downcase %}
+        {% assign theme_color = "#2563eb" %}
+        {% assign color_key = "default" %}
+
+        {% if est_caso contains 'resolvido' %}
+          {% assign theme_color = "#16a34a" %}
+          {% assign color_key = "azul" %}
+        {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
+          {% assign theme_color = "#dc2626" %}
+          {% assign color_key = "vermelho" %}
+        {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
+          {% assign theme_color = "#f97316" %}
+          {% assign color_key = "laranja" %}
+        {% elsif t contains 'amarelo' %}
+          {% assign theme_color = "#d97706" %}
+          {% assign color_key = "amarelo" %}
+        {% endif %}
+
+        {
+          index: {{ forloop.index0 }},
+          especie: {{ post.especie | default: "Animal" | jsonify }},
+          concelho: {{ post.concelho | default: post.localidade | default: post.distrito | default: '' | jsonify }},
+          estado_fisico: {{ post.estado_fisico | default: "Estado N/D" | jsonify }},
+          url: {{ post.url | relative_url | jsonify }},
+          color: {{ theme_color | jsonify }},
+          colorKey: {{ color_key | jsonify }},
+          imagem: {{ post.imagem | default: '' | jsonify }}
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ];
+
+    var locaisValidos = ocorrencias.filter(function(item) {
+      return item.concelho && item.concelho !== "Não indicada" && item.concelho.trim() !== "";
+    });
+
+    var indexFila = 0;
+    function processarProximoLocal() {
+      if (indexFila >= locaisValidos.length) return;
+      var item = locaisValidos[indexFila];
+      var cacheKey = "geo_" + item.concelho.toLowerCase().trim();
+      var cachedCoords = localStorage.getItem(cacheKey);
+
+      if (cachedCoords) {
+        var coords = JSON.parse(cachedCoords);
+        var m = criarMarcador(coords.lat, coords.lon, item);
+        allMarkersData.push(m);
+        allMarkersLayerGroup.addLayer(m);
+        indexFila++;
+        processarProximoLocal();
+      } else {
+        var query = encodeURIComponent(item.concelho + ", Portugal");
+        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
+          .then(function(res) { return res.json(); })
+          .then(function(data) {
+            if (data && data.length > 0) {
+              var lat = parseFloat(data[0].lat);
+              var lon = parseFloat(data[0].lon);
+              localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
+              var m = criarMarcador(lat, lon, item);
+              allMarkersData.push(m);
+              allMarkersLayerGroup.addLayer(m);
+            }
+          })
+          .catch(function(err) { console.error(err); })
+          .finally(function() { indexFila++; setTimeout(processarProximoLocal, 600); });
+      }
+    }
+
+    if (locaisValidos.length > 0) processarProximoLocal();
+  }
+
+  function criarMarcador(lat, lon, item) {
+    var emojiIcon = getSpeciesEmoji(item.especie);
+    var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
+
+    var customIcon = L.divIcon({
+      className: '',
+      html: iconHtml,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+      popupAnchor: [0, -15]
+    });
+
+    var marker = L.marker([lat, lon], { icon: customIcon });
+    marker.options.colorKey = item.colorKey;
+    marker.options.originalIndex = item.index;
+
+    marker.bindPopup(
+      '<div class="map-popup-card">' +
+        '<img src="' + (item.imagem || 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg') + '" class="map-popup-img" alt="">' +
+        '<div class="map-popup-body">' +
+          '<strong style="color: ' + item.color + '; font-size: 14px;">' + (item.especie || 'Animal') + '</strong>' +
+          '<span style="font-size: 12px; color: var(--text-main);">🩺 ' + item.estado_fisico + '</span>' +
+          '<span style="font-size: 12px; color: var(--text-muted);">📍 ' + (item.concelho || 'Local N/D') + '</span>' +
+          '<a href="' + item.url + '" style="color: ' + item.color + '; font-weight:700; font-size: 12px; margin-top: 4px; text-decoration: none;">Ver Ficha Completa →</a>' +
+        '</div>' +
+      '</div>',
+      {
+        autoPan: true,
+        autoPanPadding: [40, 40]
+      }
+    );
+
+    markersByIndex[item.index] = marker;
+    return marker;
+  }
+
+  function focusOnMarker(originalIndex) {
+    var marker = markersByIndex[originalIndex];
+    if (marker) {
+      if (window.innerWidth < 1024) {
+        switchMobileTab('map');
+      }
+      setTimeout(function() {
+        if (mapInstance) {
+          mapInstance.invalidateSize();
+          var latLng = marker.getLatLng();
+          mapInstance.setView(latLng, 12, { animate: true });
+          mapInstance.once('moveend', function() {
+            marker.openPopup();
+          });
         }
-    </script>
-</body>
-</html>
+      }, 150);
+    }
+  }
+
+  function filterMapByColor(colorKey, btnElement) {
+    document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+    btnElement.classList.add('active');
+    activeColorFilter = colorKey;
+    applyCombinedFilters();
+  }
+
+  function applyCombinedFilters() {
+    var searchQuery = normalizeText(document.getElementById('mapSearchInput').value);
+    
+    if (mapInstance) {
+      allMarkersLayerGroup.clearLayers();
+      allMarkersData.forEach(function(marker) {
+        if (activeColorFilter === 'all' || marker.options.colorKey === activeColorFilter) {
+          allMarkersLayerGroup.addLayer(marker);
+        }
+      });
+    }
+
+    var rows = document.querySelectorAll('.map-card-item');
+    rows.forEach(function(row) {
+      var rColor = row.getAttribute('data-color');
+      var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
+      var matchesColor = (activeColorFilter === 'all' || rColor === activeColorFilter);
+      var matchesSearch = tags.includes(searchQuery);
+
+      row.style.display = (matchesColor && matchesSearch) ? "flex" : "none";
+    });
+  }
+
+  function normalizeText(text) {
+    return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+  }
+
+  function filterMapManifest() {
+    applyCombinedFilters();
+  }
+</script>

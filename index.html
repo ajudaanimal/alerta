@@ -30,21 +30,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --primary-color: #38bdf8;
   }
 
-  html, body {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    background: var(--bg-main);
-    color: var(--text-main);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  }
-
   .map-page-wrapper {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    max-height: 100vh;
-    width: 100vw;
+    height: calc(100vh - 70px);
+    max-height: calc(100vh - 70px);
+    width: 100%;
     margin: 0;
     padding: 10px;
     box-sizing: border-box;
@@ -297,9 +288,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   /* Responsivo para telemóveis / ecrãs pequenos */
   @media (max-width: 1023px) {
-    html, body {
-      overflow: auto;
-    }
     .map-page-wrapper {
       height: auto;
       max-height: none;
@@ -513,7 +501,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let activeColorFilter = 'all';
   let mapInitialized = false;
 
-  // Inicializa o mapa logo no carregamento em desktop para garantir alturas simétricas imediatas
   document.addEventListener("DOMContentLoaded", function() {
     if (window.innerWidth >= 1024) {
       initMap();
@@ -690,6 +677,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
 
     if (locaisValidos.length > 0) {
+      processarPretoLocal = processarProximoLocal;
       processarProximoLocal();
     }
   }
@@ -710,6 +698,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     
     if (mapInitialized && mapInstance) {
       allMarkersLayerGroup.clearLayers();
+      allMarkersData.push;
       allMarkersData.forEach(function(marker) {
         var matchesColor = (activeColorFilter === 'all' || marker.options.colorKey === activeColorFilter);
         if (matchesColor) {

@@ -4,303 +4,287 @@ title: "Alerta Animal"
 description: "Plataforma de monitorização e alerta de ocorrências de animais"
 image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg"
 ---
-<!-- Leaflet CSS/JS -->
+<!-- Leaflet & Leaflet.markercluster CSS/JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <style>
-  :root {
-    --bg-main: #f8fafc;
-    --card-bg: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
-    --header-bg: #f1f5f9;
-    --primary-color: #0284c7;
-    --focus-ring: rgba(2, 132, 199, 0.4);
-  }
+:root {
+  --bg-main: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --header-bg: #f1f5f9;
+  --primary-color: #0284c7;
+}
 
-  html.dark-mode, body.dark-mode {
-    --bg-main: #090d16;
-    --card-bg: #111827;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-color: #1f2937;
-    --header-bg: #1f2937;
-    --primary-color: #38bdf8;
-    --focus-ring: rgba(56, 189, 248, 0.4);
-  }
+html.dark-mode, body.dark-mode {
+  --bg-main: #090d16;
+  --card-bg: #111827;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #1f2937;
+  --header-bg: #1f2937;
+  --primary-color: #38bdf8;
+}
 
-  body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg-main);
-  }
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-main);
+}
 
-  .fs-container {
+.fs-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-main);
+}
+
+.fs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fs-header h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fs-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  flex-wrap: wrap;
+}
+
+.fs-pill {
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
+  color: var(--text-main);
+  cursor: pointer;
+}
+.fs-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+
+.fs-content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 1024px) {
+  .fs-content-wrapper {
+    grid-template-columns: 1fr 450px;
+    height: calc(100vh - 100px);
+  }
+}
+
+.fs-main-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+.fs-control-bar {
+  padding: 10px;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#searchBox {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.sort-group { display: flex; gap: 6px; }
+
+.btn-sort {
+  background: var(--card-bg);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+.btn-sort.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+#sortUrgentesBtn.active { background: #dc2626; border-color: #dc2626; }
+
+.fs-table-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.fs-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.fs-table th {
+  background: var(--header-bg);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 10px 12px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.fs-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.fs-row { cursor: pointer; transition: background 0.1s; color: var(--text-main); }
+.fs-row:hover { background: var(--header-bg); }
+
+.fs-img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.fs-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  border: 1px solid transparent;
+}
+.badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; border-color: rgba(239, 68, 68, 0.3); }
+.badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; border-color: rgba(249, 115, 22, 0.3); }
+.badge-amarelo  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; border-color: rgba(234, 179, 8, 0.3); }
+.badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; border-color: rgba(59, 130, 246, 0.3); }
+.badge-indefinido { background: rgba(100, 116, 139, 0.15); color: #64748b; border-color: rgba(100, 116, 139, 0.3); }
+
+.fs-map-panel {
+  display: none;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-direction: column;
+  height: 450px;
+}
+
+@media (min-width: 1024px) {
+  .fs-map-panel {
+    display: flex;
+    height: 100%;
+  }
+}
+
+.fs-map-panel.visible {
+  display: flex;
+}
+
+.fs-map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.btn-close-map {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+#full-map {
+  width: 100%;
+  flex: 1;
+}
+
+.map-popup-card { display: flex; gap: 8px; width: 200px; }
+.map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+.map-popup-info { font-size: 11px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.map-popup-title { font-weight: bold; margin-bottom: 2px; }
+.map-popup-desc { color: #64748b; font-size: 10px; margin-top: 4px; }
+.map-popup-link { font-size: 10px; font-weight: bold; text-decoration: none; margin-top: 6px; display: inline-block; }
+
+@media (max-width: 1023px) {
+  .fs-map-panel.visible {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100vw;
     height: 100vh;
-    max-width: 100%;
-    margin: 0;
-    padding: 12px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: var(--text-main);
-    overflow: hidden;
+    z-index: 9999;
+    border-radius: 0;
   }
-  
-  .fs-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    padding: 10px 16px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-  
-  .fs-header h1 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .fs-nav-links {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-  }
-
-  .fs-pill {
-    padding: 6px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid var(--border-color);
-    background: var(--bg-main);
-    color: var(--text-main);
-    transition: all 0.2s;
-    cursor: pointer;
-  }
-  .fs-pill:hover { border-color: var(--text-muted); }
-  .fs-pill.btn-emergency { background: #ef4444; color: #fff; border-color: #dc2626; }
-  .fs-pill.btn-report { background: #10b981; color: #fff; border-color: #059669; }
-
-  .fs-control-bar {
-    padding: 12px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  #searchBox {
-    flex: 1;
-    min-width: 200px;
-    padding: 8px 12px;
-    background: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 0.9rem;
-    outline: none;
-  }
-  #searchBox:focus { border-color: var(--primary-color); }
-
-  .fs-chips-group {
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
-  }
-
-  .fs-chip {
-    background: var(--card-bg);
-    color: var(--text-muted);
-    border: 1px solid var(--border-color);
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-  .fs-chip:hover { color: var(--text-main); }
-  .fs-chip.active { background: var(--text-main); color: var(--card-bg); border-color: var(--text-main); }
-
-  .sort-group {
-    display: flex;
-    gap: 4px;
-  }
-
-  .btn-sort {
-    background: var(--card-bg);
-    color: var(--text-muted);
-    border: 1px solid var(--border-color);
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .btn-sort.active { background: var(--text-main); color: var(--card-bg); border-color: var(--text-main); }
-
-  .fs-table-wrapper {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden; /* Evita completamente o scroll horizontal indesejado */
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-  }
-
-  .fs-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: 0.85rem;
-  }
-
-  .fs-table th {
-    background: var(--header-bg);
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    padding: 10px 12px;
-    font-weight: 700;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-muted);
-    white-space: nowrap;
-  }
-
-  .fs-table td {
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border-color);
-    vertical-align: middle;
-  }
-
-  .fs-row {
-    cursor: pointer;
-    transition: background 0.1s;
-    text-decoration: none;
-    color: var(--text-main);
-  }
-  .fs-row:hover {
-    background: var(--header-bg);
-  }
-
-  .fs-img {
-    width: 36px;
-    height: 36px;
-    object-fit: cover;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    display: block;
-  }
-
-  .fs-badge {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 4px 8px;
-    border-radius: 4px;
-    display: inline-block;
-    border: 1px solid transparent;
-  }
-
-  .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; border-color: rgba(239, 68, 68, 0.3); }
-  .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; border-color: rgba(249, 115, 22, 0.3); }
-  .badge-amarelo  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; border-color: rgba(234, 179, 8, 0.3); }
-  .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; border-color: rgba(59, 130, 246, 0.3); }
-  .badge-indefinido { background: rgba(100, 116, 139, 0.15); color: #64748b; border-color: rgba(100, 116, 139, 0.3); }
-
-  /* ADAPTAÇÃO MOBILE CRUCIAL: Transforma linhas da tabela em blocos empilhados sem scroll lateral */
-  @media (max-width: 768px) {
-    .fs-container {
-      height: auto;
-      overflow: auto;
-    }
-    .fs-table, .fs-table tbody, .fs-table tr, .fs-table td, .fs-table th {
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .fs-table thead {
-      display: none;
-    }
-    .fs-table tr.fs-row {
-      margin-bottom: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      background: var(--card-bg);
-      padding: 10px;
-      display: grid;
-      grid-template-columns: 44px 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 4px 8px;
-      align-items: center;
-    }
-    .fs-table tr.fs-row td {
-      border: none;
-      padding: 0;
-      white-space: normal;
-    }
-    /* Posicionamento dos elementos no cartão mobile */
-    .fs-table tr.fs-row td:nth-child(1) {
-      grid-row: span 3;
-    }
-    .fs-table tr.fs-row td:nth-child(1) img {
-      width: 40px;
-      height: 40px;
-    }
-    .fs-table tr.fs-row td:nth-child(2) {
-      grid-column: 2;
-      grid-row: 1;
-    }
-    .fs-table tr.fs-row td:nth-child(3) {
-      grid-column: 2;
-      grid-row: 2;
-      font-size: 0.9rem;
-    }
-    .fs-table tr.fs-row td:nth-child(4),
-    .fs-table tr.fs-row td:nth-child(5) {
-      grid-column: 2;
-      grid-row: 3;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      display: inline-block;
-      width: auto;
-    }
-    .fs-table tr.fs-row td:nth-child(5):before {
-      content: " • ";
-    }
-  }
+}
 </style>
 
 <div class="fs-container" role="main">
   <header class="fs-header">
-    <h1>🐾 Alertas</h1>
+    <h1>🐾 Alertas e Mapa</h1>
     <nav class="fs-nav-links" aria-label="Navegação Principal">
-      <button type="button" class="fs-pill" id="btnToggleMap" onclick="toggleMap()">🗺️ Mapa</button>
-      <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
-      
+      <button type="button" class="fs-pill" id="btnToggleMap" onclick="toggleMap()">🗺️ Alternar Mapa</button>
+      <span>Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
       <div class="sort-group">
-        <button type="button" class="btn-sort active" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
+        <button type="button" class="btn-sort active" id="sortDateBtn" onclick="setSortMode('date')">Data</button>
         <button type="button" class="btn-sort" id="sortUrgentesBtn" onclick="setSortMode('urgency')">🚨 Urgentes</button>
       </div>
     </nav>
@@ -309,7 +293,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   <div class="fs-content-wrapper">
     <div class="fs-main-panel">
       <div class="fs-control-bar">
-        <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
+        <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, estado..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
       </div>   
       
       <div class="fs-table-wrapper">
@@ -324,48 +308,29 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
               <th>Concelho</th>
             </tr>
           </thead>
-          <tbody id="manifestList" aria-live="polite">
+          <tbody id="manifestList">
             {% for post in site.ocorrencias %}
               {% assign nivel_val = post.nivel_alerta | strip | downcase %}
               {% assign estado_val = post.estado_fisico | strip | downcase %}
               {% assign triagem_val = post.triagem | strip | downcase %}
               
               {% assign nivel_score = 600 %}
-              {% if nivel_val contains 'emergência' or nivel_val contains 'emergencia' %}
-                {% assign nivel_score = 100 %}
-              {% elsif nivel_val contains 'urgente' %}
-                {% assign nivel_score = 200 %}
-              {% elsif nivel_val contains 'risco' %}
-                {% assign nivel_score = 300 %}
-              {% elsif nivel_val contains 'monitorização' or nivel_val contains 'monitorizacao' %}
-                {% assign nivel_score = 400 %}
-              {% elsif nivel_val contains 'busca' %}
-                {% assign nivel_score = 500 %}
+              {% if nivel_val contains 'emergência' or nivel_val contains 'emergencia' %}{% assign nivel_score = 100 %}
+              {% elsif nivel_val contains 'urgente' %}{% assign nivel_score = 200 %}
+              {% elsif nivel_val contains 'risco' %}{% assign nivel_score = 300 %}
               {% endif %}
 
               {% assign estado_score = 70 %}
-              {% if estado_val contains 'crítico' or estado_val contains 'critico' %}
-                {% assign estado_score = 10 %}
-              {% elsif estado_val contains 'ferido' %}
-                {% assign estado_score = 30 %}
-              {% elsif estado_val contains 'vulnerável' or estado_val contains 'vulneravel' %}
-                {% assign estado_score = 50 %}
+              {% if estado_val contains 'crítico' or estado_val contains 'critico' %}{% assign estado_score = 10 %}
+              {% elsif estado_val contains 'ferido' %}{% assign estado_score = 30 %}
               {% endif %}
 
               {% assign triagem_score = 4 %}
               {% assign badge_class = "badge-indefinido" %}
-              {% if triagem_val contains 'vermelho' %}
-                {% assign triagem_score = 1 %}
-                {% assign badge_class = "badge-vermelho" %}
-              {% elsif triagem_val contains 'laranja' %}
-                {% assign triagem_score = 2 %}
-                {% assign badge_class = "badge-laranja" %}
-              {% elsif triagem_val contains 'amarelo' %}
-                {% assign triagem_score = 3 %}
-                {% assign badge_class = "badge-amarelo" %}
-              {% elsif triagem_val contains 'azul' %}
-                {% assign triagem_score = 4 %}
-                {% assign badge_class = "badge-azul" %}
+              {% if triagem_val contains 'vermelho' %}{% assign badge_class = "badge-vermelho" %}{% assign triagem_score = 1 %}
+              {% elsif triagem_val contains 'laranja' %}{% assign badge_class = "badge-laranja" %}{% assign triagem_score = 2 %}
+              {% elsif triagem_val contains 'amarelo' %}{% assign badge_class = "badge-amarelo" %}{% assign triagem_score = 3 %}
+              {% elsif triagem_val contains 'azul' %}{% assign badge_class = "badge-azul" %}{% assign triagem_score = 4 %}
               {% endif %}
 
               {% assign sar_score = nivel_score | plus: estado_score | plus: triagem_score %}
@@ -374,26 +339,13 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
                   onclick="window.location='{{ post.url | relative_url }}'"
                   data-sar-score="{{ sar_score }}"
                   data-timestamp="{{ post.date | date: '%s' }}"
-                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }}">
-                
-                <td>
-                  <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="fs-img" loading="lazy">
-                </td>
-                <td>
-                  <span class="fs-badge {{ badge_class }}">{{ post.nivel_alerta | default: "" }}</span>
-                </td>
-                <td>
-                  <strong>{{ post.especie | default: "Animal" }}</strong>
-                </td>
-                <td>
-                  {{ post.estado_fisico | default: "Não especificado" }}
-                </td>
-                <td>
-                  {{ post.date | date: "%d/%m/%Y" }}
-                </td>
-                <td>
-                  📍 {{ post.concelho | default: post.distrito | default: "Concelho não indicado" }}
-                </td>
+                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
+                <td><img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="fs-img" loading="lazy"></td>
+                <td><span class="fs-badge {{ badge_class }}">{{ post.nivel_alerta | default: "N/D" }}</span></td>
+                <td><strong>{{ post.especie | default: "Animal" }}</strong></td>
+                <td>{{ post.estado_fisico | default: "Não especificado" }}</td>
+                <td>{{ post.date | date: "%d/%m/%Y" }}</td>
+                <td>📍 {{ post.concelho | default: post.distrito | default: "Local não indicado" }}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -403,7 +355,7 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
 
     <div class="fs-map-panel" id="mapPanel">
       <div class="fs-map-header">
-        <span>🗺️ Mapa Geral de Ocorrências</span>
+        <span>🗺️ Mapa de Ocorrências</span>
         <button type="button" class="btn-close-map" onclick="toggleMap()" aria-label="Fechar mapa">&times;</button>
       </div>
       <div id="full-map"></div>
@@ -416,26 +368,18 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
   let sortDateDescending = true;
   let mapInitialized = false;
   let map;
-  let markersLayer;
 
   document.addEventListener("DOMContentLoaded", () => {
     sortManifestRows();
+    initMap(); // Inicializa o mapa logo em segundo plano
+    mapInitialized = true;
   });
 
   function toggleMap() {
     const mapPanel = document.getElementById('mapPanel');
-    const btnToggle = document.getElementById('btnToggleMap');
-    
     mapPanel.classList.toggle('visible');
-    btnToggle.classList.toggle('active');
-
-    if (mapPanel.classList.contains('visible')) {
-      if (!mapInitialized) {
-        initMap();
-        mapInitialized = true;
-      } else {
-        setTimeout(() => map.invalidateSize(), 300);
-      }
+    if (map && mapInitialized) {
+      setTimeout(() => map.invalidateSize(), 300);
     }
   }
 
@@ -448,12 +392,17 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
-    markersLayer = L.layerGroup().addTo(map);
+    var markersClusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 38,
+      disableClusteringAtZoom: 9,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false
+    });
+    map.addLayer(markersClusterGroup);
 
     var ocorrencias = [
       {% for post in site.ocorrencias %}
         {% assign est_caso = post.estado_caso | upcase %}
-        
         {% assign p_nivel = post.nivel_alerta | strip | downcase %}
         {% assign p_estado = post.estado_fisico | strip | downcase %}
         {% assign score_mapa = 600 %}
@@ -468,7 +417,6 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
         {% endif %}
 
         {% assign theme_color = "#2563eb" %}
-
         {% if est_caso contains 'RESOLVIDO' %}
           {% assign theme_color = "#16a34a" %}
         {% elsif score_mapa < 200 %} 
@@ -494,111 +442,64 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       {% endfor %}
     ];
 
-    function criarMarcador(lat, lon, item) {
+    function adicionarMarcadorAoMapa(lat, lon, item) {
       var customPinIcon = L.divIcon({
         className: 'custom-map-pin',
-        html: '<div style="background-color: ' + item.color + '; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 6px rgba(0,0,0,0.4);"></div>',
-        iconSize: [16, 16],
-        iconAnchor: [8, 8],
-        popupAnchor: [0, -10]
+        html: '<div style="background-color: ' + item.color + '; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 4px rgba(0,0,0,0.5);"></div>',
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
       });
 
       var marker = L.marker([lat, lon], { icon: customPinIcon });
-      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="Foto">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:9px; color:#94a3b8; background:#f1f5f9;">Sem Foto</div>';
+      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:8px;">Sem Foto</div>';
       
       marker.bindPopup(
         '<div class="map-popup-card">' +
           imgHtml +
           '<div class="map-popup-info">' +
             '<div>' +
-              '<div class="map-popup-title" style="color: ' + item.color + ';">' + item.id + '</div>' +
-              '<div style="font-size: 11px; font-weight: bold;">' + item.especie + ' (' + item.estado + ')</div>' +
-              '<div class="map-popup-desc">' + (item.descricao || 'Sem descrição detalhada.') + '</div>' +
+              '<div class="map-popup-title" style="color: ' + item.color + ';">' + item.especie + '</div>' +
+              '<div style="font-size: 10px;">' + item.estado + '</div>' +
+              '<div class="map-popup-desc">' + item.descricao + '</div>' +
             '</div>' +
             '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + ';">Ver detalhes →</a>' +
           '</div>' +
         '</div>'
       );
-
-      markersLayer.addLayer(marker);
+      markersClusterGroup.addLayer(marker);
     }
 
-    var locaisValidos = ocorrencias.filter(function(item) {
-      return item.local && item.local !== "Não indicada" && item.local.trim() !== "";
-    });
-
-    let resolvedMarkers = [];
+    var locaisValidos = ocorrencias.filter(item => item.local && item.local !== "Não indicada" && item.local.trim() !== "");
     var indexFila = 0;
 
     function processarProximoLocal() {
-      if (indexFila >= locaisValidos.length) {
-        renderResolvedMarkers();
-        return;
-      }
-
+      if (indexFila >= locaisValidos.length) return;
       var item = locaisValidos[indexFila];
       var cacheKey = "geo_" + item.local.toLowerCase().trim();
       var cachedCoords = localStorage.getItem(cacheKey);
 
       if (cachedCoords) {
-        var coords = JSON.parse(cachedCoords);
-        resolvedMarkers.push({ lat: coords.lat, lon: coords.lon, item: item });
+        let coords = JSON.parse(cachedCoords);
+        adicionarMarcadorAoMapa(coords.lat, coords.lon, item);
         indexFila++;
         processarProximoLocal();
       } else {
-        var query = encodeURIComponent(item.local + ", Portugal");
-        
-        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
-          .then(function(response) { return response.json(); })
-          .then(function(data) {
+        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(item.local + ", Portugal") + '&limit=1')
+          .then(res => res.json())
+          .then(data => {
             if (data && data.length > 0) {
-              var lat = parseFloat(data[0].lat);
-              var lon = parseFloat(data[0].lon);
-              localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
-              resolvedMarkers.push({ lat: lat, lon: lon, item: item });
+              let lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
+              localStorage.setItem(cacheKey, JSON.stringify({ lat, lon }));
+              adicionarMarcadorAoMapa(lat, lon, item);
             }
           })
-          .catch(function(err) { console.error("Erro ao geocodificar:", err); })
-          .finally(function() {
+          .finally(() => {
             indexFila++;
             setTimeout(processarProximoLocal, 1100);
           });
       }
     }
-
-    function renderResolvedMarkers() {
-      let coordMap = {};
-      resolvedMarkers.forEach(entry => {
-        let key = entry.lat.toFixed(4) + "_" + entry.lon.toFixed(4);
-        if (!coordMap[key]) coordMap[key] = [];
-        coordMap[key].push(entry);
-      });
-
-      Object.keys(coordMap).forEach(key => {
-        let group = coordMap[key];
-        let count = group.length;
-
-        group.forEach((entry, idx) => {
-          let targetLat = entry.lat;
-          let targetLon = entry.lon;
-
-          if (count > 1) {
-            let angle = (idx / count) * 2 * Math.PI;
-            let radius = 0.00015 * Math.min(count, 6);
-            targetLat += radius * Math.cos(angle);
-            targetLon += radius * Math.sin(angle);
-          }
-
-          criarMarcador(targetLat, targetLon, entry.item);
-        });
-      });
-    }
-
-    if (locaisValidos.length > 0) {
-      processarProximoLocal();
-    }
-    
-    setTimeout(() => map.invalidateSize(), 300);
+    if (locaisValidos.length > 0) processarProximoLocal();
   }
 
   function normalizeText(text) {
@@ -607,35 +508,16 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
 
   function filterManifest() {
     let query = normalizeText(document.getElementById('searchBox').value);
-    let rows = document.querySelectorAll('.fs-row');
-    
-    rows.forEach(row => {
+    document.querySelectorAll('.fs-row').forEach(row => {
       let tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
       row.style.display = tags.includes(query) ? "" : "none";
     });
   }
 
   function setSortMode(mode) {
-    let urgentesBtn = document.getElementById('sortUrgentesBtn');
-    let dateBtn = document.getElementById('sortDateBtn');
-
-    if (currentSortMode === mode && mode === 'date') {
-      sortDateDescending = !sortDateDescending;
-    } else {
-      currentSortMode = mode;
-      if (mode === 'date') sortDateDescending = true;
-    }
-
-    if (currentSortMode === 'urgency') {
-      urgentesBtn.classList.add('active');
-      dateBtn.classList.remove('active');
-      dateBtn.innerHTML = "Por Data";
-    } else {
-      dateBtn.classList.add('active');
-      urgentesBtn.classList.remove('active');
-      dateBtn.innerHTML = sortDateDescending ? "Por Data (Mais Recente)" : "Por Data (Mais Antiga)";
-    }
-
+    currentSortMode = mode;
+    document.getElementById('sortDateBtn').classList.toggle('active', mode === 'date');
+    document.getElementById('sortUrgentesBtn').classList.toggle('active', mode === 'urgency');
     sortManifestRows();
   }
 
@@ -647,22 +529,11 @@ image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/an
       if (currentSortMode === 'urgency') {
         let scoreA = parseInt(a.getAttribute('data-sar-score') || '999', 10);
         let scoreB = parseInt(b.getAttribute('data-sar-score') || '999', 10);
-        
-        if (scoreA !== scoreB) {
-          return scoreA - scoreB;
-        }
-        
-        let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
-        let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
-        return timeB - timeA;
-        
+        return scoreA !== scoreB ? scoreA - scoreB : parseInt(b.getAttribute('data-timestamp')) - parseInt(a.getAttribute('data-timestamp'));
       } else {
-        let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
-        let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
-        return sortDateDescending ? (timeB - timeA) : (timeA - timeB);
+        return parseInt(b.getAttribute('data-timestamp')) - parseInt(a.getAttribute('data-timestamp'));
       }
     });
-
     rows.forEach(row => listContainer.appendChild(row));
   }
 </script>

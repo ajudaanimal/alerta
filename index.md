@@ -142,6 +142,41 @@ body {
     display: none;
   }
 }
+  /* Estilo individual dos cartões da lista lateral */
+.ocorrencia-card, .map-card-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+  background: #ffffff;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s;
+}
+
+.ocorrencia-card:hover, .map-card-item:hover {
+  background: #f1f5f9;
+}
+
+/* Caixa de texto dentro de cada cartão da lista */
+.ocorrencia-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+}
+
+/* Espaçamento e alinhamento da barra de pesquisa e filtros dentro da sidebar */
+.map-sidebar-panel .sidebar-header, 
+.map-sidebar-panel .filter-container {
+  padding: 12px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
 </style>
 
 <div class="map-page-wrapper" id="mapPageWrapper">

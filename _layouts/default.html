@@ -30,6 +30,7 @@
         :root {
             --bg-color: #f8fafc;
             --text-main: #0f172a;
+            --text-muted: #64748b;
             --card-bg: #ffffff;
             --border-color: #cbd5e1;
             --accent-emergency: #ef4444;
@@ -41,6 +42,7 @@
         html.dark-mode {
             --bg-color: #0f172a;
             --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
             --card-bg: #1e293b;
             --border-color: #334155;
             --pill-bg: #334155;
@@ -53,10 +55,13 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Cabeçalho Global: Título à esquerda, Menu e Ferramentas à direita */
+        /* Cabeçalho Global */
         .site-global-header {
             display: flex;
             justify-content: space-between;
@@ -78,7 +83,6 @@
             gap: 6px;
         }
 
-        /* Contentor do lado direito (Menu + Alternador de Tema) */
         .header-right-group {
             display: flex;
             align-items: center;
@@ -87,19 +91,11 @@
             margin-left: auto;
         }
 
-        /* Navegação e Pílulas */
         .fs-nav-links {
             display: flex;
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
-        }
-
-        .fs-nav-links span {
-            font-size: 13px;
-            color: var(--text-main);
-            opacity: 0.8;
-            margin-right: 4px;
         }
 
         .fs-pill {
@@ -164,13 +160,67 @@
             font-size: 14px;
         }
 
-        /* Conteúdo a ocupar 100% da largura do ecrã */
+        /* Conteúdo Principal */
         .site-main-content {
             padding: 20px;
             width: 100%;
             max-width: none !important;
             margin: 0;
             box-sizing: border-box;
+            flex: 1;
+        }
+
+        /* Rodapé Global */
+        .site-global-footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 24px 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -180,12 +230,11 @@
     <header class="site-global-header">
         <a href="{{ '/' | relative_url }}" class="site-title">🐾 Ajuda Animal</a>
         
-        <!-- Grupo alinhado à direita: Menu e Modo Escuro -->
         <div class="header-right-group">
             <nav class="fs-nav-links" aria-label="Navegação Principal">
                 <a href="{{ '/' | relative_url }}" class="fs-pill btn-home" aria-label="Página Principal">🏠 Início</a>
                 <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill btn-emergency" aria-label="Contactos">📞 Contactos</a>
-                <a href="{{ '/veterinarios.html' | relative_url }}" class="fs-pill" aria-label="Ver Mapa de Ocorrências">🗺️ Veterinários</a>
+                <a href="{{ '/veterinarios.html' | relative_url }}" class="fs-pill" aria-label="Ver Mapa de Veterinários">🗺️ Veterinários</a>
                 <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report" aria-label="Reportar nova ocorrência">➕ Reportar</a>
             </nav>
             
@@ -193,10 +242,28 @@
         </div>
     </header>
 
-    <!-- O conteúdo de cada página estica agora a 100% do ecrã -->
+    <!-- Conteúdo da Página -->
     <main class="site-main-content">
         {{ content }}
     </main>
+
+    <!-- Rodapé Global -->
+    <footer class="site-global-footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <span><strong>🐾 Ajuda Animal Portugal</strong> — Plataforma comunitária de sinalização e apoio.</span>
+                <div class="footer-links">
+                    <a href="{{ '/emergencia/' | relative_url }}">Contactos Úteis</a>
+                    <a href="{{ '/veterinarios.html' | relative_url }}">Mapa de Veterinários</a>
+                    <a href="https://github.com/ajudaanimal/alerta" target="_blank" rel="noopener noreferrer">Repositório GitHub</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Este site não substitui os serviços oficiais de emergência (112, SEPNA/GNR, PSP).</p>
+                <p>&copy; {{ 'now' | date: "%Y" }} Ajuda Animal. Licenciado sob termos comunitários.</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
         function toggleGlobalDarkMode() {

@@ -4,7 +4,7 @@ title: "Alerta Animal"
 description: "Plataforma de monitorização e alerta de ocorrências de animais"
 image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg"
 ---
-<!-- Leaflet CSS/JS (Cluster removido para manter visibilidade total dos pontos) -->
+<!-- Leaflet CSS/JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
@@ -35,20 +35,22 @@ body {
   margin: 0;
   padding: 0;
   background: var(--bg-main);
-  height: 100dvh;
-  overflow: hidden;
-}
-
-.fs-container {
-  width: calc(100vw - 16px);
-  height: calc(100dvh - 16px);
-  margin: 8px;
-  box-sizing: border-box;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: var(--text-main);
-  overflow: hidden;
+}
+
+.fs-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .fs-header {
@@ -57,15 +59,15 @@ body {
   align-items: center;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
-  padding: 8px 14px;
+  padding: 12px 18px;
   border-radius: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
   gap: 12px;
   flex-shrink: 0;
 }
 
 .fs-header h1 {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 700;
   margin: 0;
   display: flex;
@@ -76,13 +78,13 @@ body {
 .fs-nav-links {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-size: 0.85rem;
   font-weight: 500;
 }
 
 .fs-pill {
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: 600;
@@ -100,12 +102,9 @@ body {
 
 .fs-content-wrapper {
   display: flex;
-  flex: 1;
-  gap: 8px;
-  overflow: hidden;
+  gap: 16px;
   position: relative;
-  min-height: 0;
-  min-width: 0;
+  align-items: flex-start;
 }
 
 .fs-main-panel {
@@ -113,11 +112,10 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 0;
 }
 
 .fs-control-bar {
-  padding: 10px;
+  padding: 12px;
   background: var(--header-bg);
   border: 1px solid var(--border-color);
   border-bottom: none;
@@ -125,13 +123,12 @@ body {
   display: flex;
   gap: 8px;
   align-items: center;
-  flex-shrink: 0;
 }
 
 #searchBox {
   flex: 1;
   min-width: 200px;
-  padding: 7px 10px;
+  padding: 8px 12px;
   background: var(--card-bg);
   color: var(--text-main);
   border: 1px solid var(--border-color);
@@ -149,7 +146,7 @@ body {
   background: var(--btn-bg);
   color: var(--btn-text);
   border: 1px solid var(--border-color);
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -177,13 +174,12 @@ body {
 }
 
 .fs-table-wrapper {
-  flex: 1;
+  max-height: 650px;
   overflow-y: auto;
   overflow-x: auto;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 0 0 8px 8px;
-  min-height: 0;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -199,7 +195,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 2;
-  padding: 10px 12px;
+  padding: 12px;
   font-weight: 700;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-muted);
@@ -207,7 +203,7 @@ body {
 }
 
 .fs-table td {
-  padding: 10px 12px;
+  padding: 12px;
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
   white-space: nowrap;
@@ -249,14 +245,13 @@ body {
 .fs-map-panel {
   display: none;
   flex: 1;
-  min-height: 0;
-  min-width: 0;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   overflow: hidden;
   position: relative;
   flex-direction: column;
+  height: 706px; /* alinha com a barra de controlo + tabela */
 }
 
 .fs-map-panel.visible {
@@ -267,7 +262,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 12px;
   background: var(--header-bg);
   border-bottom: 1px solid var(--border-color);
   font-size: 0.85rem;
@@ -287,7 +282,6 @@ body {
 #full-map {
   width: 100%;
   flex: 1;
-  min-height: 0;
   z-index: 1;
 }
 
@@ -298,7 +292,20 @@ body {
 .map-popup-desc { color: #64748b; font-size: 10px; margin-top: 4px; }
 .map-popup-link { font-size: 10px; font-weight: bold; text-decoration: none; margin-top: 6px; display: inline-block; }
 
+.fs-footer {
+  margin-top: 32px;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
+  .fs-content-wrapper {
+    flex-direction: column;
+  }
   .fs-map-panel.visible {
     position: fixed;
     top: 0;
@@ -429,6 +436,10 @@ body {
       <div id="full-map"></div>
     </div>
   </div>
+
+  <footer class="fs-footer">
+    <p>&copy; {{ site.time | date: '%Y' }} Alerta Animal. Plataforma de monitorização e alerta de ocorrências de animais.</p>
+  </footer>
 </div>
 
 <script>

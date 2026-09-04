@@ -58,7 +58,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     align-items: start;
   }
 
-  /* Botão de Expansão do Mapa para Mobile / Acessibilidade */
   .map-toggle-bar {
     display: flex;
     justify-content: space-between;
@@ -76,7 +75,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     background: var(--header-bg);
   }
 
-  /* Filtro Posicionado Fora e Acima do Mapa */
   .map-external-filter {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -125,7 +123,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .map-display-panel {
     position: relative;
-    display: none; /* Começa escondido no mobile/desktop para evitar bloqueio de scroll */
+    display: none;
     flex-direction: column;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -142,6 +140,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     width: 100%;
     height: 100%;
     flex: 1;
+    touch-action: pan-x pan-y;
   }
 
   .map-sidebar-panel {
@@ -230,8 +229,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-radius: 3px;
     background: var(--header-bg);
     color: var(--text-muted);
-    opacity: 0.6;
-    margin-bottom: 2px;
+    opacity: 0.8;
     display: inline-block;
   }
 
@@ -249,7 +247,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  /* Marcadores SVG Profissionais */
   .species-pin {
     width: 28px;
     height: 28px;
@@ -283,6 +280,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-popup-title { font-weight: 800; font-size: 11px; }
   .map-popup-desc { color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 2px 0; }
 
+  /* Correção da Formatação dos Cards em Mobile (Flexbox Limpo) */
   @media (max-width: 1023px) {
     .map-content-layout {
       grid-template-columns: 1fr !important;
@@ -302,55 +300,60 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
 
     .map-row {
-      display: grid;
-      grid-template-columns: 44px 1fr auto;
-      grid-template-rows: auto auto;
-      gap: 2px 8px;
-      padding: 8px 10px;
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 4px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
+      display: flex;
+      flex-wrap: wrap;
       align-items: center;
+      gap: 6px 10px;
+      padding: 10px 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 8px;
     }
 
     .map-row td {
-      padding: 0;
-      border: none;
+      padding: 0 !important;
+      border: none !important;
+      width: auto !important;
     }
 
-    /* Foto ocupa as duas linhas à esquerda */
+    /* Foto à esquerda */
     .map-row td:nth-child(1) {
-      grid-column: 1;
-      grid-row: 1 / span 2;
-      align-self: center;
+      flex-shrink: 0;
     }
     .map-row-img {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
     }
 
-    /* Linha 1: Urgência & Triagem (Col 2) e Espécie (Col 3) */
+    /* Urgência & Triagem (Empilha SAR e Badge) */
     .map-row td:nth-child(2) {
-      grid-column: 2;
-      grid-row: 1;
-    }
-    .map-row td:nth-child(3) {
-      grid-column: 3;
-      grid-row: 1;
-      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
-    /* Linha 2: Estado Físico (Col 2) e Concelho (Col 3) */
-    .map-row td:nth-child(4) {
-      grid-column: 2;
-      grid-row: 2;
+    /* Espécie (Nome em destaque na linha seguinte ou ao lado) */
+    .map-row td:nth-child(3) {
+      flex-basis: 100%;
+      order: 3;
+      font-size: 13px;
+      margin-top: 2px;
     }
+
+    /* Estado Físico */
+    .map-row td:nth-child(4) {
+      order: 4;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Concelho alinhado à direita na última linha */
     .map-row td:nth-child(5) {
-      grid-column: 3;
-      grid-row: 2;
-      text-align: right;
+      order: 5;
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 600;
     }
   }
 </style>
@@ -358,7 +361,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <div class="map-page-wrapper">
   <div class="map-content-layout" id="mapContentLayout">
     
-    <!-- Painel do Mapa, Barra de Expansão e Filtro Externo -->
     <div class="map-display-container">
       <div class="map-toggle-bar" onclick="toggleMapVisibility()">
         <span>🗺️ Ver/Ocultar Mapa Interativo</span>
@@ -380,7 +382,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       </div>
     </div>
 
-    <!-- Painel Lateral / Lista de Ocorrências com Sistema SAR Ordenado -->
     <div class="map-sidebar-panel">
       <div class="map-search-bar">
         <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, concelho ou urgência..." onkeyup="filterMapManifest()" aria-label="Pesquisar ocorrências">
@@ -399,7 +400,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           <tbody id="mapManifestList">
             {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
             
-            <!-- Pré-cálculo e ordenação explícita SAR (menor score = maior prioridade) -->
             {% assign scored_posts = "" | split: "" %}
             {% for post in sorted_posts %}
               {% assign t = post.triagem | strip | downcase %}
@@ -472,7 +472,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
                   <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-row-img" loading="lazy">
                 </td>
                 <td>
-                  <span class="priority-badge">SAR: {{ sar_score }}</span><br>
+                  <span class="priority-badge">SAR: {{ sar_score }}</span>
                   <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
                 </td>
                 <td>
@@ -529,7 +529,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function initMap() {
-    mapInstance = L.map('full-map', { attributionControl: false }).setView([39.5572, -7.8537], 7);
+    // Correção do Bug de Zoom: tap: false desativa o comportamento intrusivo de toque no Leaflet mobile
+    mapInstance = L.map('full-map', { 
+      attributionControl: false,
+      tap: false,
+      touchZoom: true
+    }).setView([39.5572, -7.8537], 7);
 
     L.control.attribution({ prefix: false })
       .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors')

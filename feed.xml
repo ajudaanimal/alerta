@@ -11,11 +11,12 @@ layout: null
   <title type="html">{{ site.title | xml_escape }}</title>
   <subtitle>{{ site.description | xml_escape }}</subtitle>
 
-  {% for post in site.ocorrencias reversed limit:1 %}
+  {% assign ocorrencias_ordenadas = site.ocorrencias | sort: "date" | reverse %}
+  {% for post in ocorrencias_ordenadas limit:1 %}
   <entry>
     <title>{{ post.especie | default: "Animal" }} - {% if post.localidade %}{{ post.localidade }}{% elsif post.concelho %}{{ post.concelho }}{% elsif post.distrito %}{{ post.distrito }}{% else %}{{ post.localizacao }}{% endif %}</title>
     <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}" rel="alternate" type="text/html"/>
-    <published>{% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}{{ post.data_ocorrencia_inicial }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</published>
+    <published>{% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}{{ post.data_ocorrencia_inicial | date: "%Y-%m-%d" }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</published>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
     <id>{{ site.url }}{{ site.baseurl }}{{ post.url }}</id>
     <summary type="html"><![CDATA[Alerta Animal - {% if post.distrito %}{{ post.distrito }}{% elsif post.concelho %}{{ post.concelho }}{% else %}{{ post.localizacao }}{% endif %} | Nível de Alerta: {{ post.nivel_alerta | default: "Desconhecido" }} | {{ post.especie }} - {{ post.situacao }} - {{ post.estado_fisico }} | Detalhes: {{ post.observacoes | strip_html | truncate: 120 }}]]></summary>

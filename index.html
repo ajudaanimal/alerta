@@ -75,10 +75,10 @@ title: "Alerta Animal"
     background: var(--border-color, #f0f9ff);
   }
 
-  /* Layout principal do conteúdo (Desktop: Grid dinâmico) */
+  /* Layout principal do conteúdo (Desktop: Tabela grande à esquerda, Mapa proporcional a ~1/4 à direita) */
   .map-content-layout {
     display: grid;
-    grid-template-columns: 1fr 450px;
+    grid-template-columns: 1fr 350px; /* Ajustado para dar proporção correta de painel lateral */
     gap: 10px;
     flex: 1;
     min-height: 550px;
@@ -220,10 +220,9 @@ title: "Alerta Animal"
       grid-template-rows: auto 1fr;
     }
     .map-display-panel {
-      height: 280px; /* Quadrado/ retângulo fixo em cima no mobile */
+      height: 280px;
       min-height: 280px;
     }
-    /* Se o utilizador fechar o mapa no mobile, recolhe para uma barra limpa */
     .map-content-layout.mobile-map-collapsed .map-display-panel {
       display: none;
     }
@@ -259,16 +258,7 @@ title: "Alerta Animal"
   </div>
 
   <div class="map-content-layout" id="mapContentLayout">
-    <!-- Painel do Mapa (Fica em cima no mobile, à direita no desktop) -->
-    <div class="map-display-panel" id="mapDisplayPanel">
-      <div class="map-display-header">
-        <span>📍 Visualização Geográfica</span>
-        <button type="button" class="map-nav-link" style="padding: 2px 6px; font-size: 10px;" onclick="toggleMapDisplay()">Ocultar Mapa</button>
-      </div>
-      <div id="full-map"></div>
-    </div>
-
-    <!-- Lista de Ocorrências com Pesquisa -->
+    <!-- Lista de Ocorrências com Pesquisa (Fica à esquerda no desktop) -->
     <div class="map-sidebar-panel">
       <div class="map-search-bar">
         <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, localidade ou triagem..." onkeyup="filterMapManifest()" aria-label="Pesquisar ocorrências">
@@ -302,8 +292,6 @@ title: "Alerta Animal"
                 {% assign badge_class = "badge-azul" %}
               {% endif %}
 
-              {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 80 | escape %}
-
               <tr class="map-row" 
                   onclick="window.location='{{ post.url | relative_url }}'"
                   data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
@@ -320,6 +308,15 @@ title: "Alerta Animal"
           </tbody>
         </table>
       </div>
+    </div>
+
+    <!-- Painel do Mapa (Fica em cima no mobile, à direita no desktop com largura de 1/4 aprox.) -->
+    <div class="map-display-panel" id="mapDisplayPanel">
+      <div class="map-display-header">
+        <span>📍 Visualização Geográfica</span>
+        <button type="button" class="map-nav-link" style="padding: 2px 6px; font-size: 10px;" onclick="toggleMapDisplay()">Ocultar Mapa</button>
+      </div>
+      <div id="full-map"></div>
     </div>
   </div>
 </div>

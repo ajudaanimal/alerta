@@ -1,6 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veterinários em Portugal</title>
+    
+    <script>
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
+</head>
+<body>
+
+    <main class="main-container">
+        <!-- Immersive Map Section -->
+        <section class="map-card">
+            <div class="map-wrapper">
+                <iframe 
+                    src="https://umap.openstreetmap.fr/en/map/veterinarios-em-portugal_1453528?scaleControl=true&miniMapControl=false&scrollWheelZoom=true&zoomControl=true&editMode=disabled&moreControl=true&searchControl=true&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=none&captionBar=false&captionMenus=false" 
+                    allowfullscreen 
+                    allow="geolocation">
+                </iframe>
+            </div>
+            <div class="map-footer">
+                <span style="color: var(--text-muted);">Utilize o mapa para explorar clínicas e hospitais.</span>
+                <a href="https://umap.openstreetmap.fr/en/map/veterinarios-em-portugal_1453528" target="_blank" rel="noopener noreferrer">
+                    Ecrã Inteiro ↗
+                </a>
+            </div>
+        </section>
+
+        <!-- Sidebar Panel -->
+        <aside class="sidebar">
+            <div class="info-card">
+                <h2>Como Usar</h2>
+                <p>Navegue pelo mapa com o rato ou ecrã tátil. Utilize a barra de pesquisa integrada no canto do mapa para procurar por cidade ou localidade.</p>
+            </div>
+
+            <div class="info-card">
+                <h2>Urgências</h2>
+                <p>Em caso de emergência, verifique os marcadores no mapa para confirmar o horário de funcionamento de 24 horas.</p>
+            </div>
+        </aside>
+    </main>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pt">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinários em Portugal</title>

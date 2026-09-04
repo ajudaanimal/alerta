@@ -180,9 +180,6 @@ let mapInstance;
     var searchQuery = normalizeText(document.getElementById('mapSearchInput').value);
     if (mapInstance) {
       allMarkersLayerGroup.clearLayers();
-      allMarkersData.forEach(function5 => {
-        // ...
-      });
       allMarkersData.forEach(function(marker) {
         if (activeColorFilter === 'all' || marker.options.colorKey === activeColorFilter) {
           allMarkersLayerGroup.addLayer(marker);

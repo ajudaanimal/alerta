@@ -1,6 +1,7 @@
 ---
 layout: default
-title: "Mapa de Ocorrências — Alerta Animal"
+title: "Alerta Animal"
+description: "Plataforma de monitorização e alerta de ocorrências de animais"
 ---
 
 <!-- Leaflet CSS -->
@@ -15,269 +16,607 @@ title: "Mapa de Ocorrências — Alerta Animal"
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <style>
-  .map-page-container {
-    padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: var(--text-main, #0f172a);
-    max-width: 1200px;
-    margin: 0 auto;
+  :root {
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #cbd5e1;
+    --header-bg: #f1f5f9;
+    --primary-color: #0284c7;
   }
 
-  .map-header {
-    background: var(--card-bg, #ffffff);
-    color: var(--text-main, #0369a1);
-    border: 1px solid var(--border-color, #cbd5e1);
-    padding: 16px 20px;
-    border-radius: 4px;
-    margin-bottom: 20px;
+  html.dark-mode, body.dark-mode {
+    --bg-main: #090d16;
+    --card-bg: #111827;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #1f2937;
+    --header-bg: #1f2937;
+    --primary-color: #38bdf8;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .map-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 70px);
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px 16px;
+    box-sizing: border-box;
+  }
+
+  .map-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    border-radius: 6px;
+    margin-bottom: 10px;
     gap: 10px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
   }
 
-  .map-header h1 {
-    font-size: 16px;
+  .map-toolbar h1 {
+    font-size: 14px;
     font-weight: 800;
     margin: 0;
   }
 
+  .map-nav-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
   .map-nav-link {
-    color: var(--text-main, #0369a1);
+    color: var(--text-main);
     text-decoration: none;
-    background: var(--card-bg, #ffffff);
-    border: 1px solid var(--border-color, #cbd5e1);
-    padding: 6px 12px;
-    border-radius: 2px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 5px 10px;
+    border-radius: 4px;
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
+    cursor: pointer;
+  }
+  .map-nav-link:hover {
+    background: var(--header-bg);
   }
 
-  .map-nav-link:hover {
-    background: var(--border-color, #f0f9ff);
+  /* Layout principal: Mapa à esquerda (~1/4), Tabela à direita (~3/4) no Desktop */
+  .map-content-layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 10px;
+    flex: 1;
+    min-height: 550px;
+    transition: grid-template-columns 0.3s ease;
+  }
+
+  .map-content-layout.map-hidden {
+    grid-template-columns: 1fr !important;
+  }
+  .map-content-layout.map-hidden .map-display-panel {
+    display: none;
+  }
+
+  /* Painel do Mapa (À esquerda no desktop) */
+  .map-display-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+    min-height: 350px;
+  }
+
+  .map-display-header {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 11px;
+    font-weight: bold;
+    flex-shrink: 0;
+    gap: 6px;
+  }
+
+  .map-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .map-filter-pills {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .filter-pill {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+  .filter-pill.active {
+    background: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
   }
 
   #full-map {
     width: 100%;
-    height: 600px;
-    border-radius: 2px;
-    border: 1px solid var(--border-color, #cbd5e1);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    flex: 1;
+    min-height: 300px;
   }
 
-  .leaflet-marker-icon {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
-    background-color: rgba(37, 99, 235, 0.5) !important;
-  }
-  .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
-    background-color: #2563eb !important;
-    color: #ffffff !important;
-    font-weight: bold;
-    font-family: sans-serif;
-    border-radius: 50%;
-  }
-
-  .leaflet-popup-content-wrapper {
-    background: var(--card-bg, #ffffff);
-    color: var(--text-main, #0f172a);
-    border: 1px solid var(--border-color, #cbd5e1);
-    border-radius: 4px;
-    padding: 0;
-  }
-  .leaflet-popup-content {
-    margin: 12px;
-    line-height: 1.4;
-  }
-  .map-popup-card {
-    display: flex;
-    gap: 10px;
-    width: 240px;
-  }
-  .map-popup-img {
-    width: 70px;
-    height: 70px;
-    object-fit: cover;
-    border-radius: 2px;
-    border: 1px solid var(--border-color, #cbd5e1);
-    background: #f1f5f9;
-    flex-shrink: 0;
-  }
-  .map-popup-info {
+  /* Painel da Tabela / Lista à direita */
+  .map-sidebar-panel {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
     overflow: hidden;
+    min-height: 400px;
   }
-  .map-popup-title {
+
+  .map-search-bar {
+    padding: 8px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+  }
+
+  .map-search-input {
+    width: 100%;
+    padding: 6px 10px;
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 12px;
+    box-sizing: border-box;
+    outline: none;
+  }
+
+  .map-list-wrapper {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .map-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
     font-size: 11px;
+  }
+
+  .map-table th {
+    background: var(--header-bg);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 8px 10px;
     font-weight: 700;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-muted);
   }
-  .map-popup-desc {
-    font-size: 10px;
-    color: var(--text-muted, #475569);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin: 3px 0;
+
+  .map-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
   }
-  .map-popup-link {
-    font-size: 10px;
-    font-weight: bold;
-    text-decoration: underline;
-    margin-top: 2px;
+
+  .map-row {
+    cursor: pointer;
+    transition: background 0.1s;
+    color: var(--text-main);
+  }
+  .map-row:hover, .map-row.highlighted {
+    background: var(--header-bg);
+  }
+
+  .map-row-img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    display: block;
+  }
+
+  .map-badge {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+  .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
+  .badge-amarelo  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; }
+  .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+  .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
+
+  /* Marcador personalizado SVG avançado */
+  .custom-animal-pin {
+    background: transparent;
+    border: none;
+  }
+  .pin-container {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    border: 2px solid #ffffff;
+    transition: transform 0.2s ease;
+  }
+  .pin-container:hover {
+    transform: scale(1.15);
+  }
+
+  /* Popups estilizados tipo Card */
+  .leaflet-popup-content-wrapper {
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  }
+  .leaflet-popup-content {
+    margin: 10px;
+    line-height: 1.4;
+  }
+  .map-popup-card { display: flex; gap: 10px; width: 230px; align-items: center; }
+  .map-popup-img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; background: var(--header-bg); flex-shrink: 0; border: 1px solid var(--border-color); }
+  .map-popup-info { display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; font-size: 11px; width: 100%; }
+  .map-popup-title { font-weight: 800; font-size: 12px; }
+  .map-popup-desc { color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 3px 0; font-size: 10px; }
+  .map-popup-btn { display: inline-block; text-align: center; background: var(--primary-color); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-decoration: none; margin-top: 4px; font-size: 10px; }
+
+  /* Versão Mobile: Divisão Vertical */
+  @media (max-width: 1023px) {
+    .map-content-layout {
+      grid-template-columns: 1fr !important;
+      grid-template-rows: auto 1fr;
+    }
+    .map-display-panel {
+      height: 320px;
+      min-height: 320px;
+    }
+    .map-content-layout.mobile-map-collapsed .map-display-panel {
+      display: none;
+    }
   }
 </style>
 
-<div class="map-page-container">
-  <div class="map-header">
-    <h1>🗺️ Mapa Geral de Ocorrências (Por Localização)</h1>
-    <a href="{{ '/' | relative_url }}" class="map-nav-link">← Voltar ao Início</a>
+<div class="map-page-wrapper">
+  <div class="map-toolbar">
+    <h1>🐾 Alerta Animal</h1>
+    <div class="map-nav-actions">
+      <button type="button" class="map-nav-link" onclick="toggleMapDisplay()">📍 Ver/Ocultar Mapa</button>
+    </div>
   </div>
-  <div id="full-map"></div>
+
+  <div class="map-content-layout" id="mapContentLayout">
+    <!-- Painel do Mapa -->
+    <div class="map-display-panel" id="mapDisplayPanel">
+      <div class="map-display-header">
+        <div class="map-header-top">
+          <span>📍 Mapa de Ocorrências</span>
+          <button type="button" class="map-nav-link" style="padding: 2px 6px; font-size: 10px;" onclick="toggleMapDisplay()">Ocultar Mapa</button>
+        </div>
+        <div class="map-filter-pills">
+          <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
+          <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)">🔴 Vermelho</button>
+          <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)">🟠 Laranja</button>
+          <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)">🟡 Amarelo</button>
+          <button type="button" class="filter-pill" onclick="filterMapByColor('azul', this)">🔵 Azul</button>
+        </div>
+      </div>
+      <div id="full-map"></div>
+    </div>
+
+    <!-- Lista de Ocorrências -->
+    <div class="map-sidebar-panel">
+      <div class="map-search-bar">
+        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, localidade ou triagem..." onkeyup="filterMapManifest()" aria-label="Pesquisar ocorrências">
+      </div>
+      <div class="map-list-wrapper">
+        <table class="map-table">
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Triagem</th>
+              <th>Espécie</th>
+              <th>Localidade</th>
+            </tr>
+          </thead>
+          <tbody id="mapManifestList">
+            {% for post in site.ocorrencias %}
+              {% assign t = post.triagem | strip | downcase %}
+              {% assign est_caso = post.estado_caso | strip | downcase %}
+              {% assign est_fisico = post.estado_fisico | strip | downcase %}
+              
+              {% assign badge_class = "badge-default" %}
+              {% assign color_key = "default" %}
+              {% if est_caso contains 'resolvido' %}
+                {% assign badge_class = "badge-azul" %}
+                {% assign color_key = "azul" %}
+              {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
+                {% assign badge_class = "badge-vermelho" %}
+                {% assign color_key = "vermelho" %}
+              {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
+                {% assign badge_class = "badge-laranja" %}
+                {% assign color_key = "laranja" %}
+              {% elsif t contains 'amarelo' %}
+                {% assign badge_class = "badge-amarelo" %}
+                {% assign color_key = "amarelo" %}
+              {% elsif t contains 'azul' %}
+                {% assign badge_class = "badge-azul" %}
+                {% assign color_key = "azul" %}
+              {% endif %}
+
+              <tr class="map-row" 
+                  id="row-{{ forloop.index0 }}"
+                  onclick="focarOcorrencia({{ forloop.index0 }}, '{{ post.url | relative_url }}')"
+                  data-color="{{ color_key }}"
+                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
+                <td>
+                  <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-row-img" loading="lazy">
+                </td>
+                <td>
+                  <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
+                </td>
+                <td><strong>{{ post.especie | default: "Animal" }}</strong></td>
+                <td>📍 {{ post.localidade | default: post.concelho | default: post.distrito | default: "Indefinido" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
+  let mapInstance;
+  let allMarkersData = [];
+  let markersClusterGroup;
+
   document.addEventListener("DOMContentLoaded", function() {
-    var map = L.map('full-map', {
-      attributionControl: false
-    }).setView([39.5572, -7.8537], 7);
+    mapInstance = L.map('full-map', { attributionControl: false }).setView([39.5572, -7.8537], 7);
 
-    L.control.attribution({
-      prefix: false
-    }).addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | 🇵🇸').addTo(map);
+    L.control.attribution({ prefix: false })
+      .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors')
+      .addTo(mapInstance);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19
-    }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapInstance);
 
-    var markersClusterGroup = L.markerClusterGroup({
-      maxClusterRadius: 38,
-      disableClusteringAtZoom: 9,
+    // Cluster suave (apenas agrupa se pontos estiverem em cima uns dos outros)
+    markersClusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 15,
+      disableClusteringAtZoom: 10,
       spiderfyOnMaxZoom: true,
-      showCoverageOnHover: false,
-      zoomToBoundsOnClick: true
+      showCoverageOnHover: false
     });
-    map.addLayer(markersClusterGroup);
+    mapInstance.addLayer(markersClusterGroup);
 
     var ocorrencias = [
       {% for post in site.ocorrencias %}
-        {% assign t = post.triagem | upcase %}
-        {% assign est_caso = post.estado_caso | upcase %}
-        {% assign est_fisico = post.estado_fisico | upcase %}
+        {% assign t = post.triagem | strip | downcase %}
+        {% assign est_caso = post.estado_caso | strip | downcase %}
+        {% assign est_fisico = post.estado_fisico | strip | downcase %}
         {% assign theme_color = "#2563eb" %}
+        {% assign color_key = "default" %}
 
-        {% if est_caso contains 'RESOLVIDO' %}
+        {% if est_caso contains 'resolvido' %}
           {% assign theme_color = "#16a34a" %}
-        {% elsif t contains 'VERM' or est_fisico contains 'FERIDO' or est_fisico contains 'CRÍTICO' %}
+          {% assign color_key = "azul" %}
+        {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
           {% assign theme_color = "#dc2626" %}
-        {% elsif t contains 'LARANJA' or est_fisico contains 'URGENTE' %}
+          {% assign color_key = "vermelho" %}
+        {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
           {% assign theme_color = "#f97316" %}
-        {% else %}
+          {% assign color_key = "laranja" %}
+        {% elsif t contains 'amarelo' %}
           {% assign theme_color = "#ca8a04" %}
+          {% assign color_key = "amarelo" %}
         {% endif %}
 
-        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 90 | escape %}
+        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 70 | escape %}
 
         {
+          index: {{ forloop.index0 }},
           id: {{ post.id | default: post.slug | jsonify }},
           especie: {{ post.especie | default: "Animal" | jsonify }},
           estado: {{ post.estado_fisico | default: 'N/D' | jsonify }},
-          local: {{ post.localizacao | default: '' | jsonify }},
+          local: {{ post.localidade | default: post.concelho | default: post.distrito | default: '' | jsonify }},
           url: {{ post.url | relative_url | jsonify }},
           color: {{ theme_color | jsonify }},
+          colorKey: {{ color_key | jsonify }},
           imagem: {{ post.imagem | default: '' | jsonify }},
           descricao: {{ descricao_limpa | jsonify }}
         }{% unless forloop.last %},{% endunless %}
       {% endfor %}
     ];
 
-    // Função auxiliar para criar o marcador e popup
-    function adicionarMarcadorAoMapa(lat, lon, item) {
+    function criarMarcador(lat, lon, item) {
+      // Ícone SVG customizado com silhueta de pata de animal
+      var svgIcon = '<div class="pin-container" style="background-color: ' + item.color + ';">' +
+                      '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.24 2 7 4.24 7 7c0 1.25.47 2.4 1.25 3.28C7.47 11.4 7 12.65 7 14c0 2.21 1.79 4 4 4 1.1 0 2-.45 2.68-1.17C14.36 17.55 15.26 18 16.25 18c2.21 0 4-1.79 4-4 0-1.35-.47-2.6-1.25-3.72C19.53 9.4 20 8.25 20 7c0-2.76-2.24-5-5-5-1.1 0-2.12.36-2.95.97C11.12 2.36 10.1 2 9 2z"/></svg>' +
+                    '</div>';
+
       var customPinIcon = L.divIcon({
-        className: 'custom-map-pin',
-        html: '<div style="background-color: ' + item.color + '; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 6px rgba(0,0,0,0.4);"></div>',
-        iconSize: [16, 16],
-        iconAnchor: [8, 8],
-        popupAnchor: [0, -10]
+        className: 'custom-animal-pin',
+        html: svgIcon,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        popupAnchor: [0, -12]
       });
 
       var marker = L.marker([lat, lon], { icon: customPinIcon });
+      marker.options.colorKey = item.colorKey;
+      marker.options.itemIndex = item.index;
 
-      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="Foto">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:9px; color:#94a3b8;">Sem Foto</div>';
+      // Tooltip ao passar o rato (Hover)
+      marker.bindTooltip("<strong>" + item.especie + "</strong><br>" + item.local, {
+        direction: 'top',
+        offset: [0, -10],
+        opacity: 0.9
+      });
+
+      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:8px; color:#94a3b8;">Sem Foto</div>';
       
       marker.bindPopup(
         '<div class="map-popup-card">' +
           imgHtml +
           '<div class="map-popup-info">' +
             '<div>' +
-              '<div class="map-popup-title" style="color: ' + item.color + ';">' + item.id + '</div>' +
-              '<div style="font-size: 11px; font-weight: bold;">' + item.especie + ' (' + item.estado + ')</div>' +
-              '<div class="map-popup-desc">' + (item.descricao || 'Sem descrição detalhada.') + '</div>' +
+              '<div class="map-popup-title" style="color: ' + item.color + ';">' + item.especie + '</div>' +
+              '<div style="font-size: 9px; font-weight:600;">' + item.estado + '</div>' +
+              '<div class="map-popup-desc">' + item.descricao + '</div>' +
             '</div>' +
-            '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + ';">Ver detalhes →</a>' +
+            '<a href="' + item.url + '" class="map-popup-btn">Ver Detalhes</a>' +
           '</div>' +
         '</div>'
       );
 
-      markersClusterGroup.addLayer(marker);
+      return marker;
     }
 
-    // Processamento sequencial com fila para respeitar a política de uso do Nominatim (Evita erro 429)
     var locaisValidos = ocorrencias.filter(function(item) {
       return item.local && item.local !== "Não indicada" && item.local.trim() !== "";
     });
 
     var indexFila = 0;
-
     function processarProximoLocal() {
       if (indexFila >= locaisValidos.length) return;
-
       var item = locaisValidos[indexFila];
       var cacheKey = "geo_" + item.local.toLowerCase().trim();
       var cachedCoords = localStorage.getItem(cacheKey);
 
       if (cachedCoords) {
-        // Se já estiver em cache, carrega imediatamente sem atraso nem pedido à API
         var coords = JSON.parse(cachedCoords);
-        adicionarMarcadorAoMapa(coords.lat, coords.lon, item);
+        var m = criarMarcador(coords.lat, coords.lon, item);
+        allMarkersData.push(m);
+        markersClusterGroup.addLayer(m);
         indexFila++;
         processarProximoLocal();
       } else {
-        // Se não estiver em cache, faz o pedido com intervalo de segurança de 1.1 segundos
         var query = encodeURIComponent(item.local + ", Portugal");
-        
         fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
           .then(function(response) { return response.json(); })
           .then(function(data) {
             if (data && data.length > 0) {
               var lat = parseFloat(data[0].lat);
               var lon = parseFloat(data[0].lon);
-              
-              // Guardar em cache local para as próximas visitas
               localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
-              
-              adicionarMarcadorAoMapa(lat, lon, item);
+              var m = criarMarcador(lat, lon, item);
+              allMarkersData.push(m);
+              markersClusterGroup.addLayer(m);
             }
           })
-          .catch(function(err) { console.error("Erro ao geocodificar:", err); })
+          .catch(function(err) { console.error("Erro geocoding:", err); })
           .finally(function() {
             indexFila++;
-            setTimeout(processarProximoLocal, 1100); // Pausa de 1.1s estrita entre pedidos
+            setTimeout(processarProximoLocal, 1100);
           });
       }
     }
 
-    // Iniciar a fila se houver ocorrências
     if (locaisValidos.length > 0) {
       processarProximoLocal();
     }
   });
+
+  function focarOcorrencia(index, url) {
+    // Se o utilizador clicar na tabela, encontra o marcador correspondente no mapa, abre o popup e faz zoom
+    var targetMarker = allMarkersData.find(function(m) { return m.options.itemIndex === index; });
+    if (targetMarker) {
+      markersClusterGroup.zoomToShowLayer(targetMarker, function() {
+        targetMarker.openPopup();
+      });
+    } else {
+      window.location = url;
+    }
+  }
+
+  function filterMapByColor(colorKey, btnElement) {
+    document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+    btnElement.classList.add('active');
+
+    markersClusterGroup.clearLayers();
+
+    allMarkersData.forEach(function(marker) {
+      if (colorKey === 'all' || marker.options.colorKey === colorKey) {
+        markersClusterGroup.addLayer(marker);
+      }
+    });
+
+    var rows = document.querySelectorAll('.map-row');
+    rows.forEach(function(row) {
+      var rColor = row.getAttribute('data-color');
+      if (colorKey === 'all' || rColor === colorKey) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  }
+
+  function toggleMapDisplay() {
+    var layout = document.getElementById('mapContentLayout');
+    if (window.innerWidth <= 1023) {
+      layout.classList.toggle('mobile-map-collapsed');
+    } else {
+      layout.classList.toggle('map-hidden');
+    }
+    if (mapInstance) {
+      setTimeout(function() { mapInstance.invalidateSize(); }, 300);
+    }
+  }
+
+  function normalizeText(text) {
+    return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+  }
+
+  function filterMapManifest() {
+    var query = normalizeText(document.getElementById('mapSearchInput').value);
+    var rows = document.querySelectorAll('.map-row');
+    rows.forEach(function(row) {
+      var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
+      row.style.display = tags.includes(query) ? "" : "none";
+    });
+  }
 </script>

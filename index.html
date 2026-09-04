@@ -4,13 +4,9 @@ title: "Alerta Animal"
 description: "Plataforma de monitorização e alerta de ocorrências de animais"
 image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg"
 ---
-<!-- Leaflet & Leaflet.markercluster CSS/JS -->
+<!-- Leaflet CSS/JS (Cluster removido para manter visibilidade total dos pontos) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <style>
 :root {
@@ -440,6 +436,7 @@ body {
   let sortDateDescending = true;
   let mapInitialized = false;
   let map;
+  let markersLayer;
 
   document.addEventListener("DOMContentLoaded", () => {
     sortManifestRows();
@@ -471,14 +468,7 @@ body {
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
-    var markersClusterGroup = L.markerClusterGroup({
-      maxClusterRadius: 38,
-      disableClusteringAtZoom: 9,
-      spiderfyOnMaxZoom: true,
-      showCoverageOnHover: false,
-      zoomToBoundsOnClick: true
-    });
-    map.addLayer(markersClusterGroup);
+    markersLayer = L.layerGroup().addTo(map);
 
     var ocorrencias = [
       {% for post in site.ocorrencias %}
@@ -524,7 +514,7 @@ body {
       {% endfor %}
     ];
 
-    function adicionarMarcadorAoMapa(lat, lon, item) {
+    function criarMarcador(lat, lon, item) {
       var customPinIcon = L.divIcon({
         className: 'custom-map-pin',
         html: '<div style="background-color: ' + item.color + '; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 6px rgba(0,0,0,0.4);"></div>',
@@ -550,17 +540,21 @@ body {
         '</div>'
       );
 
-      markersClusterGroup.addLayer(marker);
+      markersLayer.addLayer(marker);
     }
 
     var locaisValidos = ocorrencias.filter(function(item) {
       return item.local && item.local !== "Não indicada" && item.local.trim() !== "";
     });
 
+    let resolvedMarkers = [];
     var indexFila = 0;
 
     function processarProximoLocal() {
-      if (indexFila >= locaisValidos.length) return;
+      if (indexFila >= locaisValidos.length) {
+        renderResolvedMarkers();
+        return;
+      }
 
       var item = locaisValidos[indexFila];
       var cacheKey = "geo_" + item.local.toLowerCase().trim();
@@ -568,7 +562,7 @@ body {
 
       if (cachedCoords) {
         var coords = JSON.parse(cachedCoords);
-        adicionarMarcadorAoMapa(coords.lat, coords.lon, item);
+        resolvedMarkers.push({ lat: coords.lat, lon: coords.lon, item: item });
         indexFila++;
         processarProximoLocal();
       } else {
@@ -581,7 +575,7 @@ body {
               var lat = parseFloat(data[0].lat);
               var lon = parseFloat(data[0].lon);
               localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
-              adicionarMarcadorAoMapa(lat, lon, item);
+              resolvedMarkers.push({ lat: lat, lon: lon, item: item });
             }
           })
           .catch(function(err) { console.error("Erro ao geocodificar:", err); })
@@ -590,6 +584,34 @@ body {
             setTimeout(processarProximoLocal, 1100);
           });
       }
+    }
+
+    function renderResolvedMarkers() {
+      let coordMap = {};
+      resolvedMarkers.forEach(entry => {
+        let key = entry.lat.toFixed(4) + "_" + entry.lon.toFixed(4);
+        if (!coordMap[key]) coordMap[key] = [];
+        coordMap[key].push(entry);
+      });
+
+      Object.keys(coordMap).forEach(key => {
+        let group = coordMap[key];
+        let count = group.length;
+
+        group.forEach((entry, idx) => {
+          let targetLat = entry.lat;
+          let targetLon = entry.lon;
+
+          if (count > 1) {
+            let angle = (idx / count) * 2 * Math.PI;
+            let radius = 0.00015 * Math.min(count, 6);
+            targetLat += radius * Math.cos(angle);
+            targetLon += radius * Math.sin(angle);
+          }
+
+          criarMarcador(targetLat, targetLon, entry.item);
+        });
+      });
     }
 
     if (locaisValidos.length > 0) {

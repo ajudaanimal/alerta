@@ -39,10 +39,9 @@ body {
   margin: 0;
   padding: 0;
   background: var(--bg-main);
-  overflow: hidden; /* Evita qualquer scroll indesejado na página principal */
+  overflow: hidden;
 }
 
-/* Container que fixa o layout rigorosamente no tamanho da ecrã */
 .fs-container {
   width: 100vw;
   height: 100vh;
@@ -67,7 +66,7 @@ body {
   border-radius: 8px;
   margin-bottom: 10px;
   gap: 12px;
-  flex-shrink: 0; /* Impede encolhimento do topo */
+  flex-shrink: 0;
 }
 
 .fs-header h1 {
@@ -104,18 +103,16 @@ body {
 .fs-pill:hover { border-color: var(--text-muted); }
 .fs-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
 
-/* Wrapper principal que segura os painéis lado a lado */
 .fs-content-wrapper {
   display: flex;
   flex: 1;
   gap: 12px;
   overflow: hidden;
   position: relative;
-  min-height: 0; /* CRÍTICO: Permite que os filhos flex shrink em altura */
+  min-height: 0;
   min-width: 0;
 }
 
-/* Painel Esquerdo: Tabela e Controlo */
 .fs-main-panel {
   flex: 1;
   display: flex;
@@ -144,11 +141,10 @@ body {
   padding: 8px 12px;
   background: var(--card-bg);
   color: var(--text-main);
-  border: 1px solid var(--btn-border);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 #searchBox:focus {
@@ -162,18 +158,16 @@ body {
   overflow-x: auto; 
 }
 
-/* Botões de filtro (Chips) e Ordenação alinhados com design sóbrio */
 .fs-chip, .btn-sort {
   background: var(--btn-bg);
   color: var(--btn-text);
-  border: 1px solid var(--btn-border);
+  border: 1px solid var(--border-color);
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s ease;
 }
 
 .fs-chip {
@@ -181,19 +175,10 @@ body {
   letter-spacing: 0.02em;
 }
 
-/* Hover simples e nítido */
-.fs-chip:hover, .btn-sort:hover {
-  background: var(--btn-hover-bg);
-  color: var(--text-main);
-  border-color: var(--text-muted);
-}
-
-/* Estado Ativo: Contraste Total (Preto no Light Mode / Branco no Dark Mode) */
 .fs-chip.active, .btn-sort.active {
-  background: var(--btn-active-bg);
-  color: var(--btn-active-text);
-  border-color: var(--btn-active-bg);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: var(--primary-color);
+  color: #ffffff;
+  border-color: var(--primary-color);
 }
 
 .sort-group { 
@@ -201,7 +186,6 @@ body {
   gap: 6px; 
 }
 
-/* ÁREA DE SCROLL APENAS NA TABELA */
 .fs-table-wrapper {
   flex: 1;
   overflow-y: auto;
@@ -209,7 +193,7 @@ body {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 0 0 8px 8px;
-  min-height: 0; /* CRÍTICO: Isola o scroll apenas a este container */
+  min-height: 0;
 }
 
 .fs-table {
@@ -224,7 +208,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 2;
-  padding: 10px 12px;
+  padding: 12px;
   font-weight: 700;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-muted);
@@ -232,7 +216,7 @@ body {
 }
 
 .fs-table td {
-  padding: 8px 12px;
+  padding: 12px;
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
   white-space: nowrap;
@@ -247,10 +231,10 @@ body {
 .fs-row:hover { background: var(--header-bg); }
 
 .fs-img {
-  width: 36px;
-  height: 36px;
+  width: 50px;
+  height: 50px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid var(--border-color);
   display: block;
 }
@@ -271,11 +255,10 @@ body {
 .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; border-color: rgba(59, 130, 246, 0.3); }
 .badge-indefinido { background: rgba(100, 116, 139, 0.15); color: #64748b; border-color: rgba(100, 116, 139, 0.3); }
 
-/* PAINEL DO MAPA */
 .fs-map-panel {
   display: none;
   flex: 1;
-  min-height: 0; /* Evita que o mapa sobressaia verticalmente */
+  min-height: 0;
   min-width: 0;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -298,7 +281,7 @@ body {
   border-bottom: 1px solid var(--border-color);
   font-size: 0.85rem;
   font-weight: bold;
-  flex-shrink: 0; /* Mantém a barra fixa no topo do mapa */
+  flex-shrink: 0;
 }
 
 .btn-close-map {
@@ -313,11 +296,10 @@ body {
 #full-map {
   width: 100%;
   flex: 1;
-  min-height: 0; /* Preenche com precisão o espaço restante do painel */
+  min-height: 0;
   z-index: 1;
 }
 
-/* Estilos do Popup do Leaflet */
 .map-popup-card { display: flex; gap: 8px; width: 200px; }
 .map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
 .map-popup-info { font-size: 11px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
@@ -325,7 +307,6 @@ body {
 .map-popup-desc { color: #64748b; font-size: 10px; margin-top: 4px; }
 .map-popup-link { font-size: 10px; font-weight: bold; text-decoration: none; margin-top: 6px; display: inline-block; }
 
-/* RESPONSIVIDADE (MOBILE OVERLAY) */
 @media (max-width: 768px) {
   .fs-map-panel.visible {
     position: fixed;
@@ -341,24 +322,22 @@ body {
 </style>
 
 <div class="fs-container" role="main">
-  
   <header class="fs-header">
     <h1>🐾 Alertas</h1>
     <nav class="fs-nav-links" aria-label="Navegação Principal">
       <button type="button" class="fs-pill" id="btnToggleMap" onclick="toggleMap()">🗺️ Mapa</button>
       <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
-        <div class="sort-group">
-          <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">Por Prioridade</button>
-          <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
-        </div>
-        <div class="fs-chips-group" role="group" aria-label="Filtrar casos urgentes">
-          <button type="button" class="fs-chip" id="btnUrgentes" onclick="toggleUrgentes(this)" aria-pressed="false">🚨 Urgentes</button>
-        </div>
+      <div class="sort-group">
+        <button type="button" class="btn-sort active" id="sortPriorityBtn" onclick="setSortMode('priority')">Por Prioridade</button>
+        <button type="button" class="btn-sort" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
+      </div>
+      <div class="fs-chips-group" role="group" aria-label="Filtrar casos urgentes">
+        <button type="button" class="fs-chip" id="btnUrgentes" onclick="toggleUrgentes(this)" aria-pressed="false">🚨 Urgentes</button>
+      </div>
     </nav>
   </header>
 
   <div class="fs-content-wrapper">
-    <!-- Painel da Tabela -->
     <div class="fs-main-panel">
       <div class="fs-control-bar">
         <input type="text" id="searchBox" placeholder="🔍 Pesquisar por espécie, local, concelho..." onkeyup="filterManifest()" aria-label="Pesquisar registos">
@@ -370,9 +349,10 @@ body {
             <tr>
               <th>Foto</th>
               <th>Triagem</th>
-              <th>Espécie / Detalhes</th>
+              <th>Espécie</th>
+              <th>Estado Físico</th>
               <th>Data</th>
-              <th>Localidade</th>
+              <th>Concelho</th>
             </tr>
           </thead>
           <tbody id="manifestList" aria-live="polite">
@@ -403,15 +383,13 @@ body {
               {% if estado_val contains 'ferido' or estado_val contains 'critico' or estado_val contains 'vulneravel' %}
                 {% assign is_urgente = true %}
               {% endif %}
-
-              {% assign raw_date = post.data_ocorrencia_inicial | default: post.date %}
               
               <tr class="fs-row" 
                   onclick="window.location='{{ post.url | relative_url }}'"
                   data-urgente="{{ is_urgente }}" 
                   data-priority="{{ priority_weight }}"
-                  data-timestamp="{{ raw_date | date: '%s' }}"
-                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }}">
+                  data-timestamp="{{ post.date | date: '%s' }}"
+                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }} {{ post.situacao }} {{ post.sexo }}">
                 
                 <td>
                   <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="fs-img" loading="lazy">
@@ -420,10 +398,17 @@ body {
                   <span class="fs-badge {{ badge_class }}">{{ post.nivel_alerta | default: "" }}</span>
                 </td>
                 <td>
-                  <strong>{{ post.especie | default: "Animal" }}</strong>{% if post.estado_fisico %} — {{ post.estado_fisico }}{% endif %}
+                  <strong>{{ post.especie | default: "Animal" }}</strong>
                 </td>
-                <td>{{ raw_date | date: "%d/%m/%Y" }}</td>
-                <td>📍 {{ post.localidade | default: post.concelho | default: post.distrito | default: post.localizacao  | default: "Local não indicado" }}</td>
+                <td>
+                  {{ post.estado_fisico | default: "Não especificado" }}
+                </td>
+                <td>
+                  {{ post.date | date: "%d/%m/%Y" }}
+                </td>
+                <td>
+                  📍 {{ post.concelho | default: post.distrito | default: "Concelho não indicado" }}
+                </td>
               </tr>
             {% endfor %}
           </tbody>
@@ -431,7 +416,6 @@ body {
       </div>
     </div>
 
-    <!-- Painel do Mapa -->
     <div class="fs-map-panel" id="mapPanel">
       <div class="fs-map-header">
         <span>🗺️ Mapa Geral de Ocorrências</span>
@@ -453,7 +437,6 @@ body {
     sortManifestRows();
   });
 
-  /* LÓGICA DO MAPA */
   function toggleMap() {
     const mapPanel = document.getElementById('mapPanel');
     const btnToggle = document.getElementById('btnToggleMap');
@@ -475,7 +458,7 @@ body {
     map = L.map('full-map', { attributionControl: false }).setView([39.5572, -7.8537], 7);
 
     L.control.attribution({ prefix: false })
-      .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | 🇵🇸')
+      .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors')
       .addTo(map);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
@@ -512,7 +495,7 @@ body {
           id: {{ post.id | default: post.slug | jsonify }},
           especie: {{ post.especie | default: "Animal" | jsonify }},
           estado: {{ post.estado_fisico | default: 'N/D' | jsonify }},
-          local: {{ post.localizacao | default: post.localidade | default: post.concelho | jsonify }},
+          local: {{ post.concelho | default: post.distrito | default: post.localizacao | jsonify }},
           url: {{ post.url | relative_url | jsonify }},
           color: {{ theme_color | jsonify }},
           imagem: {{ post.imagem | default: '' | jsonify }},
@@ -531,7 +514,6 @@ body {
       });
 
       var marker = L.marker([lat, lon], { icon: customPinIcon });
-
       var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="Foto">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:9px; color:#94a3b8; background:#f1f5f9;">Sem Foto</div>';
       
       marker.bindPopup(
@@ -597,7 +579,6 @@ body {
     setTimeout(() => map.invalidateSize(), 300);
   }
 
-  /* FILTROS E ORDENAÇÃO */
   function normalizeText(text) {
     return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
   }
@@ -637,11 +618,11 @@ body {
     if (currentSortMode === 'priority') {
       priorityBtn.classList.add('active');
       dateBtn.classList.remove('active');
-      dateBtn.innerHTML = "📅 Por Data";
+      dateBtn.innerHTML = "Por Data";
     } else {
       dateBtn.classList.add('active');
       priorityBtn.classList.remove('active');
-      dateBtn.innerHTML = sortDateDescending ? "📅 Por Data (Mais Recente)" : "📅 Por Data (Mais Antiga)";
+      dateBtn.innerHTML = sortDateDescending ? "Por Data (Mais Recente)" : "Por Data (Mais Antiga)";
     }
 
     sortManifestRows();

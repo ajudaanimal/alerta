@@ -492,14 +492,14 @@ function getSpeciesEmoji(especieStr) {
 
 function criarMarcador(lat, lon, item) {
   var emojiIcon = getSpeciesEmoji(item.especie);
-  var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + '; font-size: 14px; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3);">' + emojiIcon + '</div>';
+  var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + '; font-size: 16px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3);">' + emojiIcon + '</div>';
 
   var customIcon = L.divIcon({
     className: '',
     html: iconHtml,
-    iconSize: [28, 28],
-    iconAnchor: [14, 14],
-    popupAnchor: [0, -14]
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
   });
 
   var marker = L.marker([lat, lon], { icon: customIcon });
@@ -507,29 +507,32 @@ function criarMarcador(lat, lon, item) {
   marker.options.itemIndex = item.index;
   marker.options.urgent = item.urgent;
 
-  // Tooltip posicionado à esquerda com Espécie e Estado Físico
-  var tooltipText = "<strong>" + item.especie + "</strong>" + (item.estado ? " — " + item.estado : "");
+  var condicaoTexto = item.estado_fisico || item.estado || 'Condição N/D';
+  var tooltipText = "<strong>" + (item.especie || 'Animal') + "</strong> — " + condicaoTexto;
+  
   marker.bindTooltip(tooltipText, {
     direction: 'left',
-    offset: [-10, 0]
+    offset: [-12, 0]
   });
 
-  var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:8px; color:#94a3b8;">Sem Foto</div>';
+  var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8; background:#f1f5f9;">Sem Foto</div>';
   
-  // Popup principal enriquecido e otimizado
+  var nivelAlerta = item.nivel_alerta || item.triagem || 'Alerta';
+  var infoSecundaria = nivelAlerta + " — " + condicaoTexto;
+
   marker.bindPopup(
-    '<div class="map-popup-card">' +
+    '<div class="map-popup-card" style="font-size: 13px;">' +
       imgHtml +
-      '<div class="map-popup-info">' +
+      '<div class="map-popup-info" style="display: flex; flex-direction: column; justify-content: space-between; gap: 6px;">' +
         '<div>' +
-          '<div class="map-popup-title" style="color: ' + item.color + ';">' + item.especie + '</div>' +
-          '<div style="font-size: 9px; font-weight: 600; margin: 2px 0;">📋 ' + (item.estado || 'Estado N/D') + '</div>' +
-          '<div class="map-popup-desc">📍 ' + item.local + '</div>' +
+          '<div class="map-popup-title" style="color: ' + item.color + '; font-size: 15px; font-weight: 700; line-height: 1.2;">' + (item.especie || 'Animal') + '</div>' +
+          '<div style="font-size: 12px; font-weight: 600; color: #1e293b; margin-top: 4px;">📋 ' + infoSecundaria + '</div>' +
+          '<div class="map-popup-desc" style="font-size: 11px; color: #475569; margin-top: 3px;">📍 ' + (item.local || item.concelho || 'Local não especificado') + '</div>' +
         '</div>' +
-        '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + ';">Ver detalhes →</a>' +
+        '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + '; font-size: 12px; font-weight: 700; text-decoration: none; margin-top: 4px; display: inline-block;">Ver detalhes →</a>' +
       '</div>' +
     '</div>',
-    { maxWidth: 260 }
+    { maxWidth: 280 }
   );
 
   return marker;

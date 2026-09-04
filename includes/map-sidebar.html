@@ -1,0 +1,89 @@
+<div class="map-search-bar">
+  <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, concelho..." onkeyup="filterMapManifest()">
+</div>
+
+<div class="map-list-wrapper" id="mapManifestList">
+  {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
+  {% assign scored_posts = "" | split: "" %}
+  
+  {% for post in sorted_posts %}
+    {% assign t = post.triagem | strip | downcase %}
+    {% assign est_fisico = post.estado_fisico | strip | downcase %}
+    {% assign t_score = 10 %}
+    {% assign ef_score = 10 %}
+
+    {% if t contains 'vermelho' %}{% assign t_score = 1 %}
+    {% elsif t contains 'laranja' %}{% assign t_score = 2 %}
+    {% elsif t contains 'amarelo' %}{% assign t_score = 3 %}
+    {% elsif t contains 'azul' %}{% assign t_score = 4 %}
+    {% endif %}
+
+    {% if est_fisico contains 'crítico' or est_fisico contains 'critico' %}{% assign ef_score = 1 %}
+    {% elsif est_fisico contains 'ferido' %}{% assign ef_score = 2 %}
+    {% elsif est_fisico contains 'vulnerável' or est_fisico contains 'vulneravel' %}{% assign ef_score = 3 %}
+    {% else %}{% assign ef_score = 4 %}
+    {% endif %}
+
+    {% assign sar_score = t_score | times: 100 | plus: ef_score %}
+    {% assign scored_post = sar_score | append: "___" | append: forloop.index0 %}
+    {% assign scored_posts = scored_posts | push: scored_post %}
+  {% endfor %}
+
+  {% assign sorted_scored = scored_posts | sort %}
+
+  {% for item in sorted_scored %}
+    {% assign parts = item | split: "___" %}
+    {% assign sar_score = parts[0] | times: 1 %}
+    {% assign original_index = parts[1] | times: 1 %}
+    {% assign post = sorted_posts[original_index] %}
+
+    {% assign t = post.triagem | strip | downcase %}
+    {% assign est_fisico = post.estado_fisico | strip | downcase %}
+    {% assign est_caso = post.estado_caso | strip | downcase %}
+
+    {% assign badge_class = "badge-default" %}
+    {% assign color_key = "default" %}
+    {% if est_caso contains 'resolvido' %}
+      {% assign badge_class = "badge-azul" %}
+      {% assign color_key = "azul" %}
+    {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
+      {% assign badge_class = "badge-vermelho" %}
+      {% assign color_key = "vermelho" %}
+    {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
+      {% assign badge_class = "badge-laranja" %}
+      {% assign color_key = "laranja" %}
+    {% elsif t contains 'amarelo' %}
+      {% assign badge_class = "badge-amarelo" %}
+      {% assign color_key = "amarelo" %}
+    {% endif %}
+
+    <div class="map-card-item map-row"
+         onclick="handleCardClick(event, {{ original_index }}, '{{ post.url | relative_url }}')"
+         data-color="{{ color_key }}"
+         data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
+      
+      <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
+      
+      <div class="map-card-body">
+        <div class="map-card-top-row">
+          <div class="map-card-title">{{ post.especie | default: "Animal" }}</div>
+          <div class="map-card-tags">
+            <span class="priority-badge">SAR: {{ sar_score }}</span>
+            <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
+          </div>
+        </div>
+
+        <div class="map-card-details-row">
+          <span class="map-card-sub">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</span>
+          <span class="map-card-location">📍 {{ post.concelho | default: post.localidade | default: post.distrito | default: "N/D" }}</span>
+        </div>
+        
+        <div class="map-card-actions">
+          <span>🗺️ 1 clique: Ver no Mapa</span>
+          <span>•</span>
+          <span>📄 2 cliques: Ficha Completa</span>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

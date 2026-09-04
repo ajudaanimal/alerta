@@ -33,8 +33,6 @@
             --text-muted: #64748b;
             --card-bg: #ffffff;
             --border-color: #cbd5e1;
-            --accent-emergency: #ef4444;
-            --accent-report: #10b981;
             --pill-bg: #f1f5f9;
             --pill-text: #334155;
         }
@@ -66,106 +64,70 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 20px;
+            padding: 10px 16px;
             background: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
+            gap: 8px;
             flex-wrap: wrap;
-            gap: 12px;
         }
 
         .site-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
             text-decoration: none;
             color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            white-space: nowrap;
         }
 
         .header-right-group {
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            gap: 6px;
             margin-left: auto;
+            flex-wrap: wrap;
         }
 
         .fs-nav-links {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .fs-pill {
             background: var(--pill-bg);
             color: var(--pill-text);
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 5px 10px;
+            border-radius: 16px;
             text-decoration: none;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             border: 1px solid var(--border-color);
-            transition: opacity 0.2s;
+            white-space: nowrap;
         }
 
-        .fs-pill:hover {
-            opacity: 0.85;
-        }
+        .btn-emergency { background-color: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        html.dark-mode .btn-emergency { background-color: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
 
-        .btn-home {
-            background-color: #e0f2fe;
-            color: #0369a1;
-            border-color: #bae6fd;
-        }
-
-        html.dark-mode .btn-home {
-            background-color: #082f49;
-            color: #bae6fd;
-            border-color: #0369a1;
-        }
-
-        .btn-emergency {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border-color: #fca5a5;
-        }
-
-        html.dark-mode .btn-emergency {
-            background-color: #450a0a;
-            color: #fca5a5;
-            border-color: #7f1d1d;
-        }
-
-        .btn-report {
-            background-color: #d1fae5;
-            color: #065f46;
-            border-color: #6ee7b7;
-        }
-
-        html.dark-mode .btn-report {
-            background-color: #022c22;
-            color: #6ee7b7;
-            border-color: #065f46;
-        }
+        .btn-report { background-color: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        html.dark-mode .btn-report { background-color: #022c22; color: #6ee7b7; border-color: #065f46; }
 
         .theme-toggle-btn {
-            background: var(--card-bg);
+            background: var(--pill-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 6px 10px;
-            border-radius: 6px;
+            padding: 5px 8px;
+            border-radius: 16px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         /* Conteúdo Principal */
         .site-main-content {
-            padding: 20px;
+            padding: 16px;
             width: 100%;
-            max-width: none !important;
-            margin: 0;
+            max-width: 1400px;
+            margin: 0 auto;
             box-sizing: border-box;
             flex: 1;
         }
@@ -174,7 +136,7 @@
         .site-global-footer {
             background: var(--card-bg);
             border-top: 1px solid var(--border-color);
-            padding: 24px 20px;
+            padding: 20px 16px;
             font-size: 13px;
             color: var(--text-muted);
             margin-top: auto;
@@ -222,20 +184,30 @@
             gap: 8px;
             font-size: 12px;
         }
+
+        @media (max-width: 600px) {
+            .site-global-header {
+                padding: 8px 10px;
+            }
+            .fs-pill {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <!-- Cabeçalho Global -->
     <header class="site-global-header">
-        <a href="{{ '/' | relative_url }}" class="site-title">🐾 Ajuda Animal</a>
+        <a href="{{ '/' | relative_url }}" class="site-title">🐾 Alerta</a>
         
         <div class="header-right-group">
             <nav class="fs-nav-links" aria-label="Navegação Principal">
-                <a href="{{ '/' | relative_url }}" class="fs-pill btn-home" aria-label="Página Principal">🏠 Início</a>
-                <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill btn-emergency" aria-label="Contactos">📞 Contactos</a>
-                <a href="{{ '/veterinarios.html' | relative_url }}" class="fs-pill" aria-label="Ver Mapa de Veterinários">🗺️ Veterinários</a>
-                <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report" aria-label="Reportar nova ocorrência">➕ Reportar</a>
+                <a href="{{ '/' | relative_url }}" class="fs-pill">🏠 Início</a>
+                <a href="{{ '/mapa.html' | relative_url }}" class="fs-pill">🗺️ Mapa</a>
+                <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill btn-emergency">📞 Contactos</a>
+                <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report">➕ Reportar</a>
             </nav>
             
             <button type="button" class="theme-toggle-btn" onclick="toggleGlobalDarkMode()" title="Alternar Tema">🌓</button>
@@ -254,13 +226,13 @@
                 <span><strong>🐾 Ajuda Animal Portugal</strong> — Plataforma comunitária de sinalização e apoio.</span>
                 <div class="footer-links">
                     <a href="{{ '/emergencia/' | relative_url }}">Contactos Úteis</a>
-                    <a href="{{ '/veterinarios.html' | relative_url }}">Mapa de Veterinários</a>
-                    <a href="https://github.com/ajudaanimal/alerta" target="_blank" rel="noopener noreferrer">Repositório GitHub</a>
+                    <a href="{{ '/mapa.html' | relative_url }}">Mapa</a>
+                    <a href="https://github.com/ajudaanimal/alerta" target="_blank" rel="noopener noreferrer">GitHub</a>
                 </div>
             </div>
             <div class="footer-bottom">
                 <p>Este site não substitui os serviços oficiais de emergência (112, SEPNA/GNR, PSP).</p>
-                <p>&copy; {{ 'now' | date: "%Y" }} Ajuda Animal. Licenciado sob termos comunitários.</p>
+                <p>&copy; {{ 'now' | date: "%Y" }} Ajuda Animal.</p>
             </div>
         </div>
     </footer>

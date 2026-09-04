@@ -30,361 +30,186 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --primary-color: #38bdf8;
   }
 
-  /* Full-screen layout with minimal margins */
+  /* FORÇAR FULL BLEED (Quebra as restrições de largura do layout default) */
   .map-page-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 60px);
     width: 100vw;
-    max-width: 100%;
-    margin: 0;
-    padding: 6px;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
     box-sizing: border-box;
-    gap: 6px;
-    overflow: hidden;
+    padding: 15px;
+    background: var(--bg-main);
   }
 
-  .map-toggle-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-
-  .map-toggle-bar:hover {
-    background: var(--header-bg);
-  }
-
-  .map-content-layout {
-    display: grid;
-    grid-template-columns: 420px 1fr;
-    gap: 6px;
-    width: 100%;
-    flex: 1;
-    min-height: 0;
-    transition: grid-template-columns 0.3s ease, gap 0.3s ease;
-  }
-
-  .map-content-layout.map-hidden {
-    grid-template-columns: 0px 1fr;
-    gap: 0px;
-  }
-
-  .map-content-layout.map-hidden .map-display-container {
-    opacity: 0;
-    pointer-events: none;
-    overflow: hidden;
+  /* LAYOUT DESKTOP - SCROLL INTERNO NA LISTA, MAPA FIXO */
+  @media (min-width: 1024px) {
+    .map-page-wrapper {
+      height: calc(100vh - 70px); /* Ajustar dependendo do header do site */
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .map-content-layout {
+      display: grid;
+      grid-template-columns: 480px 1fr;
+      gap: 15px;
+      width: 100%;
+      max-width: 1600px; /* Limite de segurança para ecrãs ultrawide */
+      margin: 0 auto;
+      flex: 1;
+      min-height: 0;
+    }
+    .map-display-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+      min-height: 0;
+    }
+    .map-sidebar-panel {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      height: 100%;
+      min-height: 0;
+    }
+    .map-list-wrapper {
+      flex: 1;
+      overflow-y: auto; /* SCROLL INTERNO ATIVO APENAS AQUI */
+    }
+    /* Formatação Tabela Desktop */
+    .map-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+    .map-table th { background: var(--header-bg); position: sticky; top: 0; z-index: 2; padding: 12px 14px; font-weight: 700; border-bottom: 1px solid var(--border-color); color: var(--text-muted); }
+    .map-table td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); vertical-align: middle; color: var(--text-main); }
+    .map-row { cursor: pointer; transition: background 0.1s; }
+    .map-row:hover { background: var(--header-bg); }
+    .map-row-img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); display: block; }
   }
 
   .map-external-filter {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    padding: 6px 10px;
-    border-radius: 6px;
+    padding: 10px 14px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
     flex-shrink: 0;
   }
+  .map-filter-header { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
+  .map-filter-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-pill { font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-weight: 600; color: var(--text-main); transition: all 0.2s; }
+  .filter-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
 
-  .map-filter-header {
-    font-size: 9px;
-    font-weight: 800;
-    color: var(--text-muted);
-    letter-spacing: 0.5px;
-  }
+  .map-display-panel { position: relative; display: flex; flex-direction: column; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; flex: 1; min-height: 0; z-index: 1; }
+  #full-map { width: 100%; height: 100%; flex: 1; touch-action: pan-x pan-y; }
 
-  .map-filter-pills {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-  }
+  .map-search-bar { padding: 12px 14px; background: var(--header-bg); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+  .map-search-input { width: 100%; padding: 8px 12px; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; box-sizing: border-box; outline: none; }
 
-  .filter-pill {
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    background: var(--card-bg);
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--text-main);
-    transition: all 0.2s;
-  }
-  .filter-pill.active {
-    background: var(--primary-color);
-    color: #ffffff;
-    border-color: var(--primary-color);
-  }
-
-  .map-display-container {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    height: 100%;
-    min-height: 0;
-    transition: opacity 0.2s ease;
-  }
-
-  .map-display-panel {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    overflow: hidden;
-    flex: 1;
-    min-height: 0;
-  }
-
-  #full-map {
-    width: 100%;
-    height: 100%;
-    flex: 1;
-    touch-action: pan-x pan-y;
-  }
-
-  .map-sidebar-panel {
-    display: flex;
-    flex-direction: column;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    overflow: hidden;
-    height: 100%;
-    min-height: 0;
-  }
-
-  .map-search-bar {
-    padding: 8px 10px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0;
-  }
-
-  .map-search-input {
-    width: 100%;
-    padding: 6px 10px;
-    background: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 12px;
-    box-sizing: border-box;
-    outline: none;
-  }
-
-  .map-list-wrapper {
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
-  }
-
-  /* Desktop Table view */
-  .map-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: 11px;
-  }
-
-  .map-table th {
-    background: var(--header-bg);
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    padding: 8px 10px;
-    font-weight: 700;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-muted);
-  }
-
-  .map-table td {
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--border-color);
-    vertical-align: middle;
-    color: var(--text-main);
-  }
-
-  .map-row {
-    cursor: pointer;
-    transition: background 0.1s;
-  }
-  .map-row:hover {
-    background: var(--header-bg);
-  }
-
-  .map-row-img {
-    width: 36px;
-    height: 36px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    display: block;
-  }
-
-  .priority-badge {
-    font-size: 8px;
-    font-weight: 700;
-    padding: 1px 4px;
-    border-radius: 3px;
-    background: var(--header-bg);
-    color: var(--text-muted);
-    opacity: 0.8;
-    display: inline-block;
-  }
-
-  .map-badge {
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 4px;
-    display: inline-block;
-  }
+  /* Elementos Partilhados (Badges) */
+  .priority-badge { font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 4px; background: var(--header-bg); color: var(--text-muted); display: inline-block; }
+  .map-badge { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; display: inline-block; letter-spacing: 0.3px; }
   .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
   .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
   .badge-amarelo  { background: rgba(217, 119, 6, 0.2); color: #d97706; }
   .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  .species-pin {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-    border: 2px solid #ffffff;
-  }
+  /* Map Popups */
+  .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3); border: 2px solid #ffffff; }
+  .leaflet-popup-content-wrapper { background: var(--card-bg) !important; color: var(--text-main) !important; border: 1px solid var(--border-color); border-radius: 8px; padding: 0; }
+  .leaflet-popup-tip { background: var(--card-bg) !important; border: 1px solid var(--border-color); }
+  .leaflet-popup-content { margin: 10px; line-height: 1.3; }
+  .map-popup-card { display: flex; gap: 10px; width: 220px; align-items: center; }
+  .map-popup-img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; background: var(--header-bg); flex-shrink: 0; border: 1px solid var(--border-color); }
+  .map-popup-info { display: flex; flex-direction: column; font-size: 11px; width: 100%; }
+  .map-popup-title { font-weight: 800; font-size: 13px; line-height: 1.2; }
+  .map-popup-desc { color: var(--text-muted); margin: 3px 0; }
 
-  .leaflet-popup-content-wrapper {
-    background: var(--card-bg) !important;
-    color: var(--text-main) !important;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 0;
-  }
-  .leaflet-popup-tip {
-    background: var(--card-bg) !important;
-    border: 1px solid var(--border-color);
-  }
-  .leaflet-popup-content {
-    margin: 10px;
-    line-height: 1.3;
-  }
-  .map-popup-card { display: flex; gap: 10px; width: 210px; align-items: center; }
-  .map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; background: var(--header-bg); flex-shrink: 0; border: 1px solid var(--border-color); }
-  .map-popup-info { display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; font-size: 10px; width: 100%; }
-  .map-popup-title { font-weight: 800; font-size: 11px; }
-  .map-popup-desc { color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 2px 0; }
-
-  /* Mobile Clean Card Layout (No more messy table blocks) */
+  /* LAYOUT MOBILE - SCROLL NATIVO, CARDS DECENTES */
   @media (max-width: 1023px) {
     .map-page-wrapper {
-      height: calc(100vh - 50px);
-      padding: 2px;
-      gap: 4px;
+      height: auto; /* A página cresce nativamente */
+      padding: 10px;
     }
     .map-content-layout {
-      grid-template-columns: 1fr !important;
       display: flex;
       flex-direction: column;
+      gap: 12px;
+      width: 100%;
     }
     .map-display-container {
-      height: 320px;
+      height: 400px; /* Altura fixa para o mapa no mobile */
       flex-shrink: 0;
     }
-    .map-content-layout.map-hidden .map-display-container {
-      height: 0px !important;
-      display: none;
-    }
     .map-sidebar-panel {
-      height: 100%;
+      height: auto;
+      border: none;
+      background: transparent;
     }
+    .map-list-wrapper {
+      overflow: visible; /* Sem scroll interno! */
+    }
+    .map-search-bar {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    /* Transformação da Tabela em Cards Profissionais */
+    .map-table, .map-table tbody, .map-table tr, .map-table td { display: block; width: 100%; box-sizing: border-box; }
+    .map-table thead { display: none; }
     
-    /* Transform table into clean native mobile cards */
-    .map-table, .map-table tbody, .map-table tr, .map-table td {
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .map-table thead {
-      display: none;
-    }
     .map-row {
       display: grid;
-      grid-template-columns: 50px 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 2px 10px;
-      padding: 10px;
+      grid-template-columns: 76px 1fr;
+      grid-template-rows: auto auto auto auto;
+      gap: 2px 14px;
+      padding: 14px;
       background: var(--card-bg);
-      border-bottom: 1px solid var(--border-color);
-      border-radius: 0;
-      margin-bottom: 0;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      margin-bottom: 12px;
       align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
-    .map-row td {
-      padding: 0 !important;
-      border: none !important;
-      width: auto !important;
-    }
-    /* Photo column spanning rows */
-    .map-row td:nth-child(1) {
-      grid-row: span 3;
-    }
-    .map-row-img {
-      width: 50px;
-      height: 50px;
-      border-radius: 6px;
-    }
-    /* Urgência & Triagem */
-    .map-row td:nth-child(2) {
-      grid-column: 2;
-      grid-row: 1;
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    /* Espécie */
-    .map-row td:nth-child(3) {
-      grid-column: 2;
-      grid-row: 2;
-      font-size: 13px;
-      font-weight: 700;
-    }
+    .map-row td { padding: 0 !important; border: none !important; }
+    
+    /* Imagem à esquerda ocupando várias linhas */
+    .map-row td:nth-child(1) { grid-column: 1; grid-row: 1 / 5; align-self: start; }
+    .map-row-img { width: 76px; height: 76px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    
+    /* Tags em cima */
+    .map-row td:nth-child(2) { grid-column: 2; grid-row: 1; display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
+    
+    /* Espécie a negrito */
+    .map-row td:nth-child(3) { grid-column: 2; grid-row: 2; font-size: 16px; font-weight: 800; line-height: 1.1; }
+    
     /* Estado Físico */
-    .map-row td:nth-child(4) {
-      grid-column: 2;
-      grid-row: 3;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-    /* Concelho / Location hidden or merged if needed, or shown cleanly */
-    .map-row td:nth-child(5) {
-      display: none; /* or displayed elsewhere if preferred */
+    .map-row td:nth-child(4) { grid-column: 2; grid-row: 3; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 6px; }
+    
+    /* Concelho (Separado por linha sútil) */
+    .map-row td:nth-child(5) { 
+      grid-column: 2; 
+      grid-row: 4; 
+      font-size: 12px; 
+      color: var(--text-muted); 
+      padding-top: 8px !important; 
+      border-top: 1px solid var(--header-bg) !important; 
+      display: flex; 
+      align-items: center;
     }
   }
 </style>
 
 <div class="map-page-wrapper">
-  
-  <div class="map-toggle-bar" onclick="toggleMapVisibility()">
-    <span>🗺️ <span id="mapToggleText">Ocultar Mapa Interativo</span></span>
-    <span id="mapToggleIcon">▲</span>
-  </div>
-
-  <div class="map-content-layout" id="mapContentLayout">
+  <div class="map-content-layout">
     
     <div class="map-display-container">
       <div class="map-external-filter">
@@ -397,7 +222,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         </div>
       </div>
       
-      <div class="map-display-panel" id="mapDisplayPanel">
+      <div class="map-display-panel">
         <div id="full-map"></div>
       </div>
     </div>
@@ -410,17 +235,17 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         <table class="map-table">
           <thead>
             <tr>
-              <th style="width: 42px;">Foto</th>
+              <th style="width: 50px;">Foto</th>
               <th>Urgência & Triagem</th>
               <th>Espécie</th>
               <th>Estado Físico</th>
-              <th>Concelho</th>
+              <th>Localização</th>
             </tr>
           </thead>
           <tbody id="mapManifestList">
             {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
-            
             {% assign scored_posts = "" | split: "" %}
+            
             {% for post in sorted_posts %}
               {% assign t = post.triagem | strip | downcase %}
               {% assign est_fisico = post.estado_fisico | strip | downcase %}
@@ -484,9 +309,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
               <tr class="map-row" 
                   id="row-{{ original_index }}"
-                  onclick="focarOcorrencia({{ original_index }}, '{{ post.url | relative_url }}')"
+                  onclick="window.location.href='{{ post.url | relative_url }}'"
                   data-color="{{ color_key }}"
-                  data-sar="{{ sar_score }}"
                   data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
                 <td>
                   <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-row-img" loading="lazy">
@@ -496,12 +320,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
                   <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
                 </td>
                 <td>
-                  <strong>{{ post.especie | default: "Animal" }}</strong>
+                  {{ post.especie | default: "Animal" }}
                 </td>
                 <td>
-                  <span style="font-size: 11px; font-weight: 600;">{{ post.estado_fisico | default: "Estado N/D" }}</span>
+                  {{ post.estado_fisico | default: "Estado N/D" }}
                 </td>
-                <td>📍 {{ post.concelho | default: post.localidade | default: post.distrito | default: "Indefinido" }}</td>
+                <td>📍 {{ post.concelho | default: post.localidade | default: post.distrito | default: "N/D" }}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -516,43 +340,16 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let allMarkersLayerGroup;
   let allMarkersData = [];
   let activeColorFilter = 'all';
-  let mapInitialized = false;
 
   document.addEventListener("DOMContentLoaded", function() {
-    // Initialize map immediately on page load across all devices so it's active right away
     initMap();
-    mapInitialized = true;
   });
-
-  function toggleMapVisibility() {
-    const layout = document.getElementById('mapContentLayout');
-    const icon = document.getElementById('mapToggleIcon');
-    const toggleText = document.getElementById('mapToggleText');
-    
-    layout.classList.toggle('map-hidden');
-    const isHidden = layout.classList.contains('map-hidden');
-    
-    if (!isHidden) {
-      icon.textContent = '▲';
-      toggleText.textContent = 'Ocultar Mapa Interativo';
-      setTimeout(() => { 
-        if (mapInstance) mapInstance.invalidateSize(); 
-      }, 150);
-    } else {
-      icon.textContent = '▼';
-      toggleText.textContent = 'Mostrar Mapa Interativo';
-    }
-  }
 
   function getSpeciesEmoji(especieStr) {
     const esp = especieStr ? especieStr.toLowerCase() : '';
-    if (esp.includes('gato') || esp.includes('felino')) {
-      return '🐱';
-    } else if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) {
-      return '🐶';
-    } else if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('passaro') || esp.includes('gaivota') || esp.includes('pombo')) {
-      return '🐦';
-    }
+    if (esp.includes('gato') || esp.includes('felino')) return '🐱';
+    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
+    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('passaro') || esp.includes('gaivota') || esp.includes('pombo')) return '🐦';
     return '🐾';
   }
 
@@ -563,7 +360,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       attributionControl: false,
       tap: false,
       touchZoom: true
-    }).setView([39.5572, -7.8537], 7);
+    });
+
+    // Limites de Portugal Continental para um Zoom Inicial Perfeito
+    var portugalBounds = [
+      [36.95, -9.56], // Sudoeste
+      [42.15, -6.19]  // Nordeste
+    ];
+    mapInstance.fitBounds(portugalBounds);
 
     L.control.attribution({ prefix: false })
       .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors')
@@ -595,59 +399,48 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% assign color_key = "amarelo" %}
         {% endif %}
 
-        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 50 | escape %}
-
         {
-          index: {{ forloop.index0 }},
           especie: {{ post.especie | default: "Animal" | jsonify }},
           concelho: {{ post.concelho | default: post.localidade | default: post.distrito | default: '' | jsonify }},
           estado_fisico: {{ post.estado_fisico | default: "Estado N/D" | jsonify }},
           url: {{ post.url | relative_url | jsonify }},
           color: {{ theme_color | jsonify }},
           colorKey: {{ color_key | jsonify }},
-          imagem: {{ post.imagem | default: '' | jsonify }},
-          descricao: {{ descricao_limpa | jsonify }}
+          imagem: {{ post.imagem | default: '' | jsonify }}
         }{% unless forloop.last %},{% endunless %}
       {% endfor %}
     ];
 
     function criarMarcador(lat, lon, item) {
       var emojiIcon = getSpeciesEmoji(item.especie);
-      var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + '; font-size: 16px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3);">' + emojiIcon + '</div>';
+      var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
 
       var customIcon = L.divIcon({
         className: '',
         html: iconHtml,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16]
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        popupAnchor: [0, -15]
       });
 
       var marker = L.marker([lat, lon], { icon: customIcon });
       marker.options.colorKey = item.colorKey;
-      marker.options.itemIndex = item.index;
 
-      var tooltipText = "<strong>" + (item.especie || 'Animal') + "</strong> — " + item.estado_fisico;
-      marker.bindTooltip(tooltipText, {
-        direction: 'left',
-        offset: [-12, 0]
-      });
+      marker.bindTooltip("<strong>" + (item.especie || 'Animal') + "</strong>", { direction: 'left', offset: [-12, 0] });
 
-      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8; background:#f1f5f9;">Sem Foto</div>';
+      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">Sem Foto</div>';
       
       marker.bindPopup(
-        '<div class="map-popup-card" style="font-size: 14px;">' +
+        '<div class="map-popup-card">' +
           imgHtml +
-          '<div class="map-popup-info" style="display: flex; flex-direction: column; justify-content: space-between; gap: 5px;">' +
-            '<div>' +
-              '<div class="map-popup-title" style="color: ' + item.color + '; font-size: 16px; font-weight: 700; line-height: 1.2;">' + (item.especie || 'Animal') + '</div>' +
-              '<div style="font-size: 13px; font-weight: 600; color: #1e293b; margin-top: 3px;">📋 ' + item.estado_fisico + '</div>' +
-              '<div class="map-popup-desc" style="font-size: 12px; color: #475569; margin-top: 2px;">📍 ' + (item.concelho || 'Local não indicado') + '</div>' +
-            '</div>' +
-            '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + '; font-size: 13px; font-weight: 700; text-decoration: none; margin-top: 4px; display: inline-block;">Ver detalhes →</a>' +
+          '<div class="map-popup-info">' +
+            '<div class="map-popup-title" style="color: ' + item.color + ';">' + (item.especie || 'Animal') + '</div>' +
+            '<div style="font-weight: 600; margin-top: 2px;">' + item.estado_fisico + '</div>' +
+            '<div class="map-popup-desc">📍 ' + (item.concelho || 'Local N/D') + '</div>' +
+            '<a href="' + item.url + '" style="color: ' + item.color + '; font-weight: 700; text-decoration: none; margin-top: 4px; display: inline-block;">Ver mais →</a>' +
           '</div>' +
         '</div>',
-        { maxWidth: 280 }
+        { maxWidth: 260 }
       );
 
       return marker;
@@ -685,21 +478,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               allMarkersLayerGroup.addLayer(m);
             }
           })
-          .catch(function(err) { console.error("Erro geocoding:", err); })
-          .finally(function() {
-            indexFila++;
-            setTimeout(processarProximoLocal, 800);
-          });
+          .catch(function(err) { console.error("Geocoding Erro:", err); })
+          .finally(function() { indexFila++; setTimeout(processarProximoLocal, 800); });
       }
     }
 
     if (locaisValidos.length > 0) {
       processarProximoLocal();
     }
-  }
-
-  function focarOcorrencia(index, url) {
-    window.location.href = url;
   }
 
   function filterMapByColor(colorKey, btnElement) {
@@ -712,11 +498,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   function applyCombinedFilters() {
     var searchQuery = normalizeText(document.getElementById('mapSearchInput').value);
     
-    if (mapInitialized && mapInstance) {
+    if (mapInstance) {
       allMarkersLayerGroup.clearLayers();
       allMarkersData.forEach(function(marker) {
-        var matchesColor = (activeColorFilter === 'all' || marker.options.colorKey === activeColorFilter);
-        if (matchesColor) {
+        if (activeColorFilter === 'all' || marker.options.colorKey === activeColorFilter) {
           allMarkersLayerGroup.addLayer(marker);
         }
       });
@@ -726,15 +511,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     rows.forEach(function(row) {
       var rColor = row.getAttribute('data-color');
       var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
-      
       var matchesColor = (activeColorFilter === 'all' || rColor === activeColorFilter);
       var matchesSearch = tags.includes(searchQuery);
 
-      if (matchesColor && matchesSearch) {
-        row.style.display = "";
-      } else {
-        row.style.display = "none";
-      }
+      row.style.display = (matchesColor && matchesSearch) ? "" : "none";
     });
   }
 

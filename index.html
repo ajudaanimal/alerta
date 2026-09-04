@@ -273,14 +273,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     .map-display-container { padding: 8px; box-sizing: border-box; }
   }
 
-  /* POP-UP LEAFLET OTIMIZADO (IMAGEM GRANDE EM CIMA) */
+  /* POP-UP LEAFLET CORRIGIDO (IMAGEM AJUSTADA) */
   .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3); border: 2px solid #ffffff; }
   .leaflet-popup-content-wrapper { background: var(--card-bg) !important; color: var(--text-main) !important; border: 1px solid var(--border-color); border-radius: 10px; padding: 0; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
   .leaflet-popup-tip { background: var(--card-bg) !important; border: 1px solid var(--border-color); }
   .leaflet-popup-content { margin: 0 !important; line-height: normal; }
   
-  .map-popup-card { display: flex; flex-direction: column; width: 240px; }
-  .map-popup-img { width: 100%; height: 130px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+  .map-popup-card { display: flex; flex-direction: column; width: 240px; background: var(--card-bg); }
+  .map-popup-img { width: 100%; height: 140px; object-fit: cover; object-position: center; background: #000; border-bottom: 1px solid var(--border-color); }
   .map-popup-body { padding: 10px; display: flex; flex-direction: column; gap: 4px; }
 </style>
 

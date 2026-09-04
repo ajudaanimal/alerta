@@ -4,12 +4,19 @@ title: "Alerta Animal — Mapa e Ocorrências"
 description: "Plataforma de monitorização e alerta de ocorrências de animais"
 ---
 
-<!-- Leaflet CSS -->
+<!-- Leaflet CSS & JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<!-- Leaflet JavaScript -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <style>
+  /* 1. SOBREPOSIÇÃO FORÇADA DO CONTAINER BASE DO DEFAULT.HTML */
+  .site-main-content {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
   :root {
     --bg-main: #f8fafc;
     --card-bg: #ffffff;
@@ -30,65 +37,27 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --primary-color: #38bdf8;
   }
 
-  /* FORÇAR FULL BLEED (Quebra as restrições de largura do layout default) */
   .map-page-wrapper {
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-    box-sizing: border-box;
-    padding: 15px;
+    width: 100%;
     background: var(--bg-main);
+    box-sizing: border-box;
+    padding: 12px;
   }
 
-  /* LAYOUT DESKTOP - SCROLL INTERNO NA LISTA, MAPA FIXO */
-  @media (min-width: 1024px) {
-    .map-page-wrapper {
-      height: calc(100vh - 70px); /* Ajustar dependendo do header do site */
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .map-content-layout {
-      display: grid;
-      grid-template-columns: 480px 1fr;
-      gap: 15px;
-      width: 100%;
-      max-width: 1600px; /* Limite de segurança para ecrãs ultrawide */
-      margin: 0 auto;
-      flex: 1;
-      min-height: 0;
-    }
-    .map-display-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      height: 100%;
-      min-height: 0;
-    }
-    .map-sidebar-panel {
-      display: flex;
-      flex-direction: column;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      overflow: hidden;
-      height: 100%;
-      min-height: 0;
-    }
-    .map-list-wrapper {
-      flex: 1;
-      overflow-y: auto; /* SCROLL INTERNO ATIVO APENAS AQUI */
-    }
-    /* Formatação Tabela Desktop */
-    .map-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
-    .map-table th { background: var(--header-bg); position: sticky; top: 0; z-index: 2; padding: 12px 14px; font-weight: 700; border-bottom: 1px solid var(--border-color); color: var(--text-muted); }
-    .map-table td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); vertical-align: middle; color: var(--text-main); }
-    .map-row { cursor: pointer; transition: background 0.1s; }
-    .map-row:hover { background: var(--header-bg); }
-    .map-row-img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); display: block; }
+  /* ESTRUTURA GERAL */
+  .map-content-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  /* PAINEL DO MAPA */
+  .map-display-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
   }
 
   .map-external-filter {
@@ -99,118 +68,218 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     flex-direction: column;
     gap: 8px;
-    flex-shrink: 0;
   }
   .map-filter-header { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
-  .map-filter-pills { display: flex; gap: 8px; flex-wrap: wrap; }
-  .filter-pill { font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-weight: 600; color: var(--text-main); transition: all 0.2s; }
+  .map-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-pill { font-size: 11px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-weight: 600; color: var(--text-main); }
   .filter-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
 
-  .map-display-panel { position: relative; display: flex; flex-direction: column; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; flex: 1; min-height: 0; z-index: 1; }
-  #full-map { width: 100%; height: 100%; flex: 1; touch-action: pan-x pan-y; }
+  .map-display-panel {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+  }
 
-  .map-search-bar { padding: 12px 14px; background: var(--header-bg); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
-  .map-search-input { width: 100%; padding: 8px 12px; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; box-sizing: border-box; outline: none; }
+  #full-map {
+    width: 100%;
+    touch-action: pan-x pan-y;
+  }
 
-  /* Elementos Partilhados (Badges) */
-  .priority-badge { font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 4px; background: var(--header-bg); color: var(--text-muted); display: inline-block; }
-  .map-badge { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; display: inline-block; letter-spacing: 0.3px; }
+  /* PAINEL DA LISTA E PESQUISA */
+  .map-sidebar-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .map-search-bar {
+    padding: 10px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+  }
+  .map-search-input {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+    outline: none;
+  }
+
+  /* CARTÕES DA LISTA (PURA ESTRUTURA DIV) */
+  .map-list-wrapper { width: 100%; }
+
+  .map-card-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--card-bg);
+    cursor: pointer;
+    transition: background 0.15s ease;
+    align-items: center;
+  }
+  .map-card-item:hover { background: var(--header-bg); }
+
+  .map-card-img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+  }
+
+  .map-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .map-card-tags { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .priority-badge { font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 4px; background: var(--header-bg); color: var(--text-muted); }
+  .map-badge { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
+  
   .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
   .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
   .badge-amarelo  { background: rgba(217, 119, 6, 0.2); color: #d97706; }
   .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  /* Map Popups */
+  .map-card-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1.2; }
+  .map-card-sub { font-size: 12px; font-weight: 600; color: var(--text-main); }
+  .map-card-location { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
+
+  /* COMPORTAMENTO DESKTOP (≥ 1024px) */
+  @media (min-width: 1024px) {
+    .map-page-wrapper {
+      height: calc(100vh - 75px);
+      overflow: hidden;
+    }
+    .map-content-layout {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      height: 100%;
+    }
+    .map-sidebar-panel { height: 100%; }
+    .map-list-wrapper { overflow-y: auto; flex: 1; }
+    .map-display-panel, #full-map { height: 100%; min-height: 100%; }
+  }
+
+  /* COMPORTAMENTO MOBILE (< 1024px) */
+  @media (max-width: 1023px) {
+    .map-page-wrapper { height: auto; }
+    #full-map { height: 320px !important; min-height: 320px; }
+    .map-display-panel { height: 320px; }
+  }
+
+  /* LEAFLET POPUPS */
   .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3); border: 2px solid #ffffff; }
   .leaflet-popup-content-wrapper { background: var(--card-bg) !important; color: var(--text-main) !important; border: 1px solid var(--border-color); border-radius: 8px; padding: 0; }
   .leaflet-popup-tip { background: var(--card-bg) !important; border: 1px solid var(--border-color); }
-  .leaflet-popup-content { margin: 10px; line-height: 1.3; }
+  .leaflet-popup-content { margin: 10px; }
   .map-popup-card { display: flex; gap: 10px; width: 220px; align-items: center; }
-  .map-popup-img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; background: var(--header-bg); flex-shrink: 0; border: 1px solid var(--border-color); }
-  .map-popup-info { display: flex; flex-direction: column; font-size: 11px; width: 100%; }
-  .map-popup-title { font-weight: 800; font-size: 13px; line-height: 1.2; }
-  .map-popup-desc { color: var(--text-muted); margin: 3px 0; }
-
-  /* LAYOUT MOBILE - SCROLL NATIVO, CARDS DECENTES */
-  @media (max-width: 1023px) {
-    .map-page-wrapper {
-      height: auto; /* A página cresce nativamente */
-      padding: 10px;
-    }
-    .map-content-layout {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-    }
-    .map-display-container {
-      height: 400px; /* Altura fixa para o mapa no mobile */
-      flex-shrink: 0;
-    }
-    .map-sidebar-panel {
-      height: auto;
-      border: none;
-      background: transparent;
-    }
-    .map-list-wrapper {
-      overflow: visible; /* Sem scroll interno! */
-    }
-    .map-search-bar {
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      margin-bottom: 12px;
-    }
-
-    /* Transformação da Tabela em Cards Profissionais */
-    .map-table, .map-table tbody, .map-table tr, .map-table td { display: block; width: 100%; box-sizing: border-box; }
-    .map-table thead { display: none; }
-    
-    .map-row {
-      display: grid;
-      grid-template-columns: 76px 1fr;
-      grid-template-rows: auto auto auto auto;
-      gap: 2px 14px;
-      padding: 14px;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      margin-bottom: 12px;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    .map-row td { padding: 0 !important; border: none !important; }
-    
-    /* Imagem à esquerda ocupando várias linhas */
-    .map-row td:nth-child(1) { grid-column: 1; grid-row: 1 / 5; align-self: start; }
-    .map-row-img { width: 76px; height: 76px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    
-    /* Tags em cima */
-    .map-row td:nth-child(2) { grid-column: 2; grid-row: 1; display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
-    
-    /* Espécie a negrito */
-    .map-row td:nth-child(3) { grid-column: 2; grid-row: 2; font-size: 16px; font-weight: 800; line-height: 1.1; }
-    
-    /* Estado Físico */
-    .map-row td:nth-child(4) { grid-column: 2; grid-row: 3; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 6px; }
-    
-    /* Concelho (Separado por linha sútil) */
-    .map-row td:nth-child(5) { 
-      grid-column: 2; 
-      grid-row: 4; 
-      font-size: 12px; 
-      color: var(--text-muted); 
-      padding-top: 8px !important; 
-      border-top: 1px solid var(--header-bg) !important; 
-      display: flex; 
-      align-items: center;
-    }
-  }
+  .map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
 </style>
 
 <div class="map-page-wrapper">
   <div class="map-content-layout">
     
+    <!-- COLUNA DA LISTA / PESQUISA -->
+    <div class="map-sidebar-panel">
+      <div class="map-search-bar">
+        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, concelho..." onkeyup="filterMapManifest()">
+      </div>
+
+      <div class="map-list-wrapper" id="mapManifestList">
+        {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
+        {% assign scored_posts = "" | split: "" %}
+        
+        {% for post in sorted_posts %}
+          {% assign t = post.triagem | strip | downcase %}
+          {% assign est_fisico = post.estado_fisico | strip | downcase %}
+
+          {% assign t_score = 10 %}
+          {% assign ef_score = 10 %}
+
+          {% if t contains 'vermelho' %}{% assign t_score = 1 %}
+          {% elsif t contains 'laranja' %}{% assign t_score = 2 %}
+          {% elsif t contains 'amarelo' %}{% assign t_score = 3 %}
+          {% elsif t contains 'azul' %}{% assign t_score = 4 %}
+          {% endif %}
+
+          {% if est_fisico contains 'crítico' or est_fisico contains 'critico' %}{% assign ef_score = 1 %}
+          {% elsif est_fisico contains 'ferido' %}{% assign ef_score = 2 %}
+          {% elsif est_fisico contains 'vulnerável' or est_fisico contains 'vulneravel' %}{% assign ef_score = 3 %}
+          {% else %}{% assign ef_score = 4 %}
+          {% endif %}
+
+          {% assign sar_score = t_score | times: 100 | plus: ef_score %}
+          {% assign scored_post = sar_score | append: "___" | append: forloop.index0 %}
+          {% assign scored_posts = scored_posts | push: scored_post %}
+        {% endfor %}
+
+        {% assign sorted_scored = scored_posts | sort %}
+
+        {% for item in sorted_scored %}
+          {% assign parts = item | split: "___" %}
+          {% assign sar_score = parts[0] | times: 1 %}
+          {% assign original_index = parts[1] | times: 1 %}
+          {% assign post = sorted_posts[original_index] %}
+
+          {% assign t = post.triagem | strip | downcase %}
+          {% assign est_fisico = post.estado_fisico | strip | downcase %}
+          {% assign est_caso = post.estado_caso | strip | downcase %}
+
+          {% assign badge_class = "badge-default" %}
+          {% assign color_key = "default" %}
+          {% if est_caso contains 'resolvido' %}
+            {% assign badge_class = "badge-azul" %}
+            {% assign color_key = "azul" %}
+          {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
+            {% assign badge_class = "badge-vermelho" %}
+            {% assign color_key = "vermelho" %}
+          {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
+            {% assign badge_class = "badge-laranja" %}
+            {% assign color_key = "laranja" %}
+          {% elsif t contains 'amarelo' %}
+            {% assign badge_class = "badge-amarelo" %}
+            {% assign color_key = "amarelo" %}
+          {% endif %}
+
+          <div class="map-card-item map-row"
+               onclick="window.location.href='{{ post.url | relative_url }}'"
+               data-color="{{ color_key }}"
+               data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
+            
+            <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
+            
+            <div class="map-card-body">
+              <div class="map-card-tags">
+                <span class="priority-badge">SAR: {{ sar_score }}</span>
+                <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
+              </div>
+              <div class="map-card-title">{{ post.especie | default: "Animal" }}</div>
+              <div class="map-card-sub">{{ post.estado_fisico | default: "Estado N/D" }}</div>
+              <div class="map-card-location">📍 {{ post.concelho | default: post.localidade | default: post.distrito | default: "N/D" }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- COLUNA DO MAPA -->
     <div class="map-display-container">
       <div class="map-external-filter">
         <div class="map-filter-header">FILTRAR POR TRIAGEM / URGÊNCIA</div>
@@ -227,111 +296,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       </div>
     </div>
 
-    <div class="map-sidebar-panel">
-      <div class="map-search-bar">
-        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, concelho ou urgência..." onkeyup="filterMapManifest()" aria-label="Pesquisar ocorrências">
-      </div>
-      <div class="map-list-wrapper">
-        <table class="map-table">
-          <thead>
-            <tr>
-              <th style="width: 50px;">Foto</th>
-              <th>Urgência & Triagem</th>
-              <th>Espécie</th>
-              <th>Estado Físico</th>
-              <th>Localização</th>
-            </tr>
-          </thead>
-          <tbody id="mapManifestList">
-            {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
-            {% assign scored_posts = "" | split: "" %}
-            
-            {% for post in sorted_posts %}
-              {% assign t = post.triagem | strip | downcase %}
-              {% assign est_fisico = post.estado_fisico | strip | downcase %}
-              {% assign est_caso = post.estado_caso | strip | downcase %}
-
-              {% assign t_score = 10 %}
-              {% assign ef_score = 10 %}
-
-              {% if t contains 'vermelho' %}
-                {% assign t_score = 1 %}
-              {% elsif t contains 'laranja' %}
-                {% assign t_score = 2 %}
-              {% elsif t contains 'amarelo' %}
-                {% assign t_score = 3 %}
-              {% elsif t contains 'azul' %}
-                {% assign t_score = 4 %}
-              {% endif %}
-
-              {% if est_fisico contains 'crítico' or est_fisico contains 'critico' %}
-                {% assign ef_score = 1 %}
-              {% elsif est_fisico contains 'ferido' %}
-                {% assign ef_score = 2 %}
-              {% elsif est_fisico contains 'vulnerável' or est_fisico contains 'vulneravel' %}
-                {% assign ef_score = 3 %}
-              {% else %}
-                {% assign ef_score = 4 %}
-              {% endif %}
-
-              {% assign sar_score = t_score | times: 100 | plus: ef_score %}
-              {% assign scored_post = sar_score | append: "___" | append: forloop.index0 %}
-              {% assign scored_posts = scored_posts | push: scored_post %}
-            {% endfor %}
-
-            {% assign sorted_scored = scored_posts | sort %}
-
-            {% for item in sorted_scored %}
-              {% assign parts = item | split: "___" %}
-              {% assign sar_score = parts[0] | times: 1 %}
-              {% assign original_index = parts[1] | times: 1 %}
-              {% assign post = sorted_posts[original_index] %}
-
-              {% assign t = post.triagem | strip | downcase %}
-              {% assign est_fisico = post.estado_fisico | strip | downcase %}
-              {% assign est_caso = post.estado_caso | strip | downcase %}
-
-              {% assign badge_class = "badge-default" %}
-              {% assign color_key = "default" %}
-              {% if est_caso contains 'resolvido' %}
-                {% assign badge_class = "badge-azul" %}
-                {% assign color_key = "azul" %}
-              {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
-                {% assign badge_class = "badge-vermelho" %}
-                {% assign color_key = "vermelho" %}
-              {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
-                {% assign badge_class = "badge-laranja" %}
-                {% assign color_key = "laranja" %}
-              {% elsif t contains 'amarelo' %}
-                {% assign badge_class = "badge-amarelo" %}
-                {% assign color_key = "amarelo" %}
-              {% endif %}
-
-              <tr class="map-row" 
-                  id="row-{{ original_index }}"
-                  onclick="window.location.href='{{ post.url | relative_url }}'"
-                  data-color="{{ color_key }}"
-                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
-                <td>
-                  <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-row-img" loading="lazy">
-                </td>
-                <td>
-                  <span class="priority-badge">SAR: {{ sar_score }}</span>
-                  <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
-                </td>
-                <td>
-                  {{ post.especie | default: "Animal" }}
-                </td>
-                <td>
-                  {{ post.estado_fisico | default: "Estado N/D" }}
-                </td>
-                <td>📍 {{ post.concelho | default: post.localidade | default: post.distrito | default: "N/D" }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -343,13 +307,17 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   document.addEventListener("DOMContentLoaded", function() {
     initMap();
+    // Forçar recalculamento de tamanho do mapa após renderização no browser
+    setTimeout(function() {
+      if (mapInstance) mapInstance.invalidateSize();
+    }, 400);
   });
 
   function getSpeciesEmoji(especieStr) {
     const esp = especieStr ? especieStr.toLowerCase() : '';
     if (esp.includes('gato') || esp.includes('felino')) return '🐱';
     if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
-    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('passaro') || esp.includes('gaivota') || esp.includes('pombo')) return '🐦';
+    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('passaro') || esp.includes('gaivota')) return '🐦';
     return '🐾';
   }
 
@@ -362,15 +330,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       touchZoom: true
     });
 
-    // Limites de Portugal Continental para um Zoom Inicial Perfeito
     var portugalBounds = [
-      [36.95, -9.56], // Sudoeste
-      [42.15, -6.19]  // Nordeste
+      [36.95, -9.56],
+      [42.15, -6.19]
     ];
     mapInstance.fitBounds(portugalBounds);
 
     L.control.attribution({ prefix: false })
-      .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors')
+      .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>')
       .addTo(mapInstance);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapInstance);
@@ -426,21 +393,16 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       var marker = L.marker([lat, lon], { icon: customIcon });
       marker.options.colorKey = item.colorKey;
 
-      marker.bindTooltip("<strong>" + (item.especie || 'Animal') + "</strong>", { direction: 'left', offset: [-12, 0] });
-
-      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">Sem Foto</div>';
-      
       marker.bindPopup(
         '<div class="map-popup-card">' +
-          imgHtml +
-          '<div class="map-popup-info">' +
-            '<div class="map-popup-title" style="color: ' + item.color + ';">' + (item.especie || 'Animal') + '</div>' +
-            '<div style="font-weight: 600; margin-top: 2px;">' + item.estado_fisico + '</div>' +
-            '<div class="map-popup-desc">📍 ' + (item.concelho || 'Local N/D') + '</div>' +
-            '<a href="' + item.url + '" style="color: ' + item.color + '; font-weight: 700; text-decoration: none; margin-top: 4px; display: inline-block;">Ver mais →</a>' +
+          '<img src="' + (item.imagem || 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg') + '" class="map-popup-img" alt="">' +
+          '<div>' +
+            '<strong style="color: ' + item.color + ';">' + (item.especie || 'Animal') + '</strong><br>' +
+            '<small>' + item.estado_fisico + '</small><br>' +
+            '<small>📍 ' + (item.concelho || 'Local N/D') + '</small><br>' +
+            '<a href="' + item.url + '" style="color: ' + item.color + '; font-weight:700;">Ver detalhe →</a>' +
           '</div>' +
-        '</div>',
-        { maxWidth: 260 }
+        '</div>'
       );
 
       return marker;
@@ -467,7 +429,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       } else {
         var query = encodeURIComponent(item.concelho + ", Portugal");
         fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
-          .then(function(response) { return response.json(); })
+          .then(function(res) { return res.json(); })
           .then(function(data) {
             if (data && data.length > 0) {
               var lat = parseFloat(data[0].lat);
@@ -478,14 +440,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               allMarkersLayerGroup.addLayer(m);
             }
           })
-          .catch(function(err) { console.error("Geocoding Erro:", err); })
-          .finally(function() { indexFila++; setTimeout(processarProximoLocal, 800); });
+          .catch(function(err) { console.error(err); })
+          .finally(function() { indexFila++; setTimeout(processarProximoLocal, 600); });
       }
     }
 
-    if (locaisValidos.length > 0) {
-      processarProximoLocal();
-    }
+    if (locaisValidos.length > 0) processarProximoLocal();
   }
 
   function filterMapByColor(colorKey, btnElement) {
@@ -507,14 +467,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       });
     }
 
-    var rows = document.querySelectorAll('.map-row');
+    var rows = document.querySelectorAll('.map-card-item');
     rows.forEach(function(row) {
       var rColor = row.getAttribute('data-color');
       var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
       var matchesColor = (activeColorFilter === 'all' || rColor === activeColorFilter);
       var matchesSearch = tags.includes(searchQuery);
 
-      row.style.display = (matchesColor && matchesSearch) ? "" : "none";
+      row.style.display = (matchesColor && matchesSearch) ? "flex" : "none";
     });
   }
 

@@ -6,14 +6,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<!-- Leaflet MarkerCluster CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-
 <!-- Leaflet JavaScript -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<!-- Leaflet MarkerCluster JavaScript -->
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <style>
   :root {
@@ -26,7 +20,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --primary-color: #0284c7;
   }
 
-  html.dark-mode, body.dark-mode {
+  /* Correção robusta para o Dark Mode (assegura compatibilidade com classes do site) */
+  html.dark-mode, body.dark-mode, [data-theme="dark"] {
     --bg-main: #090d16;
     --card-bg: #111827;
     --text-main: #f8fafc;
@@ -34,15 +29,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --border-color: #1f2937;
     --header-bg: #1f2937;
     --primary-color: #38bdf8;
-  }
-
-  html, body {
-    height: 100%;
-    margin: 0;
-    overflow-x: hidden;
-    background: var(--bg-main);
-    color: var(--text-main);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
   .map-page-wrapper {
@@ -73,6 +59,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     font-size: 14px;
     font-weight: 800;
     margin: 0;
+    color: var(--text-main);
   }
 
   .map-nav-actions {
@@ -97,17 +84,16 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     background: var(--header-bg);
   }
 
-  /* Layout principal: Mapa à esquerda (~1/4), Tabela à direita (~3/4) no Desktop */
+  /* Layout principal: Mapa à esquerda (fixo/compatível mobile em cima), Tabela à direita */
   .map-content-layout {
     display: grid;
-    grid-template-columns: 340px 1fr;
+    grid-template-columns: 360px 1fr;
     gap: 10px;
     flex: 1;
     min-height: 550px;
     transition: grid-template-columns 0.3s ease;
   }
 
-  /* Quando o utilizador oculta o mapa no desktop */
   .map-content-layout.map-hidden {
     grid-template-columns: 1fr !important;
   }
@@ -115,7 +101,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: none;
   }
 
-  /* Painel do Mapa (À esquerda no desktop) */
   .map-display-panel {
     display: flex;
     flex-direction: column;
@@ -124,7 +109,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-radius: 6px;
     overflow: hidden;
     min-height: 350px;
-    transition: all 0.3s ease;
   }
 
   .map-display-header {
@@ -137,6 +121,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     font-weight: bold;
     flex-shrink: 0;
     gap: 6px;
+    color: var(--text-main);
   }
 
   .map-header-top {
@@ -174,7 +159,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     min-height: 300px;
   }
 
-  /* Painel da Tabela / Lista à direita */
   .map-sidebar-panel {
     display: flex;
     flex-direction: column;
@@ -231,12 +215,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     padding: 8px 10px;
     border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
+    color: var(--text-main);
   }
 
   .map-row {
     cursor: pointer;
     transition: background 0.1s;
-    color: var(--text-main);
   }
   .map-row:hover {
     background: var(--header-bg);
@@ -265,56 +249,70 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  /* Versão Mobile: Divisão Vertical (Mapa em cima quadrado, Tabela em baixo) */
+  /* Ícones pequenos e elegantes por espécie */
+  .species-pin {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    border: 2px solid #ffffff;
+    font-size: 11px;
+  }
+
+  /* Popups limpos e seguros */
+  .leaflet-popup-content-wrapper {
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0;
+  }
+  .leaflet-popup-content {
+    margin: 8px;
+    line-height: 1.3;
+  }
+  .map-popup-card { display: flex; gap: 8px; width: 210px; align-items: center; }
+  .map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; background: var(--header-bg); flex-shrink: 0; border: 1px solid var(--border-color); }
+  .map-popup-info { display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; font-size: 10px; width: 100%; }
+  .map-popup-title { font-weight: 800; font-size: 11px; }
+  .map-popup-desc { color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 2px 0; }
+  .map-popup-btn { display: inline-block; background: var(--primary-color); color: #ffffff; padding: 2px 6px; border-radius: 3px; font-weight: bold; text-decoration: none; margin-top: 3px; text-align: center; }
+
+  /* Mobile: Mapa em cima fixo à esquerda do layout, tabela em baixo */
   @media (max-width: 1023px) {
     .map-content-layout {
       grid-template-columns: 1fr !important;
-      grid-template-rows: auto 1fr;
+      grid-template-rows: 280px 1fr;
     }
     .map-display-panel {
-      height: 300px;
-      min-height: 300px;
+      height: 280px;
+      min-height: 280px;
     }
     .map-content-layout.mobile-map-collapsed .map-display-panel {
       display: none;
     }
   }
-
-  /* Popups do Leaflet */
-  .leaflet-popup-content-wrapper {
-    background: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 0;
-  }
-  .leaflet-popup-content {
-    margin: 10px;
-    line-height: 1.3;
-  }
-  .map-popup-card { display: flex; gap: 8px; width: 210px; }
-  .map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 3px; background: var(--header-bg); flex-shrink: 0; }
-  .map-popup-info { display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; font-size: 10px; }
-  .map-popup-title { font-weight: 700; }
-  .map-popup-desc { color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 2px 0; }
-  .map-popup-link { font-weight: bold; text-decoration: underline; margin-top: 2px; }
 </style>
 
 <div class="map-page-wrapper">
   <div class="map-toolbar">
-    <h1>🐾 Alerta Animal</h1>
+    <h1>🐾 Mapa de Ocorrências</h1>
     <div class="map-nav-actions">
       <button type="button" class="map-nav-link" onclick="toggleMapDisplay()">📍 Ver/Ocultar Mapa</button>
     </div>
   </div>
 
   <div class="map-content-layout" id="mapContentLayout">
-    <!-- Painel do Mapa (Fica em cima no mobile, à esquerda no desktop) -->
+    <!-- Painel do Mapa (Fica sempre à esquerda no desktop / em cima no mobile) -->
     <div class="map-display-panel" id="mapDisplayPanel">
       <div class="map-display-header">
         <div class="map-header-top">
-          <span>📍 Mapa de Ocorrências</span>
-          <button type="button" class="map-nav-link" style="padding: 2px 6px; font-size: 10px;" onclick="toggleMapDisplay()">Ocultar Mapa</button>
+          <span>Filtro Rápido por Triagem</span>
+          <button type="button" class="map-nav-link" style="padding: 2px 6px; font-size: 9px;" onclick="toggleMapDisplay()">Ocultar</button>
         </div>
         <div class="map-filter-pills">
           <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
@@ -327,7 +325,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       <div id="full-map"></div>
     </div>
 
-    <!-- Lista de Ocorrências com Pesquisa -->
+    <!-- Tabela / Lista de Casos à Direita -->
     <div class="map-sidebar-panel">
       <div class="map-search-bar">
         <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, localidade ou triagem..." onkeyup="filterMapManifest()" aria-label="Pesquisar ocorrências">
@@ -368,7 +366,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               {% endif %}
 
               <tr class="map-row" 
-                  onclick="window.location='{{ post.url | relative_url }}'"
+                  id="row-{{ forloop.index0 }}"
+                  onclick="focarOcorrencia({{ forloop.index0 }}, '{{ post.url | relative_url }}')"
                   data-color="{{ color_key }}"
                   data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
                 <td>
@@ -390,8 +389,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 <script>
   let mapInstance;
+  let allMarkersLayerGroup;
   let allMarkersData = [];
-  let markersClusterGroup;
 
   document.addEventListener("DOMContentLoaded", function() {
     mapInstance = L.map('full-map', { attributionControl: false }).setView([39.5572, -7.8537], 7);
@@ -402,20 +401,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapInstance);
 
-    // Ajuste de clusters para não serem agressivos (raio pequeno, apenas agrupa se muito próximos/intersectados)
-    markersClusterGroup = L.markerClusterGroup({
-      maxClusterRadius: 18,
-      disableClusteringAtZoom: 10,
-      spiderfyOnMaxZoom: true,
-      showCoverageOnHover: false
-    });
-    mapInstance.addLayer(markersClusterGroup);
+    // Usamos um LayerGroup normal em vez de Cluster para evitar comportamento agressivo ou ocultação de pontos
+    allMarkersLayerGroup = L.layerGroup().addTo(mapInstance);
 
     var ocorrencias = [
       {% for post in site.ocorrencias %}
         {% assign t = post.triagem | strip | downcase %}
         {% assign est_caso = post.estado_caso | strip | downcase %}
         {% assign est_fisico = post.estado_fisico | strip | downcase %}
+        {% assign esp = post.especie | strip | downcase %}
         {% assign theme_color = "#2563eb" %}
         {% assign color_key = "default" %}
 
@@ -433,16 +427,27 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% assign color_key = "amarelo" %}
         {% endif %}
 
-        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 80 | escape %}
+        {% comment %} Escolha de ícone baseado na espécie {% endcomment %}
+        {% assign icon_symbol = "🐾" %}
+        {% if esp contains 'gato' or esp contains 'felino' %}
+          {% assign icon_symbol = "🐱" %}
+        {% elsif esp contains 'cão' or esp contains 'cao' or esp contains 'cão' or esp contains 'canídeo' %}
+          {% assign icon_symbol = "🐶" %}
+        {% elsif esp contains 'ave' or esp contains 'pássaro' or esp contains 'gaivota' or esp contains 'pombo' %}
+          {% assign icon_symbol = "🐦" %}
+        {% endif %}
+
+        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 60 | escape %}
 
         {
-          id: {{ post.id | default: post.slug | jsonify }},
+          index: {{ forloop.index0 }},
           especie: {{ post.especie | default: "Animal" | jsonify }},
           estado: {{ post.estado_fisico | default: 'N/D' | jsonify }},
           local: {{ post.localidade | default: post.concelho | default: post.distrito | default: '' | jsonify }},
           url: {{ post.url | relative_url | jsonify }},
           color: {{ theme_color | jsonify }},
           colorKey: {{ color_key | jsonify }},
+          iconSymbol: {{ icon_symbol | jsonify }},
           imagem: {{ post.imagem | default: '' | jsonify }},
           descricao: {{ descricao_limpa | jsonify }}
         }{% unless forloop.last %},{% endunless %}
@@ -450,15 +455,24 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     ];
 
     function criarMarcador(lat, lon, item) {
-      var customPinIcon = L.divIcon({
-        className: 'custom-map-pin',
-        html: '<div style="background-color: ' + item.color + '; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 0 4px rgba(0,0,0,0.4);"></div>',
-        iconSize: [14, 14],
-        iconAnchor: [7, 7]
+      var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + item.iconSymbol + '</div>';
+
+      var customIcon = L.divIcon({
+        className: '',
+        html: iconHtml,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -10]
       });
 
-      var marker = L.marker([lat, lon], { icon: customPinIcon });
+      var marker = L.marker([lat, lon], { icon: customIcon });
       marker.options.colorKey = item.colorKey;
+      marker.options.itemIndex = item.index;
+
+      marker.bindTooltip("<strong>" + item.especie + "</strong> (" + item.local + ")", {
+        direction: 'top',
+        offset: [0, -8]
+      });
 
       var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:8px; color:#94a3b8;">Sem Foto</div>';
       
@@ -471,7 +485,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               '<div style="font-size: 9px; font-weight:600;">' + item.estado + '</div>' +
               '<div class="map-popup-desc">' + item.descricao + '</div>' +
             '</div>' +
-            '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + ';">Ver detalhes →</a>' +
+            '<a href="' + item.url + '" class="map-popup-btn">Ver Detalhes</a>' +
           '</div>' +
         '</div>'
       );
@@ -494,7 +508,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         var coords = JSON.parse(cachedCoords);
         var m = criarMarcador(coords.lat, coords.lon, item);
         allMarkersData.push(m);
-        markersClusterGroup.addLayer(m);
+        allMarkersLayerGroup.addLayer(m);
         indexFila++;
         processarProximoLocal();
       } else {
@@ -508,13 +522,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
               var m = criarMarcador(lat, lon, item);
               allMarkersData.push(m);
-              markersClusterGroup.addLayer(m);
+              allMarkersLayerGroup.addLayer(m);
             }
           })
           .catch(function(err) { console.error("Erro geocoding:", err); })
           .finally(function() {
             indexFila++;
-            setTimeout(processarProximoLocal, 1100);
+            setTimeout(processarProximoLocal, 1000);
           });
       }
     }
@@ -524,15 +538,25 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   });
 
+  function focarOcorrencia(index, url) {
+    var targetMarker = allMarkersData.find(function(m) { return m.options.itemIndex === index; });
+    if (targetMarker) {
+      mapInstance.setView(targetMarker.getLatLng(), 14);
+      targetMarker.openPopup();
+    } else {
+      window.location = url;
+    }
+  }
+
   function filterMapByColor(colorKey, btnElement) {
     document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
     btnElement.classList.add('active');
 
-    markersClusterGroup.clearLayers();
+    allMarkersLayerGroup.clearLayers();
 
     allMarkersData.forEach(function(marker) {
       if (colorKey === 'all' || marker.options.colorKey === colorKey) {
-        markersClusterGroup.addLayer(marker);
+        allMarkersLayerGroup.addLayer(marker);
       }
     });
 

@@ -1,0 +1,15 @@
+<div class="map-display-container">
+  <div class="map-external-filter">
+    <div class="map-filter-header">FILTRAR POR TRIAGEM / URGÊNCIA</div>
+    <div class="map-filter-pills">
+      <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)">🔴 Vermelho</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)">🟠 Laranja</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)">🟡 Amarelo</button>
+    </div>
+  </div>
+  
+  <div class="map-display-panel">
+    <div id="full-map"></div>
+  </div>
+</div>

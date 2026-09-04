@@ -43,19 +43,20 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 40px);
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 10px 16px;
+    width: 100%;
+    margin: 0;
+    padding: 10px 20px;
     box-sizing: border-box;
     gap: 10px;
   }
 
   .map-content-layout {
     display: grid;
-    grid-template-columns: 380px 1fr;
+    grid-template-columns: 420px 1fr;
     gap: 12px;
     flex: 1;
     min-height: 600px;
+    width: 100%;
   }
 
   /* Filtro Posicionado Fora e Acima do Mapa */
@@ -157,31 +158,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     outline: none;
   }
 
-  .map-toolbar-actions {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-
-  .btn-urgent-filter {
-    flex: 1;
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s;
-  }
-  .btn-urgent-filter.active {
-    background: #dc2626;
-    color: #ffffff;
-    border-color: #dc2626;
-  }
-
   .map-list-wrapper {
     flex: 1;
     overflow-y: auto;
@@ -254,6 +230,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
+  /* Campos extra visíveis no desktop, adaptados no mobile */
+  .desktop-only-field {
+    display: table-cell;
+  }
+  .mobile-extra-line {
+    display: none;
+  }
+
   /* Marcadores SVG Profissionais */
   .species-pin {
     width: 28px;
@@ -302,6 +286,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     .map-display-container {
       min-height: 420px;
     }
+    .desktop-only-field {
+      display: none !important;
+    }
+    .mobile-extra-line {
+      display: block;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
   }
 </style>
 
@@ -325,13 +318,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       </div>
     </div>
 
-    <!-- Painel Lateral / Lista de Ocorrências com Sistema SAR -->
+    <!-- Painel Lateral / Lista de Ocorrências com Sistema SAR Ordenado -->
     <div class="map-sidebar-panel">
       <div class="map-search-bar">
-        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, localidade ou triagem..." onkeyup="filterMapManifest()" aria-label="Pesquisar ocorrências">
-        <div class="map-toolbar-actions">
-          <button type="button" class="btn-urgent-filter" id="btnUrgentToggle" onclick="toggleUrgentFilter()">🚨 Apenas Casos Urgentes</button>
-        </div>
+        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, concelho ou triagem..." onkeyup="filterMapManifest()" aria-label="Pesquisar ocorrências">
       </div>
       <div class="map-list-wrapper">
         <table class="map-table">
@@ -340,11 +330,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               <th style="width: 42px;">Foto</th>
               <th>Prioridade & Triagem</th>
               <th>Espécie</th>
-              <th>Localidade</th>
+              <th class="desktop-only-field">Estado Físico</th>
+              <th>Concelho</th>
             </tr>
           </thead>
           <tbody id="mapManifestList">
             {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
+            
+            <!-- Pré-cálculo e ordenação explícita SAR (menor score = maior prioridade) -->
+            {% assign scored_posts = "" | split: "" %}
             {% for post in sorted_posts %}
               {% assign t = post.triagem | strip | downcase %}
               {% assign est_fisico = post.estado_fisico | strip | downcase %}
@@ -374,10 +368,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               {% endif %}
 
               {% assign sar_score = t_score | times: 100 | plus: ef_score %}
-              {% assign is_urgent = false %}
-              {% if t_score <= 2 or ef_score <= 2 %}
-                {% assign is_urgent = true %}
-              {% endif %}
+              {% assign scored_post = sar_score | append: "___" | append: forloop.index0 %}
+              {% assign scored_posts = scored_posts | push: scored_post %}
+            {% endfor %}
+
+            {% assign sorted_scored = scored_posts | sort %}
+
+            {% for item in sorted_scored %}
+              {% assign parts = item | split: "___" %}
+              {% assign sar_score = parts[0] | times: 1 %}
+              {% assign original_index = parts[1] | times: 1 %}
+              {% assign post = sorted_posts[original_index] %}
+
+              {% assign t = post.triagem | strip | downcase %}
+              {% assign est_fisico = post.estado_fisico | strip | downcase %}
+              {% assign est_caso = post.estado_caso | strip | downcase %}
 
               {% assign badge_class = "badge-default" %}
               {% assign color_key = "default" %}
@@ -396,21 +401,26 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               {% endif %}
 
               <tr class="map-row" 
-                  id="row-{{ forloop.index0 }}"
-                  onclick="focarOcorrencia({{ forloop.index0 }}, '{{ post.url | relative_url }}')"
+                  id="row-{{ original_index }}"
+                  onclick="focarOcorrencia({{ original_index }}, '{{ post.url | relative_url }}')"
                   data-color="{{ color_key }}"
                   data-sar="{{ sar_score }}"
-                  data-urgent="{{ is_urgent }}"
-                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
+                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
                 <td>
                   <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-row-img" loading="lazy">
                 </td>
                 <td>
-                  <span class="priority-badge">#{{ forloop.index }} (SAR: {{ sar_score }})</span><br>
+                  <span class="priority-badge">SAR: {{ sar_score }}</span><br>
                   <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
                 </td>
-                <td><strong>{{ post.especie | default: "Animal" }}</strong></td>
-                <td>📍 {{ post.localidade | default: post.concelho | default: post.distrito | default: "Indefinido" }}</td>
+                <td>
+                  <strong>{{ post.especie | default: "Animal" }}</strong>
+                  <div class="mobile-extra-line">📋 {{ post.estado_fisico | default: "Estado N/D" }}</div>
+                </td>
+                <td class="desktop-only-field">
+                  <span style="font-size: 11px; font-weight: 600;">{{ post.estado_fisico | default: "Estado N/D" }}</span>
+                </td>
+                <td>📍 {{ post.concelho | default: post.localidade | default: post.distrito | default: "Indefinido" }}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -424,22 +434,19 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let mapInstance;
   let allMarkersLayerGroup;
   let allMarkersData = [];
-  let urgentFilterActive = false;
   let activeColorFilter = 'all';
 
-  // Função segura em JS para mapear o ícone SVG correto sem falhas de template
-function getSpeciesEmoji(especieStr) {
-  const esp = especieStr ? especieStr.toLowerCase() : '';
-  if (esp.includes('gato') || esp.includes('felino')) {
-    return '🐱';
-  } else if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) {
-    return '🐶';
-  } else if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('passaro') || esp.includes('gaivota') || esp.includes('pombo')) {
-    return '🐦';
+  function getSpeciesEmoji(especieStr) {
+    const esp = especieStr ? especieStr.toLowerCase() : '';
+    if (esp.includes('gato') || esp.includes('felino')) {
+      return '🐱';
+    } else if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) {
+      return '🐶';
+    } else if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('passaro') || esp.includes('gaivota') || esp.includes('pombo')) {
+      return '🐦';
+    }
+    return '🐾';
   }
-  // Emoji padrão (patinha) caso não corresponda a nenhum
-  return '🐾';
-}
 
   document.addEventListener("DOMContentLoaded", function() {
     mapInstance = L.map('full-map', { attributionControl: false }).setView([39.5572, -7.8537], 7);
@@ -479,74 +486,68 @@ function getSpeciesEmoji(especieStr) {
         {
           index: {{ forloop.index0 }},
           especie: {{ post.especie | default: "Animal" | jsonify }},
-          local: {{ post.localidade | default: post.concelho | default: post.distrito | default: '' | jsonify }},
+          concelho: {{ post.concelho | default: post.localidade | default: post.distrito | default: '' | jsonify }},
+          estado_fisico: {{ post.estado_fisico | default: "Estado N/D" | jsonify }},
           url: {{ post.url | relative_url | jsonify }},
           color: {{ theme_color | jsonify }},
           colorKey: {{ color_key | jsonify }},
           imagem: {{ post.imagem | default: '' | jsonify }},
-          descricao: {{ descricao_limpa | jsonify }},
-          urgent: {% if t contains 'vermelho' or t contains 'laranja' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}true{% else %}false{% endif %}
+          descricao: {{ descricao_limpa | jsonify }}
         }{% unless forloop.last %},{% endunless %}
       {% endfor %}
     ];
 
-function criarMarcador(lat, lon, item) {
-  var emojiIcon = getSpeciesEmoji(item.especie);
-  var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + '; font-size: 16px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3);">' + emojiIcon + '</div>';
+    function criarMarcador(lat, lon, item) {
+      var emojiIcon = getSpeciesEmoji(item.especie);
+      var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + '; font-size: 16px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3);">' + emojiIcon + '</div>';
 
-  var customIcon = L.divIcon({
-    className: '',
-    html: iconHtml,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    popupAnchor: [0, -16]
-  });
+      var customIcon = L.divIcon({
+        className: '',
+        html: iconHtml,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+      });
 
-  var marker = L.marker([lat, lon], { icon: customIcon });
-  marker.options.colorKey = item.colorKey;
-  marker.options.itemIndex = item.index;
-  marker.options.urgent = item.urgent;
+      var marker = L.marker([lat, lon], { icon: customIcon });
+      marker.options.colorKey = item.colorKey;
+      marker.options.itemIndex = item.index;
 
-  // Hierarquia de localização exata: localidade -> concelho -> distrito -> local
-  var localizacaoFinal = item.localidade || item.concelho || item.distrito || item.local || 'Local não indicado';
-  var estadoFisicoFinal = item.estado_fisico || item.condicao || 'Estado N/D';
+      var tooltipText = "<strong>" + (item.especie || 'Animal') + "</strong> — " + item.estado_fisico;
+      marker.bindTooltip(tooltipText, {
+        direction: 'left',
+        offset: [-12, 0]
+      });
 
-  // Tooltip lateral com Espécie e Estado Físico legíveis
-  var tooltipText = "<strong>" + (item.especie || 'Animal') + "</strong> — " + estadoFisicoFinal;
-  marker.bindTooltip(tooltipText, {
-    direction: 'left',
-    offset: [-12, 0]
-  });
+      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8; background:#f1f5f9;">Sem Foto</div>';
+      
+      marker.bindPopup(
+        '<div class="map-popup-card" style="font-size: 14px;">' +
+          imgHtml +
+          '<div class="map-popup-info" style="display: flex; flex-direction: column; justify-content: space-between; gap: 5px;">' +
+            '<div>' +
+              '<div class="map-popup-title" style="color: ' + item.color + '; font-size: 16px; font-weight: 700; line-height: 1.2;">' + (item.especie || 'Animal') + '</div>' +
+              '<div style="font-size: 13px; font-weight: 600; color: #1e293b; margin-top: 3px;">📋 ' + item.estado_fisico + '</div>' +
+              '<div class="map-popup-desc" style="font-size: 12px; color: #475569; margin-top: 2px;">📍 ' + (item.concelho || 'Local não indicado') + '</div>' +
+            '</div>' +
+            '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + '; font-size: 13px; font-weight: 700; text-decoration: none; margin-top: 4px; display: inline-block;">Ver detalhes →</a>' +
+          '</div>' +
+        '</div>',
+        { maxWidth: 280 }
+      );
 
-  var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8; background:#f1f5f9;">Sem Foto</div>';
-  
-  // Popup principal limpo, com letras maiores e espaçamento correto (Espécie, Estado Físico e Localidade)
-  marker.bindPopup(
-    '<div class="map-popup-card" style="font-size: 14px;">' +
-      imgHtml +
-      '<div class="map-popup-info" style="display: flex; flex-direction: column; justify-content: space-between; gap: 5px;">' +
-        '<div>' +
-          '<div class="map-popup-title" style="color: ' + item.color + '; font-size: 16px; font-weight: 700; line-height: 1.2;">' + (item.especie || 'Animal') + '</div>' +
-          '<div style="font-size: 13px; font-weight: 600; color: #1e293b; margin-top: 3px;">📋 ' + estadoFisicoFinal + '</div>' +
-          '<div class="map-popup-desc" style="font-size: 12px; color: #475569; margin-top: 2px;">📍 ' + localizacaoFinal + '</div>' +
-        '</div>' +
-        '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + '; font-size: 13px; font-weight: 700; text-decoration: none; margin-top: 4px; display: inline-block;">Ver detalhes →</a>' +
-      '</div>' +
-    '</div>',
-    { maxWidth: 280 }
-  );
+      return marker;
+    }
 
-  return marker;
-}
     var locaisValidos = ocorrencias.filter(function(item) {
-      return item.local && item.local !== "Não indicada" && item.local.trim() !== "";
+      return item.concelho && item.concelho !== "Não indicada" && item.concelho.trim() !== "";
     });
 
     var indexFila = 0;
     function processarProximoLocal() {
       if (indexFila >= locaisValidos.length) return;
       var item = locaisValidos[indexFila];
-      var cacheKey = "geo_" + item.local.toLowerCase().trim();
+      var cacheKey = "geo_" + item.concelho.toLowerCase().trim();
       var cachedCoords = localStorage.getItem(cacheKey);
 
       if (cachedCoords) {
@@ -557,7 +558,7 @@ function criarMarcador(lat, lon, item) {
         indexFila++;
         processarProximoLocal();
       } else {
-        var query = encodeURIComponent(item.local + ", Portugal");
+        var query = encodeURIComponent(item.concelho + ", Portugal");
         fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
           .then(function(response) { return response.json(); })
           .then(function(data) {
@@ -600,25 +601,13 @@ function criarMarcador(lat, lon, item) {
     applyCombinedFilters();
   }
 
-  function toggleUrgentFilter() {
-    urgentFilterActive = !urgentFilterActive;
-    var btn = document.getElementById('btnUrgentToggle');
-    if (urgentFilterActive) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-    applyCombinedFilters();
-  }
-
   function applyCombinedFilters() {
     var searchQuery = normalizeText(document.getElementById('mapSearchInput').value);
     
     allMarkersLayerGroup.clearLayers();
     allMarkersData.forEach(function(marker) {
       var matchesColor = (activeColorFilter === 'all' || marker.options.colorKey === activeColorFilter);
-      var matchesUrgent = (!urgentFilterActive || marker.options.urgent);
-      if (matchesColor && matchesUrgent) {
+      if (matchesColor) {
         allMarkersLayerGroup.addLayer(marker);
       }
     });
@@ -626,14 +615,12 @@ function criarMarcador(lat, lon, item) {
     var rows = document.querySelectorAll('.map-row');
     rows.forEach(function(row) {
       var rColor = row.getAttribute('data-color');
-      var rUrgent = row.getAttribute('data-urgent') === 'true';
       var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
       
       var matchesColor = (activeColorFilter === 'all' || rColor === activeColorFilter);
-      var matchesUrgent = (!urgentFilterActive || rUrgent);
       var matchesSearch = tags.includes(searchQuery);
 
-      if (matchesColor && matchesUrgent && matchesSearch) {
+      if (matchesColor && matchesSearch) {
         row.style.display = "";
       } else {
         row.style.display = "none";

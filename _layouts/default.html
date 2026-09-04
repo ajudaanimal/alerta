@@ -55,7 +55,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     flex-direction: column;
     gap: 8px;
     width: 100%;
-    min-width: 200px;
+    min-width: 0;
   }
 
   .map-external-filter {
@@ -97,7 +97,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     overflow: hidden;
     width: 100%;
     flex: 1;
-    min-width: 200px;
+    min-width: 0;
   }
 
   .map-search-bar {
@@ -208,10 +208,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   .split-resizer {
-    width: 8px;
+    width: 6px;
     background: var(--border-color);
     cursor: col-resize;
-    border-radius: 4px;
+    border-radius: 3px;
     transition: background 0.2s;
     display: none;
     flex-shrink: 0;
@@ -245,11 +245,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   @media (min-width: 1024px) {
     .map-page-wrapper { height: calc(100vh - 75px); overflow: hidden; }
-    .map-content-layout { display: flex; flex-direction: row; height: 100%; flex-wrap: nowrap; }
+    .map-content-layout { display: flex; flex-direction: row; height: 100%; }
     .split-resizer { display: block; }
-    .map-display-container { width: 35% !important; height: 100%; flex: 0 0 auto; }
+    .map-display-container { width: 50%; height: 100%; flex: 0 0 50%; }
     .map-display-panel { height: calc(100% - 75px); flex: 1; }
-    .map-sidebar-panel { height: 100%; flex: 1 1 auto; width: auto; }
+    .map-sidebar-panel { height: 100%; flex: 1; }
     .mobile-tab-nav { display: none !important; }
   }
 
@@ -454,13 +454,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     const mapContainer = document.getElementById('mapDisplayContainer');
     const container = document.getElementById('mapContentLayout');
 
-    if (!resizer || !mapContainer) return;
+    if (!resizer || !mapContainer || !container) return;
 
     let isResizing = false;
 
     resizer.addEventListener('mousedown', function(e) {
       isResizing = true;
       document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
       e.preventDefault();
     });
 
@@ -469,9 +470,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       const containerRect = container.getBoundingClientRect();
       let newLeftWidth = e.clientX - containerRect.left;
       
-      if (newLeftWidth > 200 && newLeftWidth < containerRect.width - 250) {
-        mapContainer.style.width = newLeftWidth + 'px';
-        mapContainer.style.flex = '0 0 auto';
+      // Limita os tamanhos mínimos do painel esquerdo (mapa) e direito (lista)
+      if (newLeftWidth > 250 && newLeftWidth < containerRect.width - 300) {
+        let percentage = (newLeftWidth / containerRect.width) * 100;
+        mapContainer.style.flex = `0 0 ${percentage}%`;
+        mapContainer.style.width = `${percentage}%`;
         if (mapInstance) mapInstance.invalidateSize();
       }
     });
@@ -480,6 +483,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       if (isResizing) {
         isResizing = false;
         document.body.style.cursor = 'default';
+        document.body.style.userSelect = 'auto';
         if (mapInstance) mapInstance.invalidateSize();
       }
     });

@@ -47,6 +47,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     margin: 0 auto;
     padding: 10px 16px;
     box-sizing: border-box;
+    gap: 10px;
   }
 
   .map-content-layout {
@@ -57,35 +58,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     min-height: 600px;
   }
 
-  .map-display-panel {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    min-height: 400px;
-  }
-
-  .map-floating-filter {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    z-index: 1000;
+  /* Filtro Posicionado Fora e Acima do Mapa */
+  .map-external-filter {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     padding: 8px 12px;
-    border-radius: 6px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    backdrop-filter: blur(4px);
   }
 
-  .map-floating-header {
+  .map-filter-header {
     font-size: 10px;
     font-weight: 800;
     color: var(--text-muted);
@@ -115,10 +99,30 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-color: var(--primary-color);
   }
 
-  #full-map {
-    width: 100%;
+  .map-display-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     flex: 1;
     min-height: 400px;
+  }
+
+  .map-display-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    flex: 1;
+    min-height: 380px;
+  }
+
+  #full-map {
+    width: 100%;
+    height: 100%;
+    flex: 1;
   }
 
   .map-sidebar-panel {
@@ -293,20 +297,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   @media (max-width: 1023px) {
     .map-content-layout {
       grid-template-columns: 1fr !important;
-      grid-template-rows: 400px 1fr;
+      grid-template-rows: auto 1fr;
     }
-    .map-display-panel {
-      height: 400px;
+    .map-display-container {
+      min-height: 420px;
     }
   }
 </style>
 
 <div class="map-page-wrapper">
   <div class="map-content-layout" id="mapContentLayout">
-    <!-- Painel do Mapa -->
-    <div class="map-display-panel" id="mapDisplayPanel">
-      <div class="map-floating-filter">
-        <div class="map-floating-header">FILTRAR POR TRIAGEM</div>
+    
+    <!-- Painel do Mapa e Filtro Externo (Acima do mapa) -->
+    <div class="map-display-container">
+      <div class="map-external-filter">
+        <div class="map-filter-header">FILTRAR MAPA POR TRIAGEM</div>
         <div class="map-filter-pills">
           <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
           <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)">🔴 Vermelho</button>
@@ -314,7 +319,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)">🟡 Amarelo</button>
         </div>
       </div>
-      <div id="full-map"></div>
+      
+      <div class="map-display-panel" id="mapDisplayPanel">
+        <div id="full-map"></div>
+      </div>
     </div>
 
     <!-- Painel Lateral / Lista de Ocorrências com Sistema SAR -->
@@ -342,7 +350,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               {% assign est_fisico = post.estado_fisico | strip | downcase %}
               {% assign est_caso = post.estado_caso | strip | downcase %}
 
-              <!-- Sistema Inteligente SAR de Pontuação Ponderada -->
               {% assign t_score = 10 %}
               {% assign ef_score = 10 %}
 
@@ -420,6 +427,20 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let urgentFilterActive = false;
   let activeColorFilter = 'all';
 
+  // Função segura em JS para mapear o ícone SVG correto sem falhas de template
+  function getSpeciesSvg(especieStr) {
+    const esp = especieStr ? especieStr.toLowerCase() : '';
+    if (esp.includes('gato') || esp.includes('felino')) {
+      return '<path d="M12 2l-5 4H4v3l-2 3 3 6h14l3-6-2-3V6h-3l-5-4zM9 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>';
+    } else if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) {
+      return '<path d="M10 2C7.79 2 6 3.79 6 6v1c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2v3c0 2.21 1.79 4 4 4h4c2.21 0 4-1.79 4-4v-3c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2V6c0-2.21-1.79-4-4-4h-4zm0 2h4c1.1 0 2 .9 2 2v1H8V6c0-1.1.9-2 2-2z"/>';
+    } else if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('passaro') || esp.includes('gaivota') || esp.includes('pombo')) {
+      return '<path d="M16 2c-3.31 0-6 2.69-6 6 0 .58.08 1.14.22 1.67L3.08 15.82a1.003 1.003 0 0 0 0 1.42l1.42 1.42c.39.39 1.02.39 1.41 0l6.43-6.43C12.86 12.34 13.42 12.42 14 12.42c3.31 0 6-2.69 6-6s-2.69-4.42-4-4.42z"/>';
+    }
+    // Patinha genérica (Default)
+    return '<path d="M12 3c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm7 4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM5 7c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm7 5c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>';
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
     mapInstance = L.map('full-map', { attributionControl: false }).setView([39.5572, -7.8537], 7);
 
@@ -436,7 +457,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         {% assign t = post.triagem | strip | downcase %}
         {% assign est_caso = post.estado_caso | strip | downcase %}
         {% assign est_fisico = post.estado_fisico | strip | downcase %}
-        {% assign esp = post.especie | strip | downcase %}
         {% assign theme_color = "#2563eb" %}
         {% assign color_key = "default" %}
 
@@ -454,17 +474,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% assign color_key = "amarelo" %}
         {% endif %}
 
-        <!-- Ícones SVG Dedicados por Espécie (Cão, Gato, Ave, Patinha) -->
-        {% assign svg_path = '<path d="M12 3c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm7 4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM5 7c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm7 5c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>' %}
-        
-        {% if esp contains 'gato' or esp contains 'felino' %}
-          {% assign svg_path = '<path d="M12 2l-5 4H4v3l-2 3 3 6h14l3-6-2-3V6h-3l-5-4zM9 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>' %}
-        {% elsif esp contains 'cão' or esp contains 'cao' or esp contains 'canídeo' %}
-          {% assign svg_path = '<path d="M10 2C7.79 2 6 3.79 6 6v1c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2v3c0 2.21 1.79 4 4 4h4c2.21 0 4-1.79 4-4v-3c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2V6c0-2.21-1.79-4-4-4h-4zm0 2h4c1.1 0 2 .9 2 2v1H8V6c0-1.1.9-2 2-2z"/>' %}
-        {% elsif esp contains 'ave' or esp contains 'pássaro' or esp contains 'passaro' or esp contains 'gaivota' or esp contains 'pombo' %}
-          {% assign svg_path = '<path d="M16 2c-3.31 0-6 2.69-6 6 0 .58.08 1.14.22 1.67L3.08 15.82a1.003 1.003 0 0 0 0 1.42l1.42 1.42c.39.39 1.02.39 1.41 0l6.43-6.43C12.86 12.34 13.42 12.42 14 12.42c3.31 0 6-2.69 6-6s-2.69-4.42-4-4.42z"/>' %}
-        {% endif %}
-
         {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 50 | escape %}
 
         {
@@ -474,7 +483,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           url: {{ post.url | relative_url | jsonify }},
           color: {{ theme_color | jsonify }},
           colorKey: {{ color_key | jsonify }},
-          svgPath: {{ svg_path | jsonify }},
           imagem: {{ post.imagem | default: '' | jsonify }},
           descricao: {{ descricao_limpa | jsonify }},
           urgent: {% if t contains 'vermelho' or t contains 'laranja' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}true{% else %}false{% endif %}
@@ -483,8 +491,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     ];
 
     function criarMarcador(lat, lon, item) {
+      var svgPath = getSpeciesSvg(item.especie);
       var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' +
-                       '<svg viewBox="0 0 24 24">' + item.svgPath + '</svg>' +
+                       '<svg viewBox="0 0 24 24">' + svgPath + '</svg>' +
                      '</div>';
 
       var customIcon = L.divIcon({

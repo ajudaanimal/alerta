@@ -385,10 +385,6 @@ layout: default
             {% if display_loc != "" %}
             <div class="header-location">
                 📍 {{ display_loc }}{% if page.concelho and page.concelho != "Não indicado" %}, {{ page.concelho }}{% endif %}
-                <span class="map-links">
-                    (<a href="https://www.google.com/maps/search/?api=1&query={{ display_loc | append: ', Portugal' | url_encode }}" target="_blank" rel="noopener" title="Procurar no Google Maps">G.Maps</a> | 
-                    <a href="https://www.openstreetmap.org/search?query={{ display_loc | append: ', Portugal' | url_encode }}" target="_blank" rel="noopener" title="Procurar no OpenStreetMap">OSM</a>)
-                </span>
             </div>
             {% endif %}
         </div>
@@ -443,7 +439,16 @@ layout: default
 
     <h2 class="section-title">
         <span>🗺️ Localização no Mapa</span>
-        <a href="{{ '/mapa.html' | relative_url }}" style="font-size: 9.5px; color: var(--text-muted); text-decoration: underline;">Ver Mapa Geral</a>
+        <span style="font-size: 9.5px; font-weight: normal; display: flex; align-items: center; gap: 6px;">
+            {% if display_loc != "" %}
+            <span class="map-links">
+                <a href="https://www.google.com/maps/search/?api=1&query={{ display_loc | append: ', Portugal' | url_encode }}" target="_blank" rel="noopener" title="Procurar no Google Maps">G.Maps</a> | 
+                <a href="https://www.openstreetmap.org/search?query={{ display_loc | append: ', Portugal' | url_encode }}" target="_blank" rel="noopener" title="Procurar no OpenStreetMap">OSM</a>
+            </span>
+            <span style="color: var(--text-muted);">|</span>
+            {% endif %}
+            <a href="{{ '/mapa.html' | relative_url }}" style="color: var(--text-muted); text-decoration: underline;">Ver Mapa Geral</a>
+        </span>
     </h2>
     <div id="single-case-map"></div>
 

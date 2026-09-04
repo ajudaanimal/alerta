@@ -122,13 +122,22 @@
             font-size: 13px;
         }
 
-        /* Conteúdo Principal — Removido o max-width e padding fixo para permitir ecrã inteiro */
+        /* COMPORTAMENTO PADRÃO (Páginas normais como Emergência, Textos, etc.) */
         .site-main-content {
-            padding: 0;
+            padding: 24px 16px;
+            max-width: 900px;
             width: 100%;
-            margin: 0;
+            margin: 0 auto;
             box-sizing: border-box;
             flex: 1;
+        }
+
+        /* COMPORTAMENTO FULLSCREEN (Aplicado apenas quando a página pede layout de mapa/ecrã inteiro) */
+        body.layout-fullscreen .site-main-content {
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
         }
 
         /* Rodapé Global */
@@ -195,7 +204,7 @@
         }
     </style>
 </head>
-<body>
+<body class="{% if page.layout_fullscreen or page.url == '/' or page.url == '/index.html' %}layout-fullscreen{% endif %}">
 
     <!-- Cabeçalho Global -->
     <header class="site-global-header">

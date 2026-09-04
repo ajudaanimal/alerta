@@ -98,8 +98,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    width: 50%; /* Inicial 50/50 */
-    min-width: 300px;
+    width: 50%;
+    min-width: 320px;
     max-width: calc(100% - 300px);
   }
 
@@ -122,22 +122,23 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .map-list-wrapper { width: 100%; overflow-y: auto; flex: 1; }
 
+  /* CARTÃO UNIFICADO COMPACTO (MOBILE & DESKTOP OTIMIZADO) */
   .map-card-item {
     display: flex;
-    gap: 12px;
-    padding: 14px;
+    gap: 10px;
+    padding: 10px 12px;
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
     transition: background 0.15s ease;
-    align-items: flex-start;
+    align-items: center;
   }
   .map-card-item:hover { background: var(--header-bg); }
 
   .map-card-img {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid var(--border-color);
     flex-shrink: 0;
     cursor: pointer;
@@ -146,14 +147,34 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-card-body {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 2px;
     flex: 1;
     min-width: 0;
   }
 
-  .map-card-tags { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .priority-badge { font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 4px; background: var(--header-bg); color: var(--text-muted); }
-  .map-badge { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
+  .map-card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .map-card-title { 
+    font-size: 14px; 
+    font-weight: 800; 
+    color: var(--text-main); 
+    margin: 0; 
+    line-height: 1.2; 
+    cursor: pointer; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+  }
+  .map-card-title:hover { color: var(--primary-color); text-decoration: underline; }
+
+  .map-card-tags { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+  .priority-badge { font-size: 8px; font-weight: 700; padding: 1px 4px; border-radius: 3px; background: var(--header-bg); color: var(--text-muted); }
+  .map-badge { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 1px 5px; border-radius: 3px; }
   
   .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
   .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
@@ -161,19 +182,27 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  .map-card-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1.2; cursor: pointer; }
-  .map-card-title:hover { color: var(--primary-color); text-decoration: underline; }
-  
-  .map-card-sub { font-size: 13px; font-weight: 600; color: var(--text-main); }
-  .map-card-location { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
-  
+  .map-card-details-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    gap: 8px;
+  }
+
+  .map-card-sub { font-weight: 600; color: var(--text-main); }
+  .map-card-location { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   .map-card-actions {
     display: flex;
-    gap: 10px;
-    margin-top: 4px;
+    gap: 8px;
+    align-items: center;
+    font-size: 10px;
+    margin-top: 2px;
   }
   .action-link {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: var(--primary-color);
     text-decoration: none;
@@ -200,18 +229,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: none;
     background: var(--card-bg);
     border-bottom: 1px solid var(--border-color);
-    padding: 8px 12px;
-    gap: 8px;
+    padding: 6px 10px;
+    gap: 6px;
   }
   .mobile-tab-btn {
     flex: 1;
-    padding: 8px;
+    padding: 7px;
     border-radius: 6px;
     border: 1px solid var(--border-color);
     background: var(--header-bg);
     color: var(--text-main);
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12px;
     cursor: pointer;
     text-align: center;
   }
@@ -251,7 +280,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       flex: 1;
       display: flex;
       flex-direction: column;
-      height: calc(100% - 50px);
+      height: calc(100% - 44px);
       overflow: hidden;
       position: relative;
     }
@@ -357,13 +386,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
             <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" onclick="focusOnMarker({{ original_index }})" title="Ver no Mapa" loading="lazy">
             
             <div class="map-card-body">
-              <div class="map-card-tags">
-                <span class="priority-badge">SAR: {{ sar_score }}</span>
-                <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
+              <div class="map-card-top-row">
+                <div class="map-card-title" onclick="focusOnMarker({{ original_index }})">{{ post.especie | default: "Animal" }}</div>
+                <div class="map-card-tags">
+                  <span class="priority-badge">SAR: {{ sar_score }}</span>
+                  <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
+                </div>
               </div>
-              <div class="map-card-title" onclick="focusOnMarker({{ original_index }})">{{ post.especie | default: "Animal" }}</div>
-              <div class="map-card-sub">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</div>
-              <div class="map-card-location">📍 {{ post.concelho | default: post.localidade | default: post.distrito | default: "N/D" }}</div>
+
+              <div class="map-card-details-row">
+                <span class="map-card-sub">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</span>
+                <span class="map-card-location">📍 {{ post.concelho | default: post.localidade | default: post.distrito | default: "N/D" }}</span>
+              </div>
               
               <div class="map-card-actions">
                 <button type="button" class="action-link" onclick="focusOnMarker({{ original_index }})">🗺️ Ver no Mapa</button>
@@ -453,7 +487,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       const containerRect = container.getBoundingClientRect();
       let newWidth = e.clientX - containerRect.left;
       
-      // Limites min e max para o painel lateral
       if (newWidth > 300 && newWidth < containerRect.width - 300) {
         sidebar.style.width = newWidth + 'px';
         sidebar.style.maxWidth = 'none';

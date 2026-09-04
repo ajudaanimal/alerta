@@ -9,7 +9,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <style>
-  /* 1. SOBREPOSIÇÃO FORÇADA DO CONTAINER BASE DO DEFAULT.HTML */
   .site-main-content {
     max-width: 100% !important;
     padding: 0 !important;
@@ -44,7 +43,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     padding: 12px;
   }
 
-  /* ESTRUTURA GERAL */
   .map-content-layout {
     display: flex;
     flex-direction: column;
@@ -58,6 +56,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     flex-direction: column;
     gap: 8px;
     width: 100%;
+    flex: 1;
+    min-width: 0;
   }
 
   .map-external-filter {
@@ -81,10 +81,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-radius: 8px;
     overflow: hidden;
     width: 100%;
+    flex: 1;
   }
 
   #full-map {
     width: 100%;
+    height: 100%;
     touch-action: pan-x pan-y;
   }
 
@@ -96,6 +98,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
+    width: 50%; /* Inicial 50/50 */
+    min-width: 300px;
+    max-width: calc(100% - 300px);
   }
 
   .map-search-bar {
@@ -115,34 +120,33 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     outline: none;
   }
 
-  /* CARTÕES DA LISTA */
-  .map-list-wrapper { width: 100%; }
+  .map-list-wrapper { width: 100%; overflow-y: auto; flex: 1; }
 
   .map-card-item {
     display: flex;
     gap: 12px;
-    padding: 12px;
+    padding: 14px;
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
-    cursor: pointer;
     transition: background 0.15s ease;
-    align-items: center;
+    align-items: flex-start;
   }
   .map-card-item:hover { background: var(--header-bg); }
 
   .map-card-img {
-    width: 72px;
-    height: 72px;
+    width: 80px;
+    height: 80px;
     object-fit: cover;
     border-radius: 8px;
     border: 1px solid var(--border-color);
     flex-shrink: 0;
+    cursor: pointer;
   }
 
   .map-card-body {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
     flex: 1;
     min-width: 0;
   }
@@ -157,11 +161,41 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  .map-card-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1.2; }
-  .map-card-sub { font-size: 12px; font-weight: 600; color: var(--text-main); }
+  .map-card-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1.2; cursor: pointer; }
+  .map-card-title:hover { color: var(--primary-color); text-decoration: underline; }
+  
+  .map-card-sub { font-size: 13px; font-weight: 600; color: var(--text-main); }
   .map-card-location { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
+  
+  .map-card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .action-link {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .action-link:hover { text-decoration: underline; }
 
-  /* NAVEGAÇÃO MÓVEL POR ABAS (MOBILE TABS) */
+  /* DIVISOR DE ARRASTE (SPLITER DESKTOP) */
+  .split-resizer {
+    width: 6px;
+    background: var(--border-color);
+    cursor: col-resize;
+    border-radius: 3px;
+    transition: background 0.2s;
+    display: none;
+  }
+  .split-resizer:hover { background: var(--primary-color); }
+
+  /* NAVEGAÇÃO MÓVEL POR ABAS */
   .mobile-tab-nav {
     display: none;
     background: var(--card-bg);
@@ -187,24 +221,24 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-color: var(--primary-color);
   }
 
-  /* COMPORTAMENTO DESKTOP (≥ 1024px) */
+  /* DESKTOP (≥ 1024px) */
   @media (min-width: 1024px) {
     .map-page-wrapper {
       height: calc(100vh - 75px);
       overflow: hidden;
     }
     .map-content-layout {
-      display: grid;
-      grid-template-columns: 420px 1fr;
+      display: flex;
+      flex-direction: row;
       height: 100%;
     }
+    .split-resizer { display: block; }
     .map-sidebar-panel { height: 100%; }
-    .map-list-wrapper { overflow-y: auto; flex: 1; }
-    .map-display-panel, #full-map { height: 100%; min-height: 100%; }
+    .map-display-container { height: 100%; }
     .mobile-tab-nav { display: none !important; }
   }
 
-  /* COMPORTAMENTO MOBILE (< 1024px) */
+  /* MOBILE (< 1024px) */
   @media (max-width: 1023px) {
     .map-page-wrapper {
       height: calc(100vh - 60px);
@@ -221,22 +255,19 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       overflow: hidden;
       position: relative;
     }
-    /* Sistema de abas para o mobile */
+    .split-resizer { display: none !important; }
     .map-sidebar-panel, .map-display-container {
       position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0; left: 0; width: 100% !important; height: 100%;
       background: var(--bg-main);
       transition: opacity 0.2s ease;
+      max-width: 100% !important;
     }
     .map-sidebar-panel { display: flex; z-index: 2; }
     .map-display-container { display: flex; z-index: 1; opacity: 0; pointer-events: none; }
 
-    /* Estados das abas */
     .map-page-wrapper.show-map .map-sidebar-panel { opacity: 0; pointer-events: none; z-index: 1; }
     .map-page-wrapper.show-map .map-display-container { opacity: 1; pointer-events: auto; z-index: 2; }
-
-    .map-list-wrapper { overflow-y: auto; flex: 1; }
-    .map-display-panel, #full-map { height: 100% !important; flex: 1; }
     .map-display-container { padding: 8px; box-sizing: border-box; }
   }
 
@@ -245,22 +276,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .leaflet-popup-content-wrapper { background: var(--card-bg) !important; color: var(--text-main) !important; border: 1px solid var(--border-color); border-radius: 8px; padding: 0; }
   .leaflet-popup-tip { background: var(--card-bg) !important; border: 1px solid var(--border-color); }
   .leaflet-popup-content { margin: 10px; }
-  .map-popup-card { display: flex; gap: 10px; width: 220px; align-items: center; }
+  .map-popup-card { display: flex; gap: 10px; width: 230px; align-items: center; }
   .map-popup-img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
 </style>
 
 <div class="map-page-wrapper" id="mapPageWrapper">
   
-  <!-- Abas de navegação exclusivas para Mobile -->
   <div class="mobile-tab-nav">
-    <button type="button" class="mobile-tab-btn active" id="tabBtnList" onclick="switchMobileTab('list')">📋 Lista</button>
-    <button type="button" class="mobile-tab-btn" id="tabBtnMap" onclick="switchMobileTab('map')">🗺️ Mapa</button>
+    <button type="button" class="mobile-tab-btn active" id="tabBtnList" onclick="switchMobileTab('list')">📋 Lista & Fichas</button>
+    <button type="button" class="mobile-tab-btn" id="tabBtnMap" onclick="switchMobileTab('map')">🗺️ Ver no Mapa</button>
   </div>
 
-  <div class="map-content-layout">
+  <div class="map-content-layout" id="mapContentLayout">
     
-    <!-- COLUNA DA LISTA / PESQUISA -->
-    <div class="map-sidebar-panel">
+    <!-- COLUNA DA LISTA -->
+    <div class="map-sidebar-panel" id="mapSidebarPanel">
       <div class="map-search-bar">
         <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, concelho..." onkeyup="filterMapManifest()">
       </div>
@@ -272,7 +302,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         {% for post in sorted_posts %}
           {% assign t = post.triagem | strip | downcase %}
           {% assign est_fisico = post.estado_fisico | strip | downcase %}
-
           {% assign t_score = 10 %}
           {% assign ef_score = 10 %}
 
@@ -322,25 +351,33 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% endif %}
 
           <div class="map-card-item map-row"
-               onclick="focusOnMarker({{ original_index }})"
                data-color="{{ color_key }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
-            <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
+            <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" onclick="focusOnMarker({{ original_index }})" title="Ver no Mapa" loading="lazy">
             
             <div class="map-card-body">
               <div class="map-card-tags">
                 <span class="priority-badge">SAR: {{ sar_score }}</span>
                 <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
               </div>
-              <div class="map-card-title">{{ post.especie | default: "Animal" }}</div>
-              <div class="map-card-sub">{{ post.estado_fisico | default: "Estado N/D" }}</div>
+              <div class="map-card-title" onclick="focusOnMarker({{ original_index }})">{{ post.especie | default: "Animal" }}</div>
+              <div class="map-card-sub">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</div>
               <div class="map-card-location">📍 {{ post.concelho | default: post.localidade | default: post.distrito | default: "N/D" }}</div>
+              
+              <div class="map-card-actions">
+                <button type="button" class="action-link" onclick="focusOnMarker({{ original_index }})">🗺️ Ver no Mapa</button>
+                <span>•</span>
+                <a href="{{ post.url | relative_url }}" class="action-link">📄 Ver Ficha Completa →</a>
+              </div>
             </div>
           </div>
         {% endfor %}
       </div>
     </div>
+
+    <!-- SEPARADOR DE ARRASTE -->
+    <div class="split-resizer" id="splitResizer"></div>
 
     <!-- COLUNA DO MAPA -->
     <div class="map-display-container">
@@ -366,11 +403,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let mapInstance;
   let allMarkersLayerGroup;
   let allMarkersData = [];
-  let markersByIndex = {}; // Associa o índice original do post ao seu marcador
+  let markersByIndex = {};
   let activeColorFilter = 'all';
 
   document.addEventListener("DOMContentLoaded", function() {
     initMap();
+    initSplitPane();
     setTimeout(function() {
       if (mapInstance) mapInstance.invalidateSize();
     }, 400);
@@ -395,6 +433,43 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
+  function initSplitPane() {
+    const resizer = document.getElementById('splitResizer');
+    const sidebar = document.getElementById('mapSidebarPanel');
+    const container = document.getElementById('mapContentLayout');
+
+    if (!resizer) return;
+
+    let isResizing = false;
+
+    resizer.addEventListener('mousedown', function(e) {
+      isResizing = true;
+      document.body.style.cursor = 'col-resize';
+      e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', function(e) {
+      if (!isResizing) return;
+      const containerRect = container.getBoundingClientRect();
+      let newWidth = e.clientX - containerRect.left;
+      
+      // Limites min e max para o painel lateral
+      if (newWidth > 300 && newWidth < containerRect.width - 300) {
+        sidebar.style.width = newWidth + 'px';
+        sidebar.style.maxWidth = 'none';
+        if (mapInstance) mapInstance.invalidateSize();
+      }
+    });
+
+    window.addEventListener('mouseup', function() {
+      if (isResizing) {
+        isResizing = false;
+        document.body.style.cursor = 'default';
+        if (mapInstance) mapInstance.invalidateSize();
+      }
+    });
+  }
+
   function getSpeciesEmoji(especieStr) {
     const esp = especieStr ? especieStr.toLowerCase() : '';
     if (esp.includes('gato') || esp.includes('felino')) return '🐱';
@@ -412,10 +487,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       touchZoom: true
     });
 
-    var portugalBounds = [
-      [36.95, -9.56],
-      [42.15, -6.19]
-    ];
+    var portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
     mapInstance.fitBounds(portugalBounds);
 
     L.control.attribution({ prefix: false })
@@ -484,7 +556,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
             '<strong style="color: ' + item.color + ';">' + (item.especie || 'Animal') + '</strong><br>' +
             '<small>' + item.estado_fisico + '</small><br>' +
             '<small>📍 ' + (item.concelho || 'Local N/D') + '</small><br>' +
-            '<a href="' + item.url + '" style="color: ' + item.color + '; font-weight:700;">Ver detalhe →</a>' +
+            '<a href="' + item.url + '" style="color: ' + item.color + '; font-weight:700;">Ver Ficha Completa →</a>' +
           '</div>' +
         '</div>'
       );
@@ -536,21 +608,17 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   function focusOnMarker(originalIndex) {
     var marker = markersByIndex[originalIndex];
     if (marker) {
-      // Se estiver em mobile, muda automaticamente para a aba do mapa para ver o resultado
       if (window.innerWidth < 1024) {
         switchMobileTab('map');
       }
-      var latLng = marker.getLatLng();
-      mapInstance.setView(latLng, 14, { animate: true });
-      marker.openPopup();
-    } else {
-      // Fallback caso o marcador ainda não tenha coordenadas ou morada válida
-      var rows = document.querySelectorAll('.map-card-item');
-      // Encontra o link do item e redireciona caso não haja mapa carregado
-      rows.forEach(function(r) {
-        // Como alternativa imediata se não houver pin, abre o link ou dá feedback
-      });
-      console.log("Coordenadas ainda em processamento para este item.");
+      setTimeout(function() {
+        if (mapInstance) {
+          mapInstance.invalidateSize();
+          var latLng = marker.getLatLng();
+          mapInstance.setView(latLng, 15, { animate: true });
+          marker.openPopup();
+        }
+      }, 150);
     }
   }
 

@@ -190,20 +190,25 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .map-card-actions {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     align-items: center;
-    font-size: 11px;
-    font-weight: 700;
-    margin-top: 2px;
+    margin-top: 4px;
   }
   
-  .map-card-actions a {
-    color: var(--primary-color);
+  .btn-ficha-completa {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: #ffffff !important;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
     text-decoration: none;
-    pointer-events: auto;
+    transition: opacity 0.2s ease;
   }
-  .map-card-actions a:hover {
-    text-decoration: underline;
+  .btn-ficha-completa:hover {
+    opacity: 0.9;
+    text-decoration: none;
   }
 
   .split-resizer {
@@ -363,7 +368,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% endif %}
 
           <div class="map-card-item map-row"
-               onclick="handleCardClick(event, {{ original_index }}, '{{ post.url | relative_url }}')"
+               onclick="focusOnMarker({{ original_index }})"
                data-color="{{ color_key }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
@@ -384,9 +389,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               </div>
               
               <div class="map-card-actions">
-                <a href="javascript:void(0);" onclick="focusOnMarker({{ original_index }}); event.stopPropagation();">Ver Mapa</a>
-                <span>•</span>
-                <a href="{{ post.url | relative_url }}" onclick="event.stopPropagation();">Ver Ficha</a>
+                <a href="{{ post.url | relative_url }}" class="btn-ficha-completa" onclick="event.stopPropagation();">Ver Ficha Completa</a>
               </div>
             </div>
           </div>
@@ -403,7 +406,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let allMarkersData = [];
   let markersByIndex = {};
   let activeColorFilter = 'all';
-  let cardClickTimer = null;
 
   document.addEventListener("DOMContentLoaded", function() {
     initMap();
@@ -412,21 +414,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       if (mapInstance) mapInstance.invalidateSize();
     }, 400);
   });
-
-  function handleCardClick(event, originalIndex, url) {
-    if (event.target.tagName === 'A' || event.target.closest('a')) return;
-
-    if (cardClickTimer === null) {
-      cardClickTimer = setTimeout(function() {
-        cardClickTimer = null;
-        focusOnMarker(originalIndex);
-      }, 300);
-    } else {
-      clearTimeout(cardClickTimer);
-      cardClickTimer = null;
-      window.location.href = url;
-    }
-  }
 
   function switchMobileTab(tab) {
     const wrapper = document.getElementById('mapPageWrapper');

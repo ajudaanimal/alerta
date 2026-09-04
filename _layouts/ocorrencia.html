@@ -35,41 +35,38 @@ layout: default
         --box-bg: #1f2937;
     }
 
-    /* 1. Garante que o body ocupa toda a largura sem margens */
-body {
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    transition: background 0.3s, color 0.3s;
-}
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        transition: background 0.3s, color 0.3s;
+    }
 
-/* 2. Força o cabeçalho global a expandir de ponta a ponta */
-header, .fs-header, .navbar {
-    width: 100%;
-    box-sizing: border-box;
-    margin: 0 0 16px 0;
-    border-radius: 0; /* Remove cantos arredondados se a barra for colada ao topo */
-}
+    header, .fs-header, .navbar {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0 0 16px 0;
+        border-radius: 0;
+    }
 
-/* 3. Mantém a ficha de ocorrência isolada e centrada */
-.page-wrapper {
-    max-width: 720px;
-    margin: 16px auto;
-    padding: 0;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-    font-size: 11.5px;
-    overflow: hidden;
-    transition: background 0.3s, border-color 0.3s;
-}
+    .page-wrapper {
+        max-width: 720px;
+        margin: 16px auto;
+        padding: 0;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+        font-size: 11.5px;
+        overflow: hidden;
+        transition: background 0.3s, border-color 0.3s;
+    }
 
     .report-header {
-        color: #0f172a; /* Letras normalizadas a preto para legibilidade perfeita sobre a cor do banner */
+        color: #0f172a;
         padding: 14px 16px;
         display: flex;
         justify-content: space-between;
@@ -86,7 +83,7 @@ header, .fs-header, .navbar {
     }
 
     .header-location {
-        font-size: 13px; /* Letra maior para ser bem legível conforme pedido */
+        font-size: 13px;
         font-weight: 700;
         color: #0f172a;
         margin-top: 4px;
@@ -262,30 +259,6 @@ header, .fs-header, .navbar {
         font-weight: 700;
     }
 
-    .details-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px 12px;
-        background: var(--box-bg);
-        border: 1px solid var(--border-color);
-        padding: 10px 12px;
-        border-radius: 6px;
-    }
-
-    .detail-item {
-        font-size: 11px;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    .detail-item strong {
-        color: var(--text-muted);
-        font-size: 9px;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-    }
-
     .section-title {
         font-size: 10px;
         font-weight: 800;
@@ -299,7 +272,7 @@ header, .fs-header, .navbar {
     }
 
     .content-box {
-        font-size: 13px;
+        font-size: 12px;
         background: var(--box-bg);
         padding: 10px 12px;
         border: 1px solid var(--border-color);
@@ -422,7 +395,7 @@ header, .fs-header, .navbar {
         <div class="report-header-right">
             <div>
                 <h3>{{ page.date | date: "%d/%m/%Y" }}</h3>
-                <h2>ID: {{ page.id }}</h2>
+                <h2>{{ page.nivel_alerta | default: page.triagem | default: "ALERTA" }}</h2>
             </div>
         </div>
     </header>
@@ -447,47 +420,77 @@ header, .fs-header, .navbar {
                 <span>{{ page.situacao | default: "N/D" }}</span>
             </div>
             <div class="box-row">
+                <label style="color: {{ theme_color }};">Estado Físico</label>
+                <span>{{ page.estado_fisico | default: "N/D" }}</span>
+            </div>
+            <div class="box-row">
                 <label style="color: {{ theme_color }};">Alerta</label>
                 <span>{{ page.nivel_alerta | default: page.triagem | default: "N/D" }}</span>
             </div>
-            <div class="box-row">
-                <label style="color: {{ theme_color }};">Estado Caso</label>
-                <span>{{ page.estado_caso | default: "N/D" }}</span>
-            </div>
+        </div>
+    </div>
+         
+    <h2 class="section-title">📝 Detalhes e Dados de Terreno</h2>
+    <div class="content-box" style="display: flex; flex-direction: column; gap: 4px;">
+        {% assign p1_parts = "" %}
+        {% if page.especie %}{% assign p1_parts = p1_parts | append: page.especie %}{% endif %}
+        {% if page.estado_fisico %}{% if p1_parts != "" %}{% assign p1_parts = p1_parts | append: " • " %}{% endif %}{% assign p1_parts = p1_parts | append: page.estado_fisico %}{% endif %}
+        {% assign alert_val = page.nivel_alerta | default: page.triagem %}
+        {% if alert_val %}{% if p1_parts != "" %}{% assign p1_parts = p1_parts | append: " • " %}{% endif %}{% assign p1_parts = p1_parts | append: alert_val %}{% endif %}
+        {% if p1_parts != "" %}<div><strong>Espécie / Estado Físico / Alerta:</strong> {{ p1_parts }}</div>{% endif %}
+
+        {% assign p2_parts = "" %}
+        {% if page.nome %}{% assign p2_parts = p2_parts | append: page.nome %}{% endif %}
+        {% if page.idade %}{% if p2_parts != "" %}{% assign p2_parts = p2_parts | append: " • " %}{% endif %}{% assign p2_parts = p2_parts | append: page.idade %}{% endif %}
+        {% if page.identificacao %}{% if p2_parts != "" %}{% assign p2_parts = p2_parts | append: " • " %}{% endif %}{% assign p2_parts = p2_parts | append: page.identificacao %}{% endif %}
+        {% if page.sexo %}{% if p2_parts != "" %}{% assign p2_parts = p2_parts | append: " • " %}{% endif %}{% assign p2_parts = p2_parts | append: page.sexo %}{% endif %}
+        {% if p2_parts != "" %}<div><strong>Nome / Idade / Identificação / Sexo:</strong> {{ p2_parts }}</div>{% endif %}
+
+        {% assign data_ocorr = page.data_ocorrencia_inicial | default: page.date %}
+        {% if data_ocorr %}
+            <div><strong>Data:</strong> {{ data_ocorr | date: "%d/%m/%Y" }}</div>
+        {% endif %}
+
+        {% assign loc_clean = page.localidade | default: page.freguesia %}
+        {% if loc_clean and loc_clean != "" and loc_clean != "Não indicada" and loc_clean != "Não indicado" and loc_clean != "N/D" %}
+            <div><strong>Localidade:</strong> {{ loc_clean }}</div>
+        {% endif %}
+
+        {% if page.concelho and page.concelho != "" and page.concelho != "Não indicado" and page.concelho != "Não indicada" and page.concelho != "N/D" %}
+            <div><strong>Concelho:</strong> {{ page.concelho }}</div>
+        {% endif %}
+
+        {% if page.distrito and page.distrito != "" and page.distrito != "Não indicado" and page.distrito != "Não indicada" and page.distrito != "N/D" %}
+            <div><strong>Distrito:</strong> {{ page.distrito }}</div>
+        {% endif %}
+    </div>
+
+    <h2 class="section-title">🩺 Observações e Acompanhamento</h2>
+    <div class="content-box">
+        <div class="obs-meta-summary" style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px;">
+            <div><strong>Situação:</strong> {{ page.situacao | default: "N/D" }}</div>
+            <div><strong>Condição:</strong> {{ page.estado_fisico | default: "N/D" }}</div>
+            <div><strong>Alerta:</strong> {{ page.nivel_alerta | default: "N/D" }}</div>
+        </div>
+        <div id="obs-content">
+            {% if page.observacoes %}
+                {{ page.observacoes }}
+            {% else %}
+                <em style="color: var(--text-muted); font-size: 11.5px;">Sem observações adicionais registadas.</em>
+            {% endif %}
         </div>
     </div>
 
-         
-        <h2 class="section-title">📝 Detalhes e Dados de Terreno</h2>
-<div class="details-grid">
-    <div class="detail-item"><strong>Localidade</strong><span>{{ page.localidade | default: page.freguesia | default: "" }}</span></div>
-    <div class="detail-item"><strong>Concelho</strong><span>{{ page.concelho | default: "" }}</span></div>
-    <div class="detail-item"><strong>Distrito</strong><span>{{ page.distrito | default: "" }}</span></div>
-    <div class="detail-item"><strong>Data Ocorrência Inicial</strong><span>{{ page.data_ocorrencia_inicial | default: "" }}</span></div>
-    <div class="detail-item"><strong>Idade</strong><span>{{ page.idade | default: "" }}</span></div>
-    <div class="detail-item"><strong>Condição</strong><span>{{ page.estado_fisico | default: "" }}</span></div>
-</div>
-        <h2 class="section-title">🩺 Observações e Acompanhamento</h2>
-<div class="content-box">
-    <div class="obs-meta-summary" style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px;">
-        <div><strong>Situação:</strong> {{ page.situacao | default: "N/D" }}</div>
-        <div><strong>Condição:</strong> {{ page.estado_fisico | default: "N/D" }}</div>
-        <div><strong>Alerta:</strong> {{ page.nivel_alerta | default: "N/D" }}</div>
+    <h2 class="section-title">
+        <span>🗺️ Localização no Mapa</span>
+        <a href="{{ '/mapa.html' | relative_url }}" style="font-size: 9.5px; color: var(--text-muted); text-decoration: underline;">Ver Mapa Geral</a>
+    </h2>
+    <div id="single-case-map"></div>
+    {% if page.referencia %}
+    <div style="margin-top: 6px; font-size: 11px;">
+        🔗 <a href="{{ page.referencia }}" target="_blank" rel="noopener" style="color: var(--text-main); text-decoration: underline;">Referência (link externo)</a>
     </div>
-    <div id="obs-content">
-        {% if page.observacoes %}
-            {{ page.observacoes }}
-        {% else %}
-            <em style="color: var(--text-muted); font-size: 11.5px;">Sem observações adicionais registadas.</em>
-        {% endif %}
-    </div>
-</div>
-
-        <h2 class="section-title">
-            <span>🗺️ Localização no Mapa</span>
-            <a href="{{ '/mapa.html' | relative_url }}" style="font-size: 9.5px; color: var(--text-muted); text-decoration: underline;">Ver Mapa Geral</a>
-        </h2>
-        <div id="single-case-map"></div>
+    {% endif %}
     </main>
 
     <footer class="report-footer">
@@ -620,7 +623,7 @@ header, .fs-header, .navbar {
                         var popupContent = "<b>{{ page.especie }}</b>";
                         if (popupLocationText) popupContent += "<br>" + popupLocationText;
 
-                        L.marker([lat, lon], { icon: icon = circleIcon })
+                        L.marker([lat, lon], { icon: circleIcon })
                             .addTo(map)
                             .bindPopup(popupContent)
                             .openPopup();

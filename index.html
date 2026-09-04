@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Alerta Animal — Mapa de Ocorrências"
-description: "Plataforma de sinalização e alerta de ocorrências de animais em risco"
+description: "Plataforma de monitorização e alerta de ocorrências de animais"
 ---
 
 <!-- Leaflet CSS & JS -->
@@ -50,7 +50,6 @@ description: "Plataforma de sinalização e alerta de ocorrências de animais em
     width: 100%;
   }
 
-  /* PAINEL DO MAPA (Aproximadamente 1/4 ou ajustado no desktop) */
   .map-display-container {
     display: flex;
     flex-direction: column;
@@ -89,7 +88,6 @@ description: "Plataforma de sinalização e alerta de ocorrências de animais em
     touch-action: pan-x pan-y;
   }
 
-  /* PAINEL DA LISTA E PESQUISA (Ocupa o restante do espaço) */
   .map-sidebar-panel {
     display: flex;
     flex-direction: column;
@@ -120,7 +118,6 @@ description: "Plataforma de sinalização e alerta de ocorrências de animais em
 
   .map-list-wrapper { width: 100%; overflow-y: auto; flex: 1; }
 
-  /* CARTÃO UNIFICADO COMPACTO */
   .map-card-item {
     display: flex;
     gap: 10px;
@@ -203,13 +200,12 @@ description: "Plataforma de sinalização e alerta de ocorrências de animais em
   .map-card-actions a {
     color: var(--primary-color);
     text-decoration: none;
-    pointer-events: auto; /* Garante que os links clicáveis funcionem isoladamente */
+    pointer-events: auto;
   }
   .map-card-actions a:hover {
     text-decoration: underline;
   }
 
-  /* DIVISOR DE ARRASTE */
   .split-resizer {
     width: 6px;
     background: var(--border-color);
@@ -220,7 +216,6 @@ description: "Plataforma de sinalização e alerta de ocorrências de animais em
   }
   .split-resizer:hover { background: var(--primary-color); }
 
-  /* NAVEGAÇÃO MÓVEL */
   .mobile-tab-nav {
     display: none;
     background: var(--card-bg);
@@ -246,17 +241,12 @@ description: "Plataforma de sinalização e alerta de ocorrências de animais em
     border-color: var(--primary-color);
   }
 
-  /* MEDIA QUERIES - RESTAURANDO O LAYOUT DESKTOP ORIGINAL COM MAPA À ESQUERDA (~1/4) */
   @media (min-width: 1024px) {
     .map-page-wrapper { height: calc(100vh - 75px); overflow: hidden; }
-    .map-content-layout { display: flex; flex-direction: row-reverse; height: 100%; } /* Lista à direita, Mapa à esquerda */
+    .map-content-layout { display: flex; flex-direction: row-reverse; height: 100%; }
     .split-resizer { display: block; }
-    
-    /* Mapa fixo à esquerda com largura proporcional de ~28% (cerca de 1/4 a 1/3) */
     .map-display-container { width: 28% !important; height: 100%; flex: 0 0 auto; }
     .map-display-panel { height: calc(100% - 75px); flex: 1; }
-    
-    /* Lista à direita ocupando o restante */
     .map-sidebar-panel { height: 100%; flex: 1; width: auto; }
     .mobile-tab-nav { display: none !important; }
   }
@@ -275,7 +265,6 @@ description: "Plataforma de sinalização e alerta de ocorrências de animais em
     .map-display-panel { height: calc(100% - 70px); }
   }
 
-  /* POP-UP LEAFLET CORRIGIDO */
   .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.3); border: 2px solid #ffffff; }
   .leaflet-popup-content-wrapper { background: var(--card-bg) !important; color: var(--text-main) !important; border: 1px solid var(--border-color); border-radius: 10px; padding: 0; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
   .leaflet-popup-tip { background: var(--card-bg) !important; border: 1px solid var(--border-color); }
@@ -295,7 +284,6 @@ description: "Plataforma de sinalização e alerta de ocorrências de animais em
 
   <div class="map-content-layout" id="mapContentLayout">
     
-    <!-- COLUNA DO MAPA (À esquerda no desktop, ~1/4 do ecrã) -->
     <div class="map-display-container">
       <div class="map-external-filter">
         <div class="map-filter-header">FILTRAR POR TRIAGEM / URGÊNCIA</div>
@@ -312,10 +300,8 @@ description: "Plataforma de sinalização e alerta de ocorrências de animais em
       </div>
     </div>
 
-    <!-- SEPARADOR DE ARRASTE -->
     <div class="split-resizer" id="splitResizer"></div>
 
-    <!-- COLUNA DA LISTA (À direita no desktop) -->
     <div class="map-sidebar-panel" id="mapSidebarPanel">
       <div class="map-search-bar">
         <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, concelho..." onkeyup="filterMapManifest()">

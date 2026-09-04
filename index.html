@@ -507,9 +507,12 @@ function criarMarcador(lat, lon, item) {
   marker.options.itemIndex = item.index;
   marker.options.urgent = item.urgent;
 
-  var condicaoTexto = item.estado_fisico || item.estado || 'Condição N/D';
-  var tooltipText = "<strong>" + (item.especie || 'Animal') + "</strong> — " + condicaoTexto;
-  
+  // Hierarquia de localização exata: localidade -> concelho -> distrito -> local
+  var localizacaoFinal = item.localidade || item.concelho || item.distrito || item.local || 'Local não indicado';
+  var estadoFisicoFinal = item.estado_fisico || item.condicao || 'Estado N/D';
+
+  // Tooltip lateral com Espécie e Estado Físico legíveis
+  var tooltipText = "<strong>" + (item.especie || 'Animal') + "</strong> — " + estadoFisicoFinal;
   marker.bindTooltip(tooltipText, {
     direction: 'left',
     offset: [-12, 0]
@@ -517,19 +520,17 @@ function criarMarcador(lat, lon, item) {
 
   var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8; background:#f1f5f9;">Sem Foto</div>';
   
-  var nivelAlerta = item.nivel_alerta || item.triagem || 'Alerta';
-  var infoSecundaria = nivelAlerta + " — " + condicaoTexto;
-
+  // Popup principal limpo, com letras maiores e espaçamento correto (Espécie, Estado Físico e Localidade)
   marker.bindPopup(
-    '<div class="map-popup-card" style="font-size: 13px;">' +
+    '<div class="map-popup-card" style="font-size: 14px;">' +
       imgHtml +
-      '<div class="map-popup-info" style="display: flex; flex-direction: column; justify-content: space-between; gap: 6px;">' +
+      '<div class="map-popup-info" style="display: flex; flex-direction: column; justify-content: space-between; gap: 5px;">' +
         '<div>' +
-          '<div class="map-popup-title" style="color: ' + item.color + '; font-size: 15px; font-weight: 700; line-height: 1.2;">' + (item.especie || 'Animal') + '</div>' +
-          '<div style="font-size: 12px; font-weight: 600; color: #1e293b; margin-top: 4px;">📋 ' + infoSecundaria + '</div>' +
-          '<div class="map-popup-desc" style="font-size: 11px; color: #475569; margin-top: 3px;">📍 ' + (item.local || item.concelho || 'Local não especificado') + '</div>' +
+          '<div class="map-popup-title" style="color: ' + item.color + '; font-size: 16px; font-weight: 700; line-height: 1.2;">' + (item.especie || 'Animal') + '</div>' +
+          '<div style="font-size: 13px; font-weight: 600; color: #1e293b; margin-top: 3px;">📋 ' + estadoFisicoFinal + '</div>' +
+          '<div class="map-popup-desc" style="font-size: 12px; color: #475569; margin-top: 2px;">📍 ' + localizacaoFinal + '</div>' +
         '</div>' +
-        '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + '; font-size: 12px; font-weight: 700; text-decoration: none; margin-top: 4px; display: inline-block;">Ver detalhes →</a>' +
+        '<a href="' + item.url + '" class="map-popup-link" style="color: ' + item.color + '; font-size: 13px; font-weight: 700; text-decoration: none; margin-top: 4px; display: inline-block;">Ver detalhes →</a>' +
       '</div>' +
     '</div>',
     { maxWidth: 280 }

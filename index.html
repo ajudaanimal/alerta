@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Alerta Animal"
-description: "Plataforma de monitorização e alerta de ocorrências de animais em formato de tabela de ecrã completo."
+description: "Plataforma de monitorização e alerta de ocorrências de animais"
 image: "https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg"
 ---
 <!-- Leaflet & Leaflet.markercluster CSS/JS -->
@@ -39,15 +39,15 @@ body {
   margin: 0;
   padding: 0;
   background: var(--bg-main);
-  overflow: hidden;
+  min-height: 100dvh;
 }
 
 .fs-container {
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   max-width: 100%;
   margin: 0;
-  padding: 12px;
+  padding: 8px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -62,15 +62,15 @@ body {
   align-items: center;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
-  padding: 10px 16px;
+  padding: 8px 14px;
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   gap: 12px;
   flex-shrink: 0;
 }
 
 .fs-header h1 {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   margin: 0;
   display: flex;
@@ -81,13 +81,13 @@ body {
 .fs-nav-links {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-size: 0.85rem;
   font-weight: 500;
 }
 
 .fs-pill {
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: 600;
@@ -106,7 +106,7 @@ body {
 .fs-content-wrapper {
   display: flex;
   flex: 1;
-  gap: 12px;
+  gap: 8px;
   overflow: hidden;
   position: relative;
   min-height: 0;
@@ -119,11 +119,10 @@ body {
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  transition: flex 0.3s ease;
 }
 
 .fs-control-bar {
-  padding: 12px;
+  padding: 10px;
   background: var(--header-bg);
   border: 1px solid var(--border-color);
   border-bottom: none;
@@ -131,19 +130,18 @@ body {
   display: flex;
   gap: 8px;
   align-items: center;
-  flex-wrap: wrap;
   flex-shrink: 0;
 }
 
 #searchBox {
   flex: 1;
   min-width: 200px;
-  padding: 8px 12px;
+  padding: 7px 10px;
   background: var(--card-bg);
   color: var(--text-main);
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   outline: none;
 }
 
@@ -156,7 +154,7 @@ body {
   background: var(--btn-bg);
   color: var(--btn-text);
   border: 1px solid var(--border-color);
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -173,7 +171,7 @@ body {
 }
 
 #sortUrgentesBtn.active {
-  background: #dc2626; /* Destacar botão de urgência com vermelho quando ativo */
+  background: #dc2626;
   border-color: #dc2626;
   color: #ffffff;
 }
@@ -191,6 +189,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 0 0 8px 8px;
   min-height: 0;
+  -webkit-overflow-scrolling: touch;
 }
 
 .fs-table {
@@ -205,7 +204,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 2;
-  padding: 12px;
+  padding: 10px 12px;
   font-weight: 700;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-muted);
@@ -213,7 +212,7 @@ body {
 }
 
 .fs-table td {
-  padding: 12px;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
   white-space: nowrap;
@@ -228,8 +227,8 @@ body {
 .fs-row:hover { background: var(--header-bg); }
 
 .fs-img {
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid var(--border-color);
@@ -240,7 +239,7 @@ body {
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 4px 8px;
+  padding: 3px 6px;
   border-radius: 4px;
   display: inline-block;
   border: 1px solid transparent;
@@ -325,7 +324,6 @@ body {
       <button type="button" class="fs-pill" id="btnToggleMap" onclick="toggleMap()">🗺️ Mapa</button>
       <span aria-hidden="true">Registos: <strong>{{ site.ocorrencias | size }}</strong></span>
       
-      <!-- Agrupamento limpo apenas com as ordenações necessárias -->
       <div class="sort-group">
         <button type="button" class="btn-sort active" id="sortDateBtn" onclick="setSortMode('date')">Por Data</button>
         <button type="button" class="btn-sort" id="sortUrgentesBtn" onclick="setSortMode('urgency')">🚨 Urgentes</button>
@@ -353,12 +351,10 @@ body {
           </thead>
           <tbody id="manifestList" aria-live="polite">
             {% for post in site.ocorrencias %}
-              <!-- Processamento das Variáveis para Minúsculas -->
               {% assign nivel_val = post.nivel_alerta | strip | downcase %}
               {% assign estado_val = post.estado_fisico | strip | downcase %}
               {% assign triagem_val = post.triagem | strip | downcase %}
               
-              <!-- 1. SCORE DO NÍVEL DE ALERTA (Peso Máximo) -->
               {% assign nivel_score = 600 %}
               {% if nivel_val contains 'emergência' or nivel_val contains 'emergencia' %}
                 {% assign nivel_score = 100 %}
@@ -372,7 +368,6 @@ body {
                 {% assign nivel_score = 500 %}
               {% endif %}
 
-              <!-- 2. SCORE DO ESTADO FÍSICO (Peso Alto) -->
               {% assign estado_score = 70 %}
               {% if estado_val contains 'crítico' or estado_val contains 'critico' %}
                 {% assign estado_score = 10 %}
@@ -382,7 +377,6 @@ body {
                 {% assign estado_score = 50 %}
               {% endif %}
 
-              <!-- 3. SCORE DA TRIAGEM (Fator de Desempate / Cor) -->
               {% assign triagem_score = 4 %}
               {% assign badge_class = "badge-indefinido" %}
               {% if triagem_val contains 'vermelho' %}
@@ -395,10 +389,10 @@ body {
                 {% assign triagem_score = 3 %}
                 {% assign badge_class = "badge-amarelo" %}
               {% elsif triagem_val contains 'azul' %}
+                {% assign triagem_score = 4 %}
                 {% assign badge_class = "badge-azul" %}
               {% endif %}
 
-              <!-- MATRIZ SAR: Cálculo do Score Final -->
               {% assign sar_score = nivel_score | plus: estado_score | plus: triagem_score %}
               
               <tr class="fs-row" 
@@ -443,7 +437,6 @@ body {
 </div>
 
 <script>
-  // Ordenação por defeito estabelecida em 'date'
   let currentSortMode = 'date';
   let sortDateDescending = true;
   let mapInitialized = false;
@@ -492,7 +485,6 @@ body {
       {% for post in site.ocorrencias %}
         {% assign est_caso = post.estado_caso | upcase %}
         
-        <!-- Recalcular o Score SAR para pintar os pinos do mapa corretamente -->
         {% assign p_nivel = post.nivel_alerta | strip | downcase %}
         {% assign p_estado = post.estado_fisico | strip | downcase %}
         {% assign score_mapa = 600 %}
@@ -506,16 +498,16 @@ body {
         {% elsif p_estado contains 'ferido' %}{% assign score_mapa = score_mapa | plus: 30 %}
         {% endif %}
 
-        {% assign theme_color = "#2563eb" %} <!-- Azul por Defeito -->
+        {% assign theme_color = "#2563eb" %}
 
         {% if est_caso contains 'RESOLVIDO' %}
-          {% assign theme_color = "#16a34a" %} <!-- Verde -->
+          {% assign theme_color = "#16a34a" %}
         {% elsif score_mapa < 200 %} 
-          {% assign theme_color = "#dc2626" %} <!-- Vermelho (Emergências e Críticos) -->
+          {% assign theme_color = "#dc2626" %}
         {% elsif score_mapa < 400 %} 
-          {% assign theme_color = "#f97316" %} <!-- Laranja (Urgentes e Em Risco) -->
+          {% assign theme_color = "#f97316" %}
         {% else %}
-          {% assign theme_color = "#ca8a04" %} <!-- Amarelo (Outros) -->
+          {% assign theme_color = "#ca8a04" %}
         {% endif %}
 
         {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 90 | escape %}
@@ -652,7 +644,6 @@ body {
 
     rows.sort((a, b) => {
       if (currentSortMode === 'urgency') {
-        // Ordena por SAR Score do menor (mais grave) para o maior
         let scoreA = parseInt(a.getAttribute('data-sar-score') || '999', 10);
         let scoreB = parseInt(b.getAttribute('data-sar-score') || '999', 10);
         
@@ -660,13 +651,11 @@ body {
           return scoreA - scoreB;
         }
         
-        // Em caso de empate absoluto de gravidade, o mais recente ganha
         let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
         let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
         return timeB - timeA;
         
       } else {
-        // Ordenação clássica por data
         let timeA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
         let timeB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
         return sortDateDescending ? (timeB - timeA) : (timeA - timeB);

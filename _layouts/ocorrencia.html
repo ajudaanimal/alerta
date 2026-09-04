@@ -432,11 +432,6 @@ layout: default
         
     <h2 class="section-title">🩺 Observações e Acompanhamento</h2>
     <div class="content-box">
-        <div class="obs-meta-summary" style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px;">
-            <div><strong>Situação:</strong> {{ page.situacao | default: "N/D" }}</div>
-            <div><strong>Condição:</strong> {{ page.estado_fisico | default: "N/D" }}</div>
-            <div><strong>Alerta:</strong> {{ page.nivel_alerta | default: "N/D" }}</div>
-        </div>
         <div id="obs-content">
             {% if page.observacoes %}
                 {{ page.observacoes }}
@@ -451,10 +446,12 @@ layout: default
         <a href="{{ '/mapa.html' | relative_url }}" style="font-size: 9.5px; color: var(--text-muted); text-decoration: underline;">Ver Mapa Geral</a>
     </h2>
     <div id="single-case-map"></div>
+
     {% if page.referencia %}
     <div style="margin-top: 6px; font-size: 11px;">
         🔗 <a href="{{ page.referencia }}" target="_blank" rel="noopener" style="color: var(--text-main); text-decoration: underline;">Referência (link externo)</a>
     </div>
+    {% endif %}
         
     <h2 class="section-title">📝 Detalhes e Dados de Terreno</h2>
     <div class="content-box" style="display: flex; flex-direction: column; gap: 4px;">
@@ -491,7 +488,6 @@ layout: default
         {% endif %}
     </div>
 
-    {% endif %}
     </main>
 
     <footer class="report-footer">

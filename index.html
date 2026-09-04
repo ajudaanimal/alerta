@@ -541,7 +541,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       {% endfor %}
     ];
 
-    function criarMarcador(lat, lon, item) {
+function criarMarcador(lat, lon, item) {
       var emojiIcon = getSpeciesEmoji(item.especie);
       var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
 
@@ -557,7 +557,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       marker.options.colorKey = item.colorKey;
       marker.options.originalIndex = item.index;
 
-      // NOVO LAYOUT DO POP-UP: Imagem em cima (grande) e texto em baixo
+      // Adicionadas opções de autoPanPadding para respeitar as margens do mapa
       marker.bindPopup(
         '<div class="map-popup-card">' +
           '<img src="' + (item.imagem || 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg') + '" class="map-popup-img" alt="">' +
@@ -567,13 +567,16 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
             '<span style="font-size: 12px; color: var(--text-muted);">📍 ' + (item.concelho || 'Local N/D') + '</span>' +
             '<a href="' + item.url + '" style="color: ' + item.color + '; font-weight:700; font-size: 12px; margin-top: 4px; text-decoration: none;">Ver Ficha Completa →</a>' +
           '</div>' +
-        '</div>'
+        '</div>',
+        {
+          autoPan: true,
+          autoPanPadding: [40, 40]
+        }
       );
 
       markersByIndex[item.index] = marker;
       return marker;
     }
-
     var locaisValidos = ocorrencias.filter(function(item) {
       return item.concelho && item.concelho !== "Não indicada" && item.concelho.trim() !== "";
     });
@@ -614,7 +617,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     if (locaisValidos.length > 0) processarProximoLocal();
   }
 
-  function focusOnMarker(originalIndex) {
+function focusOnMarker(originalIndex) {
     var marker = markersByIndex[originalIndex];
     if (marker) {
       if (window.innerWidth < 1024) {
@@ -624,9 +627,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         if (mapInstance) {
           mapInstance.invalidateSize();
           var latLng = marker.getLatLng();
-          // Zoom alterado para 12 para abranger a cidade/concelho de forma genérica
+          
+          // Move o mapa e abre o pop-up apenas quando o movimento terminar ('moveend')
           mapInstance.setView(latLng, 12, { animate: true });
-          marker.openPopup();
+          
+          mapInstance.once('moveend', function() {
+            marker.openPopup();
+          });
         }
       }, 150);
     }

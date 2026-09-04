@@ -652,18 +652,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function focarOcorrencia(index, url) {
-    if (!mapInitialized) {
-      toggleMapVisibility();
-    }
-    setTimeout(() => {
-      var targetMarker = allMarkersData.find(function(m) { return m.options.itemIndex === index; });
-      if (targetMarker) {
-        mapInstance.setView(targetMarker.getLatLng(), 14);
-        targetMarker.openPopup();
-      } else {
-        window.location = url;
-      }
-    }, 200);
+    window.location.href = url;
   }
 
   function filterMapByColor(colorKey, btnElement) {

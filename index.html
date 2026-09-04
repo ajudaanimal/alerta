@@ -104,39 +104,30 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-content-layout.map-hidden {
     grid-template-columns: 1fr !important;
   }
-  .map-content-layout.map-hidden .map-display-panel {
+  .map-content-layout.map-hidden .map-column-wrapper {
     display: none;
   }
 
-  .map-display-panel {
-    position: relative;
+  /* Coluna do Mapa com o filtro em cima (fora do mapa) */
+  .map-column-wrapper {
     display: flex;
     flex-direction: column;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    overflow: hidden;
+    gap: 8px;
     min-height: 350px;
   }
 
-  .map-floating-filter {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    z-index: 1000;
+  .map-external-filter {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    padding: 6px 10px;
+    padding: 8px 10px;
     border-radius: 6px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     gap: 4px;
-    backdrop-filter: blur(4px);
+    flex-shrink: 0;
   }
 
-  .map-floating-header {
+  .map-external-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -167,10 +158,23 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-color: var(--primary-color);
   }
 
+  .map-display-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+    flex: 1;
+    min-height: 300px;
+  }
+
   #full-map {
     width: 100%;
+    height: 100%;
     flex: 1;
-    min-height: 350px;
+    min-height: 300px;
   }
 
   .map-sidebar-panel {
@@ -259,11 +263,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
   .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
   .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
-  .badge-amarelo  { background: rgba(217, 119, 6, 0.2); color: #d97706; } /* Amarelo escuro acessível */
+  .badge-amarelo  { background: rgba(217, 119, 6, 0.2); color: #d97706; }
   .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  /* Marcadores SVG profissionais */
   .species-pin {
     width: 26px;
     height: 26px;
@@ -307,11 +310,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   @media (max-width: 1023px) {
     .map-content-layout {
       grid-template-columns: 1fr !important;
-      grid-template-rows: 350px 1fr;
+      grid-template-rows: auto 1fr;
     }
-    .map-display-panel {
-      height: 350px;
-      min-height: 350px;
+    .map-column-wrapper {
+      height: 380px;
+      min-height: 380px;
     }
   }
 </style>
@@ -325,11 +328,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   </div>
 
   <div class="map-content-layout" id="mapContentLayout">
-    <div class="map-display-panel" id="mapDisplayPanel">
-      <div class="map-floating-filter">
-        <div class="map-floating-header">
+    <!-- Coluna do Mapa com o Filtro em CIMA (Fora do Mapa) -->
+    <div class="map-column-wrapper">
+      <div class="map-external-filter">
+        <div class="map-external-header">
           <span>FILTRAR POR TRIAGEM</span>
-          <button type="button" class="map-nav-link" style="padding: 1px 4px; font-size: 8px;" onclick="toggleMapDisplay()">Ocultar</button>
         </div>
         <div class="map-filter-pills">
           <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
@@ -339,9 +342,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           <button type="button" class="filter-pill" onclick="filterMapByColor('azul', this)">🔵 Azul</button>
         </div>
       </div>
-      <div id="full-map"></div>
+      <div class="map-display-panel" id="mapDisplayPanel">
+        <div id="full-map"></div>
+      </div>
     </div>
 
+    <!-- Tabela / Lista de Casos à Direita -->
     <div class="map-sidebar-panel">
       <div class="map-search-bar">
         <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, localidade ou triagem..." onkeyup="filterMapManifest()" aria-label="Pesquisar ocorrências">
@@ -442,17 +448,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% assign color_key = "amarelo" %}
         {% endif %}
 
-        {% comment %} Caminhos SVG profissionais para cada espécie {% endcomment>
         {% assign svg_path = '<path d="M11.5 2C7.91 2 5 4.91 5 8.5c0 1.98.88 3.76 2.27 5A8.995 8.995 0 0 0 2 20h2a7 7 0 0 1 14 0h2a8.995 8.995 0 0 0-5.27-6.5C18.12 12.26 19 10.48 19 8.5 19 4.91 16.09 2 12.5 2h-1z"/>' %}
         
         {% if esp contains 'gato' or esp contains 'felino' %}
-          {% comment %} Ícone de Gato SVG {% endcomment %}
           {% assign svg_path = '<path d="M12 2l-5 4H4v3l-2 3 3 6h14l3-6-2-3V6h-3l-5-4zM9 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>' %}
         {% elsif esp contains 'cão' or esp contains 'cao' or esp contains 'canídeo' %}
-          {% comment %} Ícone de Cão SVG {% endcomment %}
           {% assign svg_path = '<path d="M10 2C7.79 2 6 3.79 6 6v1c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2v3c0 2.21 1.79 4 4 4h4c2.21 0 4-1.79 4-4v-3c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2V6c0-2.21-1.79-4-4-4h-4zm0 2h4c1.1 0 2 .9 2 2v1H8V6c0-1.1.9-2 2-2z"/>' %}
         {% elsif esp contains 'ave' or esp contains 'pássaro' or esp contains 'passaro' or esp contains 'gaivota' or esp contains 'pombo' %}
-          {% comment %} Ícone de Ave SVG {% endcomment %}
           {% assign svg_path = '<path d="M16 2c-3.31 0-6 2.69-6 6 0 .58.08 1.14.22 1.67L3.08 15.82a1.003 1.003 0 0 0 0 1.42l1.42 1.42c.39.39 1.02.39 1.41 0l6.43-6.43C12.86 12.34 13.42 12.42 14 12.42c3.31 0 6-2.69 6-6s-2.69-4.42-4-4.42z"/>' %}
         {% endif %}
 
@@ -488,11 +490,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       var marker = L.marker([lat, lon], { icon: customIcon });
       marker.options.colorKey = item.colorKey;
       marker.options.itemIndex = item.index;
-
-      marker.bindTooltip("<strong>" + item.especie + "</strong>", {
-        direction: 'top',
-        offset: [0, -8]
-      });
 
       var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:8px; color:#94a3b8;">Sem Foto</div>';
       
@@ -592,11 +589,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   function toggleMapDisplay() {
     var layout = document.getElementById('mapContentLayout');
-    if (window.innerWidth <= 1023) {
-      layout.classList.toggle('mobile-map-collapsed');
-    } else {
-      layout.classList.toggle('map-hidden');
-    }
+    layout.classList.toggle('map-hidden');
     if (mapInstance) {
       setTimeout(function() { mapInstance.invalidateSize(); }, 300);
     }

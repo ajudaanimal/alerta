@@ -9,7 +9,7 @@ description: "Página de teste modular"
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <!-- Mantemos temporariamente os estilos para validação rápida -->
-<link rel="stylesheet" href="{{ '/map-styles.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/map-styles.css' | relative_url }}?v=2">
 
 <div class="map-page-wrapper" id="mapPageWrapper">
   <div class="mobile-tab-nav">

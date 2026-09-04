@@ -1,21 +1,35 @@
----
-layout: default
-title: "Mapa de Veterinários"
----
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinários em Portugal</title>
+  <!-- Script para carregar o modo escuro sem piscar a página -->
+  <script>
+      if (localStorage.getItem('darkMode') === 'true') {
+          document.documentElement.classList.add('dark-mode');
+      }
+  </script>
   <style>
     :root {
       --primary-color: #0d9488;
       --bg-color: #f8fafc;
       --card-bg: #ffffff;
-      --text-color: #1e293b;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --header-bg: #f1f5f9;
       --border-radius: 12px;
+    }
+
+    html.dark-mode {
+      --bg-color: #090d16;
+      --card-bg: #111827;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #1f2937;
+      --header-bg: #1f2937;
+      --primary-color: #38bdf8;
     }
 
     * {
@@ -27,26 +41,72 @@ title: "Mapa de Veterinários"
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg-color);
-      color: var(--text-color);
+      color: var(--text-main);
       line-height: 1.5;
+      transition: background 0.3s, color 0.3s;
     }
 
-    /* Header */
-    header {
-      background-color: var(--card-bg);
-      padding: 1.5rem 2rem;
-      border-bottom: 1px solid #e2e8f0;
+    /* Global Header */
+    .site-global-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 12px 20px;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
     }
 
-    header h1 {
-      font-size: 1.5rem;
-      color: var(--primary-color);
+    .site-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text-main);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
+    }
+
+    .fs-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .fs-pill {
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text-main);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .fs-pill:hover {
+      border-color: var(--text-muted);
+    }
+
+    .fs-pill.active {
+      background: var(--primary-color);
+      color: #ffffff;
+      border-color: var(--primary-color);
+    }
+
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
     }
 
     /* Layout Container */
@@ -68,6 +128,7 @@ title: "Mapa de Veterinários"
     /* Map Card */
     .map-card {
       background: var(--card-bg);
+      border: 1px solid var(--border-color);
       border-radius: var(--border-radius);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       overflow: hidden;
@@ -93,8 +154,8 @@ title: "Mapa de Veterinários"
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #ffffff;
-      border-top: 1px solid #f1f5f9;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border-color);
     }
 
     .map-footer a {
@@ -117,6 +178,7 @@ title: "Mapa de Veterinários"
 
     .info-card {
       background: var(--card-bg);
+      border: 1px solid var(--border-color);
       padding: 1.5rem;
       border-radius: var(--border-radius);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -125,18 +187,26 @@ title: "Mapa de Veterinários"
     .info-card h2 {
       font-size: 1.1rem;
       margin-bottom: 0.75rem;
+      color: var(--text-main);
     }
 
     .info-card p {
       font-size: 0.95rem;
-      color: #64748b;
+      color: var(--text-muted);
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>🐾 Veterinários em Portugal</h1>
+  <!-- Cabeçalho Global Integrado -->
+  <header class="site-global-header">
+    <a href="{{ '/' | relative_url }}" class="site-title">🐾 Veterinários em Portugal</a>
+    
+    <nav class="fs-nav-links" aria-label="Navegação Principal">
+      <a href="{{ '/contactos_emergencia.md' | relative_url }}" class="fs-pill" aria-label="Contactos de Emergência">📞 Contactos</a>
+      <a href="{{ '/mapa.html' | relative_url }}" class="fs-pill active" aria-label="Ver Mapa">🗺️ Mapa</a>
+      <button type="button" class="theme-toggle-btn" onclick="toggleGlobalDarkMode()" title="Alternar Tema">🌓</button>
+    </nav>
   </header>
 
   <main class="main-container">
@@ -150,7 +220,7 @@ title: "Mapa de Veterinários"
         </iframe>
       </div>
       <div class="map-footer">
-        <span>Utilize o mapa para explorar clínicas e hospitais.</span>
+        <span style="color: var(--text-muted);">Utilize o mapa para explorar clínicas e hospitais.</span>
         <a href="https://umap.openstreetmap.fr/en/map/veterinarios-em-portugal_1453528" target="_blank" rel="noopener noreferrer">
           Ecrã Inteiro ↗
         </a>
@@ -171,5 +241,11 @@ title: "Mapa de Veterinários"
     </aside>
   </main>
 
+  <script>
+      function toggleGlobalDarkMode() {
+          let isDark = document.documentElement.classList.toggle('dark-mode');
+          localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+      }
+  </script>
 </body>
 </html>

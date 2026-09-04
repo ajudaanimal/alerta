@@ -43,24 +43,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     overflow: hidden;
   }
 
-  .map-content-layout {
-    display: grid;
-    grid-template-columns: 450px 1fr;
-    gap: 10px;
-    width: 100%;
-    flex: 1;
-    min-height: 0;
-    transition: grid-template-columns 0.3s ease;
-  }
-
-  .map-content-layout.map-hidden {
-    grid-template-columns: 0fr 1fr;
-  }
-
-  .map-content-layout.map-hidden .map-display-container {
-    display: none;
-  }
-
   .map-toggle-bar {
     display: flex;
     justify-content: space-between;
@@ -77,6 +59,27 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .map-toggle-bar:hover {
     background: var(--header-bg);
+  }
+
+  .map-content-layout {
+    display: grid;
+    grid-template-columns: 450px 1fr;
+    gap: 10px;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    transition: grid-template-columns 0.3s ease, gap 0.3s ease;
+  }
+
+  .map-content-layout.map-hidden {
+    grid-template-columns: 0px 1fr;
+    gap: 0px;
+  }
+
+  .map-content-layout.map-hidden .map-display-container {
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
   }
 
   .map-external-filter {
@@ -126,6 +129,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     gap: 8px;
     height: 100%;
     min-height: 0;
+    transition: opacity 0.2s ease;
   }
 
   .map-display-panel {
@@ -362,14 +366,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 </style>
 
 <div class="map-page-wrapper">
+  
+  <div class="map-toggle-bar" onclick="toggleMapVisibility()">
+    <span>🗺️ <span id="mapToggleText">Ver/Ocultar Mapa Interativo</span></span>
+    <span id="mapToggleIcon">▲</span>
+  </div>
+
   <div class="map-content-layout" id="mapContentLayout">
     
     <div class="map-display-container">
-      <div class="map-toggle-bar" onclick="toggleMapVisibility()">
-        <span>🗺️ Ver/Ocultar Mapa Interativo</span>
-        <span id="mapToggleIcon">▲</span>
-      </div>
-
       <div class="map-external-filter">
         <div class="map-filter-header">FILTRAR POR TRIAGEM / URGÊNCIA</div>
         <div class="map-filter-pills">
@@ -677,7 +682,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
 
     if (locaisValidos.length > 0) {
-      processarPretoLocal = processarProximoLocal;
       processarProximoLocal();
     }
   }
@@ -698,7 +702,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     
     if (mapInitialized && mapInstance) {
       allMarkersLayerGroup.clearLayers();
-      allMarkersData.push;
       allMarkersData.forEach(function(marker) {
         var matchesColor = (activeColorFilter === 'all' || marker.options.colorKey === activeColorFilter);
         if (matchesColor) {

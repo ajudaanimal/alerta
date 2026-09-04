@@ -30,16 +30,17 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --primary-color: #38bdf8;
   }
 
+  /* Full-screen layout with minimal margins */
   .map-page-wrapper {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 70px);
-    max-height: calc(100vh - 70px);
-    width: 100%;
+    height: calc(100vh - 60px);
+    width: 100vw;
+    max-width: 100%;
     margin: 0;
-    padding: 10px;
+    padding: 6px;
     box-sizing: border-box;
-    gap: 10px;
+    gap: 6px;
     overflow: hidden;
   }
 
@@ -49,10 +50,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     align-items: center;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    padding: 8px 12px;
-    border-radius: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
     font-size: 11px;
-    font-weight: 750;
+    font-weight: 700;
     cursor: pointer;
     flex-shrink: 0;
   }
@@ -63,8 +64,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .map-content-layout {
     display: grid;
-    grid-template-columns: 450px 1fr;
-    gap: 10px;
+    grid-template-columns: 420px 1fr;
+    gap: 6px;
     width: 100%;
     flex: 1;
     min-height: 0;
@@ -85,16 +86,16 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-external-filter {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    padding: 8px 12px;
-    border-radius: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     flex-shrink: 0;
   }
 
   .map-filter-header {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 800;
     color: var(--text-muted);
     letter-spacing: 0.5px;
@@ -102,13 +103,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .map-filter-pills {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     flex-wrap: wrap;
   }
 
   .filter-pill {
     font-size: 10px;
-    padding: 3px 8px;
+    padding: 2px 6px;
     border-radius: 4px;
     border: 1px solid var(--border-color);
     background: var(--card-bg);
@@ -126,7 +127,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-display-container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     height: 100%;
     min-height: 0;
     transition: opacity 0.2s ease;
@@ -138,7 +139,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     flex-direction: column;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
     flex: 1;
     min-height: 0;
@@ -156,25 +157,22 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     flex-direction: column;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
     height: 100%;
     min-height: 0;
   }
 
   .map-search-bar {
-    padding: 10px;
+    padding: 8px 10px;
     background: var(--header-bg);
     border-bottom: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
     flex-shrink: 0;
   }
 
   .map-search-input {
     width: 100%;
-    padding: 7px 10px;
+    padding: 6px 10px;
     background: var(--card-bg);
     color: var(--text-main);
     border: 1px solid var(--border-color);
@@ -190,6 +188,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     min-height: 0;
   }
 
+  /* Desktop Table view */
   .map-table {
     width: 100%;
     border-collapse: collapse;
@@ -290,12 +289,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-popup-title { font-weight: 800; font-size: 11px; }
   .map-popup-desc { color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 2px 0; }
 
-  /* Responsivo para telemóveis / ecrãs pequenos */
+  /* Mobile Clean Card Layout (No more messy table blocks) */
   @media (max-width: 1023px) {
     .map-page-wrapper {
-      height: auto;
-      max-height: none;
-      overflow: visible;
+      height: calc(100vh - 50px);
+      padding: 2px;
+      gap: 4px;
     }
     .map-content-layout {
       grid-template-columns: 1fr !important;
@@ -303,12 +302,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       flex-direction: column;
     }
     .map-display-container {
-      height: 450px;
+      height: 320px;
       flex-shrink: 0;
     }
-    .map-sidebar-panel {
-      height: auto;
+    .map-content-layout.map-hidden .map-display-container {
+      height: 0px !important;
+      display: none;
     }
+    .map-sidebar-panel {
+      height: 100%;
+    }
+    
+    /* Transform table into clean native mobile cards */
     .map-table, .map-table tbody, .map-table tr, .map-table td {
       display: block;
       width: 100%;
@@ -318,49 +323,56 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       display: none;
     }
     .map-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px 10px;
-      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 2px 10px;
+      padding: 10px;
       background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+      border-radius: 0;
+      margin-bottom: 0;
+      align-items: center;
     }
     .map-row td {
       padding: 0 !important;
       border: none !important;
       width: auto !important;
     }
+    /* Photo column spanning rows */
     .map-row td:nth-child(1) {
-      flex-shrink: 0;
+      grid-row: span 3;
     }
     .map-row-img {
-      width: 44px;
-      height: 44px;
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
     }
+    /* Urgência & Triagem */
     .map-row td:nth-child(2) {
+      grid-column: 2;
+      grid-row: 1;
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      gap: 6px;
+      align-items: center;
     }
+    /* Espécie */
     .map-row td:nth-child(3) {
-      flex-basis: 100%;
-      order: 3;
+      grid-column: 2;
+      grid-row: 2;
       font-size: 13px;
-      margin-top: 2px;
+      font-weight: 700;
     }
+    /* Estado Físico */
     .map-row td:nth-child(4) {
-      order: 4;
+      grid-column: 2;
+      grid-row: 3;
       font-size: 11px;
       color: var(--text-muted);
     }
+    /* Concelho / Location hidden or merged if needed, or shown cleanly */
     .map-row td:nth-child(5) {
-      order: 5;
-      margin-left: auto;
-      font-size: 11px;
-      font-weight: 600;
+      display: none; /* or displayed elsewhere if preferred */
     }
   }
 </style>
@@ -368,7 +380,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <div class="map-page-wrapper">
   
   <div class="map-toggle-bar" onclick="toggleMapVisibility()">
-    <span>🗺️ <span id="mapToggleText">Ver/Ocultar Mapa Interativo</span></span>
+    <span>🗺️ <span id="mapToggleText">Ocultar Mapa Interativo</span></span>
     <span id="mapToggleIcon">▲</span>
   </div>
 
@@ -507,28 +519,28 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let mapInitialized = false;
 
   document.addEventListener("DOMContentLoaded", function() {
-    if (window.innerWidth >= 1024) {
-      initMap();
-      mapInitialized = true;
-    }
+    // Initialize map immediately on page load across all devices so it's active right away
+    initMap();
+    mapInitialized = true;
   });
 
   function toggleMapVisibility() {
     const layout = document.getElementById('mapContentLayout');
     const icon = document.getElementById('mapToggleIcon');
-    layout.classList.toggle('map-hidden');
+    const toggleText = document.getElementById('mapToggleText');
     
+    layout.classList.toggle('map-hidden');
     const isHidden = layout.classList.contains('map-hidden');
+    
     if (!isHidden) {
       icon.textContent = '▲';
-      if (!mapInitialized) {
-        initMap();
-        mapInitialized = true;
-      } else {
-        setTimeout(() => { mapInstance.invalidateSize(); }, 150);
-      }
+      toggleText.textContent = 'Ocultar Mapa Interativo';
+      setTimeout(() => { 
+        if (mapInstance) mapInstance.invalidateSize(); 
+      }, 150);
     } else {
       icon.textContent = '▼';
+      toggleText.textContent = 'Mostrar Mapa Interativo';
     }
   }
 

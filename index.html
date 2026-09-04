@@ -54,10 +54,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: grid;
     grid-template-columns: 420px 1fr;
     gap: 12px;
-    flex: 1;
-    min-height: 500px;
     width: 100%;
-    align-items: stretch;
+    align-items: start;
   }
 
   /* Botão de Expansão do Mapa para Mobile / Acessibilidade */
@@ -123,8 +121,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     flex-direction: column;
     gap: 8px;
-    flex: 1;
-    min-height: 500px;
   }
 
   .map-display-panel {
@@ -135,9 +131,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    height: 100%;
-    min-height: 500px;
-    flex: 1;
+    height: 450px;
   }
   
   .map-display-panel.expanded {
@@ -157,8 +151,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    min-height: 500px;
-    height: 100%;
+    height: 504px;
   }
 
   .map-search-bar {
@@ -231,12 +224,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   .priority-badge {
-    font-size: 9px;
-    font-weight: 800;
-    padding: 2px 5px;
-    border-radius: 4px;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 3px;
     background: var(--header-bg);
     color: var(--text-muted);
+    opacity: 0.6;
     margin-bottom: 2px;
     display: inline-block;
   }
@@ -292,10 +286,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   @media (max-width: 1023px) {
     .map-content-layout {
       grid-template-columns: 1fr !important;
-      grid-template-rows: auto 1fr;
     }
     
-    /* Transformação da Tabela em Cards Verticais no Mobile para Evitar Scroll Horizontal */
+    .map-sidebar-panel {
+      height: auto;
+    }
+
     .map-table, .map-table tbody, .map-table tr, .map-table td {
       display: block;
       width: 100%;
@@ -304,45 +300,57 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     .map-table thead {
       display: none;
     }
+
     .map-row {
       display: grid;
-      grid-template-columns: 45px 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 4px 10px;
-      padding: 10px;
+      grid-template-columns: 44px 1fr auto;
+      grid-template-rows: auto auto;
+      gap: 2px 8px;
+      padding: 8px 10px;
       background: var(--card-bg);
       border-bottom: 1px solid var(--border-color);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       border-radius: 6px;
       border: 1px solid var(--border-color);
+      align-items: center;
     }
+
     .map-row td {
       padding: 0;
       border: none;
     }
+
+    /* Foto ocupa as duas linhas à esquerda */
     .map-row td:nth-child(1) {
-      grid-row: span 3;
+      grid-column: 1;
+      grid-row: 1 / span 2;
       align-self: center;
     }
     .map-row-img {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
     }
+
+    /* Linha 1: Urgência & Triagem (Col 2) e Espécie (Col 3) */
     .map-row td:nth-child(2) {
       grid-column: 2;
       grid-row: 1;
     }
     .map-row td:nth-child(3) {
+      grid-column: 3;
+      grid-row: 1;
+      text-align: right;
+    }
+
+    /* Linha 2: Estado Físico (Col 2) e Concelho (Col 3) */
+    .map-row td:nth-child(4) {
       grid-column: 2;
       grid-row: 2;
     }
-    .map-row td:nth-child(4) {
-      grid-column: 2;
-      grid-row: 3;
-    }
     .map-row td:nth-child(5) {
-      grid-column: 2;
-      grid-row: 4;
+      grid-column: 3;
+      grid-row: 2;
+      text-align: right;
     }
   }
 </style>

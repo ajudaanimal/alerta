@@ -1,622 +1,329 @@
 ---
 layout: default
-title: "Alerta Animal"
-description: "Plataforma de monitorização e alerta de ocorrências de animais"
+title: Alerta Animal — Mapa Geral
 ---
-
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<!-- Leaflet MarkerCluster CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-
-<!-- Leaflet JavaScript -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<!-- Leaflet MarkerCluster JavaScript -->
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-
-<style>
-  :root {
-    --bg-main: #f8fafc;
-    --card-bg: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border-color: #cbd5e1;
-    --header-bg: #f1f5f9;
-    --primary-color: #0284c7;
-  }
-
-  html.dark-mode, body.dark-mode {
-    --bg-main: #090d16;
-    --card-bg: #111827;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-color: #1f2937;
-    --header-bg: #1f2937;
-    --primary-color: #38bdf8;
-  }
-
-  html, body {
-    height: 100%;
-    margin: 0;
-    overflow-x: hidden;
-    background: var(--bg-main);
-    color: var(--text-main);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  }
-
-  .map-page-wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - 70px);
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 10px 16px;
-    box-sizing: border-box;
-  }
-
-  .map-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    padding: 8px 14px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    gap: 10px;
-    flex-wrap: wrap;
-    flex-shrink: 0;
-  }
-
-  .map-toolbar h1 {
-    font-size: 14px;
-    font-weight: 800;
-    margin: 0;
-  }
-
-  .map-nav-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-
-  .map-nav-link {
-    color: var(--text-main);
-    text-decoration: none;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-  .map-nav-link:hover {
-    background: var(--header-bg);
-  }
-
-  /* Layout principal: Mapa à esquerda (~1/4), Tabela à direita (~3/4) no Desktop */
-  .map-content-layout {
-    display: grid;
-    grid-template-columns: 360px 1fr;
-    gap: 10px;
-    flex: 1;
-    min-height: 550px;
-    transition: grid-template-columns 0.3s ease;
-  }
-
-  .map-content-layout.map-hidden {
-    grid-template-columns: 1fr !important;
-  }
-  .map-content-layout.map-hidden .map-display-panel {
-    display: none;
-  }
-
-  /* Painel do Mapa (À esquerda no desktop) */
-  .map-display-panel {
-    display: flex;
-    flex-direction: column;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    overflow: hidden;
-    min-height: 350px;
-  }
-
-  .map-display-header {
-    display: flex;
-    flex-direction: column;
-    padding: 8px 12px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    font-size: 11px;
-    font-weight: bold;
-    flex-shrink: 0;
-    gap: 6px;
-  }
-
-  .map-header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .map-filter-pills {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    margin-top: 4px;
-  }
-
-  .filter-pill {
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    background: var(--card-bg);
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--text-main);
-  }
-  .filter-pill.active {
-    background: var(--primary-color);
-    color: #ffffff;
-    border-color: var(--primary-color);
-  }
-
-  #full-map {
-    width: 100%;
-    flex: 1;
-    min-height: 300px;
-  }
-
-  /* Painel da Tabela / Lista à direita */
-  .map-sidebar-panel {
-    display: flex;
-    flex-direction: column;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    overflow: hidden;
-    min-height: 400px;
-  }
-
-  .map-search-bar {
-    padding: 8px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0;
-  }
-
-  .map-search-input {
-    width: 100%;
-    padding: 6px 10px;
-    background: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 12px;
-    box-sizing: border-box;
-    outline: none;
-  }
-
-  .map-list-wrapper {
-    flex: 1;
-    overflow-y: auto;
-  }
-
-  .map-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: 11px;
-  }
-
-  .map-table th {
-    background: var(--header-bg);
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    padding: 8px 10px;
-    font-weight: 700;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-muted);
-  }
-
-  .map-table td {
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--border-color);
-    vertical-align: middle;
-  }
-
-  .map-row {
-    cursor: pointer;
-    transition: background 0.1s;
-    color: var(--text-main);
-  }
-  .map-row:hover, .map-row.highlighted {
-    background: var(--header-bg);
-  }
-
-  .map-row-img {
-    width: 32px;
-    height: 32px;
-    object-fit: cover;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    display: block;
-  }
-
-  .map-badge {
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 3px;
-    display: inline-block;
-  }
-  .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-  .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
-  .badge-amarelo  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; }
-  .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
-  .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
-
-  /* Marcador personalizado SVG avançado */
-  .custom-animal-pin {
-    background: transparent;
-    border: none;
-  }
-  .pin-container {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-    border: 2px solid #ffffff;
-    transition: transform 0.2s ease;
-  }
-  .pin-container:hover {
-    transform: scale(1.15);
-  }
-
-  /* Popups estilizados tipo Card */
-  .leaflet-popup-content-wrapper {
-    background: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 0;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-  }
-  .leaflet-popup-content {
-    margin: 10px;
-    line-height: 1.4;
-  }
-  .map-popup-card { display: flex; gap: 10px; width: 230px; align-items: center; }
-  .map-popup-img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; background: var(--header-bg); flex-shrink: 0; border: 1px solid var(--border-color); }
-  .map-popup-info { display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; font-size: 11px; width: 100%; }
-  .map-popup-title { font-weight: 800; font-size: 12px; }
-  .map-popup-desc { color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 3px 0; font-size: 10px; }
-  .map-popup-btn { display: inline-block; text-align: center; background: var(--primary-color); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-decoration: none; margin-top: 4px; font-size: 10px; }
-
-  /* Versão Mobile: Divisão Vertical */
-  @media (max-width: 1023px) {
-    .map-content-layout {
-      grid-template-columns: 1fr !important;
-      grid-template-rows: auto 1fr;
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }}</title>
+  <!-- Leaflet CSS -->  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- FontAwesome -->  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <!-- Leaflet JS -->  
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Supabase JS -->  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; }
+    .map-wrapper { display: flex; height: 100vh; }
+    .map-sidebar { width: 420px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow-y: auto; z-index: 1001; box-shadow: 2px 0 10px rgba(0,0,0,0.03); }
+    .map-container { flex: 1; height: 100%; }
+    #full-map { width: 100%; height: 100%; }
+      
+    .filter-section { padding: 14px; border-bottom: 1px solid #e2e8f0; background: #ffffff; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 0; z-index: 1000; }
+    .filter-header { font-size: 14px; font-weight: 600; color: #1e293b; display: flex; justify-content: space-between; align-items: center; }
+    .filter-section input, .filter-section select { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: #f8fafc; color: #334155; }
+    .filter-section input:focus, .filter-section select:focus { outline: none; border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+    .filter-row { display: flex; gap: 6px; }
+    .filter-row select { flex: 1; }
+    
+    /* Cartão Lateral Compacto */
+    .card-item { display: flex; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; align-items: center; transition: background 0.15s; }
+    .card-item:hover { background: #f8fafc; }
+    .card-img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; background: #e2e8f0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 16px; }
+    .card-info { flex: 1; overflow: hidden; }
+    .card-meta { display: flex; gap: 6px; align-items: center; margin-top: 3px; font-size: 11px; color: #64748b; flex-wrap: wrap; }
+    
+    .badge { display: inline-block; padding: 2px 5px; font-size: 9px; font-weight: 700; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.2px; }
+    .badge-urgente, .badge-risco { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+    .badge-busca { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
+    .badge-monitorizacao { background: #fefce8; color: #ca8a04; border: 1px solid #fef9c3; }
+    .badge-resolvido { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+    
+    /* Popup / Ficha Detalhada */
+    .leaflet-popup-content-wrapper { border-radius: 8px; padding: 0; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+    .leaflet-popup-content { margin: 0; width: 320px !important; }
+    .popup-header { color: white; padding: 8px 12px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: space-between; }
+    .popup-body { padding: 12px; font-size: 11px; color: #334155; line-height: 1.4; display: flex; flex-direction: column; gap: 10px; }
+    .popup-top-content { display: flex; gap: 12px; align-items: flex-start; }
+    .popup-img { width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; flex-shrink: 0; }
+    .popup-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .popup-info p { margin: 0; word-break: break-word; }
+    .popup-obs { background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; color: #475569; font-style: italic; white-space: pre-wrap; font-size: 11px; max-height: 90px; overflow-y: auto; }
+    
+    @media (max-width: 768px) {
+      .map-wrapper { flex-direction: column; height: 100vh; }
+      .map-sidebar { width: 100%; height: 50%; }
+      .map-container { height: 50%; }
     }
-    .map-display-panel {
-      height: 320px;
-      min-height: 320px;
-    }
-    .map-content-layout.mobile-map-collapsed .map-display-panel {
-      display: none;
-    }
-  }
-</style>
+  </style>
+</head>
+<body>
 
-<div class="map-page-wrapper">
-  <div class="map-toolbar">
-    <h1>🐾 Alerta Animal</h1>
-    <div class="map-nav-actions">
-      <button type="button" class="map-nav-link" onclick="toggleMapDisplay()">📍 Ver/Ocultar Mapa</button>
-    </div>
-  </div>
-
-  <div class="map-content-layout" id="mapContentLayout">
-    <!-- Painel do Mapa -->
-    <div class="map-display-panel" id="mapDisplayPanel">
-      <div class="map-display-header">
-        <div class="map-header-top">
-          <span>📍 Mapa de Ocorrências</span>
-          <button type="button" class="map-nav-link" style="padding: 2px 6px; font-size: 10px;" onclick="toggleMapDisplay()">Ocultar Mapa</button>
-        </div>
-        <div class="map-filter-pills">
-          <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
-          <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)">🔴 Vermelho</button>
-          <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)">🟠 Laranja</button>
-          <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)">🟡 Amarelo</button>
-          <button type="button" class="filter-pill" onclick="filterMapByColor('azul', this)">🔵 Azul</button>
-        </div>
-      </div>
-      <div id="full-map"></div>
-    </div>
-
-    <!-- Lista de Ocorrências -->
-    <div class="map-sidebar-panel">
-      <div class="map-search-bar">
-        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, localidade ou triagem..." onkeyup="filterMapManifest()" aria-label="Pesquisar ocorrências">
-      </div>
-      <div class="map-list-wrapper">
-        <table class="map-table">
-          <thead>
-            <tr>
-              <th>Foto</th>
-              <th>Triagem</th>
-              <th>Espécie</th>
-              <th>Localidade</th>
-            </tr>
-          </thead>
-          <tbody id="mapManifestList">
-            {% for post in site.ocorrencias %}
-              {% assign t = post.triagem | strip | downcase %}
-              {% assign est_caso = post.estado_caso | strip | downcase %}
-              {% assign est_fisico = post.estado_fisico | strip | downcase %}
-              
-              {% assign badge_class = "badge-default" %}
-              {% assign color_key = "default" %}
-              {% if est_caso contains 'resolvido' %}
-                {% assign badge_class = "badge-azul" %}
-                {% assign color_key = "azul" %}
-              {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
-                {% assign badge_class = "badge-vermelho" %}
-                {% assign color_key = "vermelho" %}
-              {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
-                {% assign badge_class = "badge-laranja" %}
-                {% assign color_key = "laranja" %}
-              {% elsif t contains 'amarelo' %}
-                {% assign badge_class = "badge-amarelo" %}
-                {% assign color_key = "amarelo" %}
-              {% elsif t contains 'azul' %}
-                {% assign badge_class = "badge-azul" %}
-                {% assign color_key = "azul" %}
-              {% endif %}
-
-              <tr class="map-row" 
-                  id="row-{{ forloop.index0 }}"
-                  onclick="focarOcorrencia({{ forloop.index0 }}, '{{ post.url | relative_url }}')"
-                  data-color="{{ color_key }}"
-                  data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.localidade }} {{ post.concelho }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
-                <td>
-                  <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-row-img" loading="lazy">
-                </td>
-                <td>
-                  <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
-                </td>
-                <td><strong>{{ post.especie | default: "Animal" }}</strong></td>
-                <td>📍 {{ post.localidade | default: post.concelho | default: post.distrito | default: "Indefinido" }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+<div class="map-wrapper">  
+  <div class="map-sidebar">   
+    <div class="filter-section">      
+      <div class="filter-header">        
+        <span>🐾 Alerta Animal</span>        
+        <span id="contadorResultados" style="font-size: 11px; color: #64748b; font-weight: normal;">A carregar...</span>
+      </div>            
+      <input type="text" id="searchInput" placeholder="Pesquisar concelho, rua ou nome..." onkeyup="aplicarFiltros()">            
+      <div class="filter-row">        
+        <select id="filtroEspecie" onchange="aplicarFiltros()">          
+          <option value="">Todas as Espécies</option>        
+        </select>        
+        <select id="filtroEstado" onchange="aplicarFiltros()">          
+          <option value="">Estado: Todos</option>          
+          <option value="Ativo">Ativos</option>          
+          <option value="Resolvido">Resolvidos</option>        
+        </select>      
+      </div>      
+      <div class="filter-row">        
+        <select id="filtroSituacao" onchange="aplicarFiltros()">          
+          <option value="">Situação: Todas</option>          
+          <option value="DESAPARECIDO">Desaparecido</option>          
+          <option value="ENCONTRADO">Encontrado</option>        
+        </select>        
+        <select id="filtroAlerta" onchange="aplicarFiltros()">          
+          <option value="">Alerta: Todos</option>          
+          <option value="EM RISCO">Em Risco</option>          
+          <option value="URGENTE">Urgente</option>          
+          <option value="BUSCA">Busca</option>          
+          <option value="MONITORIZAÇÃO">Monitorização</option>        
+        </select>      
+      </div>    
+    </div>    
+    <div id="listaOcorrencias">      
+      <div style="padding: 20px; text-align: center; color: #64748b; font-size: 12px;">A carregar ocorrências...</div>    
+    </div>  
+  </div>    
+  <div class="map-container">    
+    <div id="full-map"></div>  
   </div>
 </div>
 
 <script>
-  let mapInstance;
-  let allMarkersData = [];
-  let markersClusterGroup;
+  const SUPABASE_URL = 'https://iqnalqnddtbvqgbedvgo.supabase.co';
+  // A chave é injetada automaticamente pelo GitHub Actions no momento do build do Jekyll
+  const SUPABASE_KEY = '{{ site.env.SUPABASE_KEY }}';
+    
+  let map, camadaPins, todasOcorrencias = [];
+  const iconCache = {};
 
-  document.addEventListener("DOMContentLoaded", function() {
-    mapInstance = L.map('full-map', { attributionControl: false }).setView([39.5572, -7.8537], 7);
+  document.addEventListener("DOMContentLoaded", () => {
+    map = L.map('full-map', { zoomControl: false }).setView([39.5572, -8.1027], 7);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap &copy; CARTO'
+    }).addTo(map);
 
-    L.control.attribution({ prefix: false })
-      .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors')
-      .addTo(mapInstance);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapInstance);
-
-    // Cluster suave (apenas agrupa se pontos estiverem em cima uns dos outros)
-    markersClusterGroup = L.markerClusterGroup({
-      maxClusterRadius: 15,
-      disableClusteringAtZoom: 10,
-      spiderfyOnMaxZoom: true,
-      showCoverageOnHover: false
-    });
-    mapInstance.addLayer(markersClusterGroup);
-
-    var ocorrencias = [
-      {% for post in site.ocorrencias %}
-        {% assign t = post.triagem | strip | downcase %}
-        {% assign est_caso = post.estado_caso | strip | downcase %}
-        {% assign est_fisico = post.estado_fisico | strip | downcase %}
-        {% assign theme_color = "#2563eb" %}
-        {% assign color_key = "default" %}
-
-        {% if est_caso contains 'resolvido' %}
-          {% assign theme_color = "#16a34a" %}
-          {% assign color_key = "azul" %}
-        {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
-          {% assign theme_color = "#dc2626" %}
-          {% assign color_key = "vermelho" %}
-        {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
-          {% assign theme_color = "#f97316" %}
-          {% assign color_key = "laranja" %}
-        {% elsif t contains 'amarelo' %}
-          {% assign theme_color = "#ca8a04" %}
-          {% assign color_key = "amarelo" %}
-        {% endif %}
-
-        {% assign descricao_limpa = post.descricao | default: post.content | strip_html | truncate: 70 | escape %}
-
-        {
-          index: {{ forloop.index0 }},
-          id: {{ post.id | default: post.slug | jsonify }},
-          especie: {{ post.especie | default: "Animal" | jsonify }},
-          estado: {{ post.estado_fisico | default: 'N/D' | jsonify }},
-          local: {{ post.localidade | default: post.concelho | default: post.distrito | default: '' | jsonify }},
-          url: {{ post.url | relative_url | jsonify }},
-          color: {{ theme_color | jsonify }},
-          colorKey: {{ color_key | jsonify }},
-          imagem: {{ post.imagem | default: '' | jsonify }},
-          descricao: {{ descricao_limpa | jsonify }}
-        }{% unless forloop.last %},{% endunless %}
-      {% endfor %}
-    ];
-
-    function criarMarcador(lat, lon, item) {
-      // Ícone SVG customizado com silhueta de pata de animal
-      var svgIcon = '<div class="pin-container" style="background-color: ' + item.color + ';">' +
-                      '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.24 2 7 4.24 7 7c0 1.25.47 2.4 1.25 3.28C7.47 11.4 7 12.65 7 14c0 2.21 1.79 4 4 4 1.1 0 2-.45 2.68-1.17C14.36 17.55 15.26 18 16.25 18c2.21 0 4-1.79 4-4 0-1.35-.47-2.6-1.25-3.72C19.53 9.4 20 8.25 20 7c0-2.76-2.24-5-5-5-1.1 0-2.12.36-2.95.97C11.12 2.36 10.1 2 9 2z"/></svg>' +
-                    '</div>';
-
-      var customPinIcon = L.divIcon({
-        className: 'custom-animal-pin',
-        html: svgIcon,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14],
-        popupAnchor: [0, -12]
-      });
-
-      var marker = L.marker([lat, lon], { icon: customPinIcon });
-      marker.options.colorKey = item.colorKey;
-      marker.options.itemIndex = item.index;
-
-      // Tooltip ao passar o rato (Hover)
-      marker.bindTooltip("<strong>" + item.especie + "</strong><br>" + item.local, {
-        direction: 'top',
-        offset: [0, -10],
-        opacity: 0.9
-      });
-
-      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" class="map-popup-img" alt="">' : '<div class="map-popup-img" style="display:flex; align-items:center; justify-content:center; font-size:8px; color:#94a3b8;">Sem Foto</div>';
-      
-      marker.bindPopup(
-        '<div class="map-popup-card">' +
-          imgHtml +
-          '<div class="map-popup-info">' +
-            '<div>' +
-              '<div class="map-popup-title" style="color: ' + item.color + ';">' + item.especie + '</div>' +
-              '<div style="font-size: 9px; font-weight:600;">' + item.estado + '</div>' +
-              '<div class="map-popup-desc">' + item.descricao + '</div>' +
-            '</div>' +
-            '<a href="' + item.url + '" class="map-popup-btn">Ver Detalhes</a>' +
-          '</div>' +
-        '</div>'
-      );
-
-      return marker;
-    }
-
-    var locaisValidos = ocorrencias.filter(function(item) {
-      return item.local && item.local !== "Não indicada" && item.local.trim() !== "";
-    });
-
-    var indexFila = 0;
-    function processarProximoLocal() {
-      if (indexFila >= locaisValidos.length) return;
-      var item = locaisValidos[indexFila];
-      var cacheKey = "geo_" + item.local.toLowerCase().trim();
-      var cachedCoords = localStorage.getItem(cacheKey);
-
-      if (cachedCoords) {
-        var coords = JSON.parse(cachedCoords);
-        var m = criarMarcador(coords.lat, coords.lon, item);
-        allMarkersData.push(m);
-        markersClusterGroup.addLayer(m);
-        indexFila++;
-        processarProximoLocal();
-      } else {
-        var query = encodeURIComponent(item.local + ", Portugal");
-        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
-          .then(function(response) { return response.json(); })
-          .then(function(data) {
-            if (data && data.length > 0) {
-              var lat = parseFloat(data[0].lat);
-              var lon = parseFloat(data[0].lon);
-              localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
-              var m = criarMarcador(lat, lon, item);
-              allMarkersData.push(m);
-              markersClusterGroup.addLayer(m);
-            }
-          })
-          .catch(function(err) { console.error("Erro geocoding:", err); })
-          .finally(function() {
-            indexFila++;
-            setTimeout(processarProximoLocal, 1100);
-          });
-      }
-    }
-
-    if (locaisValidos.length > 0) {
-      processarProximoLocal();
-    }
+    camadaPins = L.layerGroup().addTo(map);
+    carregarDadosSupabase();
+    map.on('zoomend', () => aplicarFiltros());
   });
 
-  function focarOcorrencia(index, url) {
-    // Se o utilizador clicar na tabela, encontra o marcador correspondente no mapa, abre o popup e faz zoom
-    var targetMarker = allMarkersData.find(function(m) { return m.options.itemIndex === index; });
-    if (targetMarker) {
-      markersClusterGroup.zoomToShowLayer(targetMarker, function() {
-        targetMarker.openPopup();
-      });
-    } else {
-      window.location = url;
-    }
-  }
-
-  function filterMapByColor(colorKey, btnElement) {
-    document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
-    btnElement.classList.add('active');
-
-    markersClusterGroup.clearLayers();
-
-    allMarkersData.forEach(function(marker) {
-      if (colorKey === 'all' || marker.options.colorKey === colorKey) {
-        markersClusterGroup.addLayer(marker);
-      }
-    });
-
-    var rows = document.querySelectorAll('.map-row');
-    rows.forEach(function(row) {
-      var rColor = row.getAttribute('data-color');
-      if (colorKey === 'all' || rColor === colorKey) {
-        row.style.display = "";
+  async function carregarDadosSupabase() {
+    try {
+      const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      let res = await supabaseClient.from('alerta_animal_rows').select('*');
+      if (res.error) {
+        let res2 = await supabaseClient.from('alerta_animal').select('*');
+        if (res2.error) throw res2.error;
+        todasOcorrencias = res2.data || [];
       } else {
-        row.style.display = "none";
+        todasOcorrencias = res.data || [];
       }
-    });
-  }
-
-  function toggleMapDisplay() {
-    var layout = document.getElementById('mapContentLayout');
-    if (window.innerWidth <= 1023) {
-      layout.classList.toggle('mobile-map-collapsed');
-    } else {
-      layout.classList.toggle('map-hidden');
-    }
-    if (mapInstance) {
-      setTimeout(function() { mapInstance.invalidateSize(); }, 300);
+      popularFiltroEspecies();
+      aplicarFiltros();
+    } catch (e) {
+      console.error("Erro Supabase:", e);
+      document.getElementById('listaOcorrencias').innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 12px;">Erro ao carregar dados.</div>';
     }
   }
 
-  function normalizeText(text) {
-    return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+  function popularFiltroEspecies() {
+    const select = document.getElementById('filtroEspecie');
+    const especies = [...new Set(todasOcorrencias.map(i => i['Espécie']).filter(Boolean))];
+    especies.sort().forEach(esp => {
+      select.innerHTML += `<option value="${esp}">${esp}</option>`;
+    });
   }
 
-  function filterMapManifest() {
-    var query = normalizeText(document.getElementById('mapSearchInput').value);
-    var rows = document.querySelectorAll('.map-row');
-    rows.forEach(function(row) {
-      var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
-      row.style.display = tags.includes(query) ? "" : "none";
+  function obterEstiloAlerta(alerta, estado) {
+    const estadoStr = (estado || '').toLowerCase();
+    const alertaStr = (alerta || '').toUpperCase();
+    if (estadoStr.includes('resolvido')) return { corHex: '#16a34a', badgeClass: 'badge-resolvido', label: 'RESOLVIDO' };
+    if (alertaStr.includes('RISCO') || alertaStr.includes('URGENTE')) return { corHex: '#dc2626', badgeClass: 'badge-urgente', label: alertaStr };
+    if (alertaStr.includes('BUSCA')) return { corHex: '#ea580c', badgeClass: 'badge-busca', label: 'BUSCA' };
+    return { corHex: '#ca8a04', badgeClass: 'badge-monitorizacao', label: alertaStr || 'MONITORIZAÇÃO' };
+  }
+
+  function obterIconeFontAwesome(especie) {
+    const esp = (especie || '').toLowerCase();
+    if (esp.includes('gato') || esp.includes('felino')) return 'fa-cat';
+    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return 'fa-dog';
+    if (esp.includes('ave') || esp.includes('pássaro')) return 'fa-dove';
+    return 'fa-paw';
+  }
+
+  function calcularTamanhoPin() {
+    const zoom = map ? map.getZoom() : 7;
+    if (zoom <= 6) return 14;
+    if (zoom <= 8) return 20;
+    if (zoom <= 10) return 28;
+    if (zoom <= 13) return 36;
+    return 46;
+  }
+
+  function obterDivIconCached(faIcon, corHex, pinSize) {
+    const cacheKey = `${faIcon}_${corHex}_${pinSize}`;
+    if (iconCache[cacheKey]) return iconCache[cacheKey];
+    const fontSizeIcon = Math.max(10, Math.floor(pinSize * 0.45));
+    const pinHtml = `<div style="background:${corHex}; width:${pinSize}px; height:${pinSize}px; border-radius:50%; border:2px solid #ffffff; box-shadow:0 3px 8px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:${fontSizeIcon}px;"><i class="fa-solid ${faIcon}"></i></div>`;
+    const customIcon = L.divIcon({ html: pinHtml, className: 'custom-fa-pin', iconSize: [pinSize, pinSize], iconAnchor: [pinSize/2, pinSize/2] });
+    iconCache[cacheKey] = customIcon;
+    return customIcon;
+  }
+
+  function obterUrlFoto(item) {
+    let url = item['Link Anexo'] || item['foto'] || item['imagem'] || item['url'] || item['anexo'] || item['Foto'] || item['Imagem'] || '';
+    url = String(url).trim();
+    if (!url || url.length < 5) return '';
+    if (url.includes('drive.google.com')) {
+      let fileId = '';
+      if (url.includes('/file/d/')) {
+        const parts = url.split('/file/d/');
+        if (parts[1]) fileId = parts[1].split('/')[0];
+      } else if (url.includes('id=')) {
+        const match = url.match(/[?&]id=([^&]+)/);
+        if (match) fileId = match[1];
+      }
+      if (fileId) return `https://lh3.googleusercontent.com/d/${fileId}`;
+    }
+    if (url.startsWith('http://')) url = url.replace('http://', 'https://');
+    return url;
+  }
+
+  function aplicarFiltros() {
+    const termo = document.getElementById('searchInput').value.toLowerCase();
+    const especieSel = document.getElementById('filtroEspecie').value;
+    const estadoSel = document.getElementById('filtroEstado').value;
+    const situacaoSel = document.getElementById('filtroSituacao').value;
+    const alertaSel = document.getElementById('filtroAlerta').value;
+
+    const filtrados = todasOcorrencias.filter(i => {
+      const esp = (i['Espécie'] || '').toLowerCase();
+      const conc = (i['Concelho'] || '').toLowerCase();
+      const rua = (i['Rua'] || '').toLowerCase();
+      const nome = (i['Nome do Animal'] || '').toLowerCase();
+      const estado = (i['Estado'] || '').trim();
+      const situacao = (i['Situação'] || '').toUpperCase();
+      const alerta = (i['Nível de Alerta'] || '').toUpperCase();
+
+      const matchTermo = !termo || conc.includes(termo) || rua.includes(termo) || nome.includes(termo) || esp.includes(termo);
+      const matchEspecie = !especieSel || i['Espécie'] === especieSel;
+      const matchEstado = !estadoSel || estado.toLowerCase().includes(estadoSel.toLowerCase());
+      const matchSituacao = !situacaoSel || situacao.includes(situacaoSel.toUpperCase());
+      const matchAlerta = !alertaSel || alerta.includes(alertaSel);
+
+      return matchTermo && matchEspecie && matchEstado && matchSituacao && matchAlerta;
     });
+
+    document.getElementById('contadorResultados').innerText = `${filtrados.length} casos`;
+    renderizar(filtrados);
+  }
+
+  function renderizar(dados) {
+    const listaHtml = document.getElementById('listaOcorrencias');
+    listaHtml.innerHTML = '';
+    camadaPins.clearLayers();
+
+    if (dados.length === 0) {
+      listaHtml.innerHTML = '<div style="padding: 25px; text-align: center; color: #64748b; font-size: 12px;">Sem ocorrências encontradas.</div>';
+      return;
+    }
+
+    const pinSize = calcularTamanhoPin();
+
+    dados.forEach(item => {
+      const lat = Number(item['Latitude']);
+      const lon = Number(item['Longitude']);
+      if (isNaN(lat) || isNaN(lon)) return;
+
+      const especie = item['Espécie'] || 'Animal';
+      const concelho = item['Concelho'] || 'Local desconhecido';
+      const rua = item['Rua'] || 'Morada não especificada';
+      const foto = obterUrlFoto(item);
+      const nomeAnimal = item['Nome do Animal'] ? ` (${item['Nome do Animal']})` : '';
+      const condicaoFisica = item['Condição Física'] || item['Estado Físico'] || item['Situação'] || 'N/D';
+      const observacoes = item['Observações'] || item['Descrição'] || '';
+      const dataOcorrencia = item['Data da Ocorrência'] || item['Data'] || item['Data Ocorrência'] || '';
+
+      const triagem = obterEstiloAlerta(item['Nível de Alerta'], item['Estado']);
+      const faIcon = obterIconeFontAwesome(especie);
+
+      const imgHtml = foto 
+        ? `<img src="${foto}" class="card-img" alt="" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\\'card-img\\'><i class=\\'fa-solid fa-paw\\'></i></div>';">`
+        : `<div class="card-img"><i class="fa-solid fa-paw"></i></div>`;
+
+      const popupImgHtml = foto ? `<img src="${foto}" class="popup-img" onerror="this.style.display='none'" alt="">` : '';
+
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'card-item';
+      cardDiv.onclick = () => focarNoMapa(lat, lon, 15);
+      cardDiv.innerHTML = `
+        ${imgHtml}
+        <div class="card-info">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 12px; color: #1e293b;">${especie}${nomeAnimal}</strong>
+            ${dataOcorrencia ? `<span style="font-size: 10px; color: #94a3b8;">${dataOcorrencia}</span>` : ''}
+          </div>
+          <div style="font-size: 11px; color: #475569; margin-top: 2px;">📍 ${concelho}</div>
+          <div class="card-meta">
+            <span class="badge ${triagem.badgeClass}">${triagem.label}</span>
+            <span style="color: #64748b;">• ${condicaoFisica}</span>
+          </div>
+        </div>
+      `;
+      listaHtml.appendChild(cardDiv);
+
+      const customIcon = obterDivIconCached(faIcon, triagem.corHex, pinSize);
+      const popupContent = `
+        <div class="popup-header" style="background: ${triagem.corHex};">
+          <span>${especie}${nomeAnimal}</span>
+          <span style="font-size: 10px; font-weight: normal;">${dataOcorrencia}</span>
+        </div>
+        <div class="popup-body">
+          <div class="popup-top-content">
+            ${popupImgHtml}
+            <div class="popup-info">
+              <p><strong>Local:</strong> ${concelho} (${rua})</p>
+              <p><strong>Condição Física:</strong> ${condicaoFisica}</p>
+              <p><strong>Nível de Alerta:</strong> ${triagem.label}</p>
+              ${dataOcorrencia ? `<p><strong>Data da Ocorrência:</strong> ${dataOcorrencia}</p>` : ''}
+            </div>
+          </div>
+          ${observacoes ? `<div class="popup-obs"><strong>Descrição / Observações:</strong><br>${observacoes}</div>` : ''}
+        </div>
+      `;
+
+      const marker = L.marker([lat, lon], { icon: customIcon }).bindPopup(popupContent);
+      camadaPins.addLayer(marker);
+    });
+  }
+
+  function focarNoMapa(lat, lon, zoom = 15) {
+    if (lat && lon) {
+      map.flyTo([lat, lon], zoom, { duration: 0.8 });
+    }
   }
 </script>
+
+</body>
+</html>

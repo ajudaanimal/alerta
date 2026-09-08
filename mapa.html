@@ -8,42 +8,40 @@ title: Alerta Animal — Mapa Geral
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page.title }}</title>
-  <!-- Leaflet CSS -->  
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <!-- FontAwesome -->  
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <!-- Leaflet JS -->  
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Supabase JS -->  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
+
   <style>
     body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; }
     .map-wrapper { display: flex; height: 100vh; }
     .map-sidebar { width: 420px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow-y: auto; z-index: 1001; box-shadow: 2px 0 10px rgba(0,0,0,0.03); }
     .map-container { flex: 1; height: 100%; }
     #full-map { width: 100%; height: 100%; }
-      
+    
     .filter-section { padding: 14px; border-bottom: 1px solid #e2e8f0; background: #ffffff; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 0; z-index: 1000; }
     .filter-header { font-size: 14px; font-weight: 600; color: #1e293b; display: flex; justify-content: space-between; align-items: center; }
     .filter-section input, .filter-section select { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: #f8fafc; color: #334155; }
     .filter-section input:focus, .filter-section select:focus { outline: none; border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
     .filter-row { display: flex; gap: 6px; }
     .filter-row select { flex: 1; }
-    
+
     /* Cartão Lateral Compacto */
     .card-item { display: flex; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; align-items: center; transition: background 0.15s; }
     .card-item:hover { background: #f8fafc; }
     .card-img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; background: #e2e8f0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 16px; }
     .card-info { flex: 1; overflow: hidden; }
     .card-meta { display: flex; gap: 6px; align-items: center; margin-top: 3px; font-size: 11px; color: #64748b; flex-wrap: wrap; }
-    
+
     .badge { display: inline-block; padding: 2px 5px; font-size: 9px; font-weight: 700; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.2px; }
     .badge-urgente, .badge-risco { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
     .badge-busca { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
     .badge-monitorizacao { background: #fefce8; color: #ca8a04; border: 1px solid #fef9c3; }
     .badge-resolvido { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
-    
+
     /* Popup / Ficha Detalhada */
     .leaflet-popup-content-wrapper { border-radius: 8px; padding: 0; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
     .leaflet-popup-content { margin: 0; width: 320px !important; }
@@ -54,7 +52,7 @@ title: Alerta Animal — Mapa Geral
     .popup-info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
     .popup-info p { margin: 0; word-break: break-word; }
     .popup-obs { background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; color: #475569; font-style: italic; white-space: pre-wrap; font-size: 11px; max-height: 90px; overflow-y: auto; }
-    
+
     @media (max-width: 768px) {
       .map-wrapper { flex-direction: column; height: 100vh; }
       .map-sidebar { width: 100%; height: 50%; }
@@ -63,89 +61,92 @@ title: Alerta Animal — Mapa Geral
   </style>
 </head>
 <body>
+<div class="map-wrapper">
+    <div class="map-sidebar">
+        <div class="filter-section">
+            <div class="filter-header">
+                <span>🐾 Alerta Animal</span>
+                <span id="contadorResultados" style="font-size: 11px; color: #64748b; font-weight: normal;">A carregar...</span>
+            </div>
+            
+            <input type="text" id="searchInput" placeholder="Pesquisar concelho, rua ou nome..." onkeyup="aplicarFiltros()">
+            
+            <div class="filter-row">
+                <select id="filtroEspecie" onchange="aplicarFiltros()">
+                    <option value="">Todas as Espécies</option>
+                </select>
+                <select id="filtroEstado" onchange="aplicarFiltros()">
+                    <option value="">Estado: Todos</option>
+                    <option value="Ativo">Ativos</option>
+                    <option value="Resolvido">Resolvidos</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <select id="filtroSituacao" onchange="aplicarFiltros()">
+                    <option value="">Situação: Todas</option>
+                    <option value="DESAPARECIDO">Desaparecido</option>
+                    <option value="ENCONTRADO">Encontrado</option>
+                </select>
+                <select id="filtroAlerta" onchange="aplicarFiltros()">
+                    <option value="">Alerta: Todos</option>
+                    <option value="EM RISCO">Em Risco</option>
+                    <option value="URGENTE">Urgente</option>
+                    <option value="BUSCA">Busca</option>
+                    <option value="MONITORIZAÇÃO">Monitorização</option>
+                </select>
+            </div>
+        </div>
+        <div id="listaOcorrencias">
+            <div style="padding: 20px; text-align: center; color: #64748b; font-size: 12px;">A carregar ocorrências...</div>
+        </div>
+    </div>
 
-<div class="map-wrapper">  
-  <div class="map-sidebar">    
-    <div class="filter-section">      
-      <div class="filter-header">        
-        <span>🐾 Alerta Animal</span>        
-        <span id="contadorResultados" style="font-size: 11px; color: #64748b; font-weight: normal;">A carregar...</span>
-      </div>            
-      <input type="text" id="searchInput" placeholder="Pesquisar concelho, rua ou nome..." onkeyup="aplicarFiltros()">            
-      <div class="filter-row">        
-        <select id="filtroEspecie" onchange="aplicarFiltros()">          
-          <option value="">Todas as Espécies</option>        
-        </select>        
-        <select id="filtroEstado" onchange="aplicarFiltros()">          
-          <option value="">Estado: Todos</option>          
-          <option value="Ativo">Ativos</option>          
-          <option value="Resolvido">Resolvidos</option>        
-        </select>      
-      </div>      
-      <div class="filter-row">        
-        <select id="filtroSituacao" onchange="aplicarFiltros()">          
-          <option value="">Situação: Todas</option>          
-          <option value="DESAPARECIDO">Desaparecido</option>          
-          <option value="ENCONTRADO">Encontrado</option>        
-        </select>        
-        <select id="filtroAlerta" onchange="aplicarFiltros()">          
-          <option value="">Alerta: Todos</option>          
-          <option value="EM RISCO">Em Risco</option>          
-          <option value="URGENTE">Urgente</option>          
-          <option value="BUSCA">Busca</option>          
-          <option value="MONITORIZAÇÃO">Monitorização</option>        
-        </select>      
-      </div>    
-    </div>    
-    <div id="listaOcorrencias">      
-      <div style="padding: 20px; text-align: center; color: #64748b; font-size: 12px;">A carregar ocorrências...</div>    
-    </div>  
-  </div>    
-  <div class="map-container">    
-    <div id="full-map"></div>  
-  </div>
+    <div class="map-container">
+        <div id="full-map"></div>
+    </div>
 </div>
 
 <script>
-  // Insira as suas chaves do Supabase em ambiente de produção
-  const SUPABASE_URL = '{{ site.supabase_url }}';
-  const SUPABASE_KEY = '{{ site.supabase_anon_key }}'; 
-    
-  let map, camadaPins, todasOcorrencias = [];
+  // Os dados são injetados diretamente pelo Jekyll a partir do JSON gerado pelo GitHub Actions
+  let todasOcorrencias = [
+    {% for item in site.data.ocorrencias %}
+      {
+        "Espécie": {{ item.Espécie | jsonify }},
+        "Concelho": {{ item.Concelho | jsonify }},
+        "Latitude": {{ item.Latitude | default: 0 }},
+        "Longitude": {{ item.Longitude | default: 0 }},
+        "Nível de Alerta": {{ item.Nível_de_Alerta | default: item['Nível de Alerta'] | jsonify }},
+        "Estado": {{ item.Estado | jsonify }},
+        "Situação": {{ item.Situação | jsonify }},
+        "Rua": {{ item.Rua | jsonify }},
+        "Nome do Animal": {{ item.Nome_do_Animal | default: item['Nome do Animal'] | jsonify }},
+        "Condição Física": {{ item.Condição_Física | default: item['Condição Física'] | default: item['Estado Físico'] | jsonify }},
+        "Observações": {{ item.Observações | default: item['Descrição'] | jsonify }},
+        "Data da Ocorrência": {{ item.Data_da_Ocorrência | default: item['Data da Ocorrência'] | default: item['Data'] | jsonify }},
+        "Link Anexo": {{ item.Link_Anexo | default: item['Link Anexo'] | default: item['foto'] | default: item['imagem'] | jsonify }}
+      },
+    {% endfor %}
+  ];
+
+  let map, camadaPins = null;
   const iconCache = {};
 
   document.addEventListener("DOMContentLoaded", () => {
     map = L.map('full-map', { zoomControl: false }).setView([39.5572, -8.1027], 7);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-    
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     camadaPins = L.layerGroup().addTo(map);
-    carregarDadosSupabase();
+
+    popularFiltroEspecies();
+    aplicarFiltros();
+
     map.on('zoomend', () => aplicarFiltros());
   });
-
-  async function carregarDadosSupabase() {
-    try {
-      const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      let res = await supabaseClient.from('alerta_animal_rows').select('*');
-      if (res.error) {
-        let res2 = await supabaseClient.from('alerta_animal').select('*');
-        if (res2.error) throw res2.error;
-        todasOcorrencias = res2.data || [];
-      } else {
-        todasOcorrencias = res.data || [];
-      }
-      popularFiltroEspecies();
-      aplicarFiltros();
-    } catch (e) {
-      console.error("Erro Supabase:", e);
-      document.getElementById('listaOcorrencias').innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 12px;">Erro ao carregar dados.</div>';
-    }
-  }
 
   function popularFiltroEspecies() {
     const select = document.getElementById('filtroEspecie');
@@ -192,7 +193,7 @@ title: Alerta Animal — Mapa Geral
   }
 
   function obterUrlFoto(item) {
-    let url = item['Link Anexo'] || item['foto'] || item['imagem'] || item['url'] || item['anexo'] || item['Foto'] || item['Imagem'] || '';
+    let url = item['Link Anexo'] || '';
     url = String(url).trim();
     if (!url || url.length < 5) return '';
     if (url.includes('drive.google.com')) {
@@ -261,10 +262,9 @@ title: Alerta Animal — Mapa Geral
       const rua = item['Rua'] || 'Morada não especificada';
       const foto = obterUrlFoto(item);
       const nomeAnimal = item['Nome do Animal'] ? ` (${item['Nome do Animal']})` : '';
-      const condicaoFisica = item['Condição Física'] || item['Estado Físico'] || item['Situação'] || 'N/D';
-      const observacoes = item['Observações'] || item['Descrição'] || '';
-      const dataOcorrencia = item['Data da Ocorrência'] || item['Data'] || item['Data Ocorrência'] || '';
-
+      const condicaoFisica = item['Condição Física'] || 'N/D';
+      const observacoes = item['Observações'] || '';
+      const dataOcorrencia = item['Data da Ocorrência'] || '';
       const triagem = obterEstiloAlerta(item['Nível de Alerta'], item['Estado']);
       const faIcon = obterIconeFontAwesome(especie);
 
@@ -324,6 +324,5 @@ title: Alerta Animal — Mapa Geral
     }
   }
 </script>
-
 </body>
 </html>

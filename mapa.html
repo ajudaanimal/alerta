@@ -108,7 +108,6 @@ title: Alerta Animal — Mapa Geral
 
 <script>
   const SUPABASE_URL = 'https://iqnalqnddtbvqgbedvgo.supabase.co';
-  // A chave é injetada automaticamente pelo GitHub Actions no momento do build do Jekyll
   const SUPABASE_KEY = '{{ site.env.SUPABASE_KEY }}';
     
   let map, camadaPins, todasOcorrencias = [];
@@ -118,9 +117,9 @@ title: Alerta Animal — Mapa Geral
     map = L.map('full-map', { zoomControl: false }).setView([39.5572, -8.1027], 7);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap &copy; CARTO'
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     camadaPins = L.layerGroup().addTo(map);
@@ -269,7 +268,7 @@ title: Alerta Animal — Mapa Geral
       const faIcon = obterIconeFontAwesome(especie);
 
       const imgHtml = foto 
-        ? `<img src="${foto}" class="card-img" alt="" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\\'card-img\\'><i class=\\'fa-solid fa-paw\\'></i></div>';">`
+        ? `<img src="${foto}" class="card-img" alt="" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'card-img\'><i class=\'fa-solid fa-paw\'></i></div>';">`
         : `<div class="card-img"><i class="fa-solid fa-paw"></i></div>`;
 
       const popupImgHtml = foto ? `<img src="${foto}" class="popup-img" onerror="this.style.display='none'" alt="">` : '';
@@ -281,7 +280,7 @@ title: Alerta Animal — Mapa Geral
         ${imgHtml}
         <div class="card-info">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <strong style="font-size: 12px; color: #1e293b;">${especie}${nomeAnimal}</strong>
+            <strong style="font-size: 12px; code color: #1e293b;">${especie}${nomeAnimal}</strong>
             ${dataOcorrencia ? `<span style="font-size: 10px; color: #94a3b8;">${dataOcorrencia}</span>` : ''}
           </div>
           <div style="font-size: 11px; color: #475569; margin-top: 2px;">📍 ${concelho}</div>

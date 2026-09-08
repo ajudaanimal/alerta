@@ -131,7 +131,8 @@ let todasOcorrencias = [];
   async function carregarDadosDaApi() {
     try {
       const supabaseUrl = 'https://iqnalqnddtbvqgbedvgo.supabase.co';
-      const supabaseKey = '{{ site.env.supabase_anon_key }}';
+      // As aspas garantem que, mesmo se a variável vier vazia, o JS lê uma string vazia e não quebra a sintaxe
+      const supabaseKey = "{{ site.env.supabase_anon_key }}";
 
       const response = await fetch(`${supabaseUrl}/functions/v1/obter-ocorrencias`, {
         headers: {

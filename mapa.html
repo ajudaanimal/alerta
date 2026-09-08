@@ -107,8 +107,8 @@ title: Alerta Animal — Mapa Geral
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://iqnalqnddtbvqgbedvgo.supabase.co';
-  const SUPABASE_KEY = '{{ site.env.SUPABASE_KEY }}';
+  const SUPABASE_URL = '{{ site.env.JEKYLL_SUPABASE_URL }}';
+  const SUPABASE_KEY = '{{ site.env.JEKYLL_SUPABASE_KEY }}';
     
   let map, camadaPins, todasOcorrencias = [];
   const iconCache = {};

@@ -32,9 +32,10 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          sed -i "s|__SUPABASE_URL_PLACEHOLDER__|$SUPABASE_URL|g" mapa.html
-          sed -i "s|__SUPABASE_KEY_PLACEHOLDER__|$SUPABASE_KEY|g" mapa.html
+          find . -name "mapa.html" -type f -exec sed -i "s|https://iqnalqnddtbvqgbedvgo.supabase.co|$SUPABASE_URL|g" {} +
+          find . -name "mapa.html" -type f -exec sed -i "s|sua_chave_aqui|$SUPABASE_KEY|g" {} +
           bundle exec jekyll build
+          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 

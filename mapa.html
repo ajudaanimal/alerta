@@ -130,8 +130,8 @@ let todasOcorrencias = [];
 
   async function carregarDadosDaApi() {
     try {
-      const supabaseKey = '{{ site.supabase_anon_key }}';
-      const supabaseUrl = '{{ site.supabase_url }}';
+      const supabaseKey = '{{ site.env.supabase_anon_key }}';
+      const supabaseUrl = '{{ site.env.supabase_url }}';
 
       const response = await fetch(`${supabaseUrl}/functions/v1/obter-ocorrencias`, {
         headers: {
@@ -151,7 +151,7 @@ let todasOcorrencias = [];
       document.getElementById('listaOcorrencias').innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 12px;">Erro ao carregar ocorrências.</div>';
     }
   }
-
+  
   function popularFiltroEspecies() {
     const select = document.getElementById('filtroEspecie');
     const especies = [...new Set(todasOcorrencias.map(i => i['Espécie']).filter(Boolean))];

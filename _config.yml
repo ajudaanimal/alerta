@@ -24,5 +24,5 @@ defaults:
       layout: "ocorrencia"
 
 env:
-  SUPABASE_URL:
-  SUPABASE_KEY:
+  supabase_anon_key: <%= ENV['SUPABASE_KEY'] %>
+  supabase_url: <%= ENV['SUPABASE_URL'] %>

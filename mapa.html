@@ -130,8 +130,8 @@ let todasOcorrencias = [];
 
   async function carregarDadosDaApi() {
     try {
+      const supabaseUrl = 'https://iqnalqnddtbvqgbedvgo.supabase.co';
       const supabaseKey = '{{ site.env.supabase_anon_key }}';
-      const supabaseUrl = '{{ site.env.supabase_url }}';
 
       const response = await fetch(`${supabaseUrl}/functions/v1/obter-ocorrencias`, {
         headers: {

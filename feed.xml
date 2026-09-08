@@ -1,3 +1,4 @@
+```liquid
 ---
 layout: null
 ---
@@ -11,7 +12,13 @@ layout: null
   <title type="html">{{ site.title | xml_escape }}</title>
   <subtitle>{{ site.description | xml_escape }}</subtitle>
 
-  {% assign ocorrencias_ordenadas = site.ocorrencias | default: empty | sort: "date" | reverse %}
+  {%- assign ocorrencias_ordenadas = site.ocorrencias | default: "" -%}
+  {%- if ocorrencias_ordenadas == "" or ocorrencias_ordenadas == nil -%}
+    {%- assign ocorrencias_ordenadas = "" | split: "" -%}
+  {%- else -%}
+    {%- assign ocorrencias_ordenadas = ocorrencias_ordenadas | sort: "date" | reverse -%}
+  {%- endif -%}
+
   {% for post in ocorrencias_ordenadas limit:20 %}
   <entry>
     <title>{{ post.especie | default: "Animal" }} - {% if post.localidade %}{{ post.localidade }}{% elsif post.concelho %}{{ post.concelho }}{% elsif post.distrito %}{{ post.distrito }}{% else %}{{ post.localizacao }}{% endif %}</title>
@@ -40,3 +47,5 @@ layout: null
   </entry>
   {% endfor %}
 </feed>
+
+```

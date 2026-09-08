@@ -22,3 +22,7 @@ defaults:
       type: "ocorrencias"
     values:
       layout: "ocorrencia"
+
+env:
+  SUPABASE_URL:
+  SUPABASE_KEY:

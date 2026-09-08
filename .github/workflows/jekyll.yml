@@ -29,10 +29,12 @@ jobs:
       - name: Build with Jekyll
         env:
           JEKYLL_ENV: production
-          JEKYLL_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          JEKYLL_SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-        run: bundle exec jekyll build
-
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          sed -i "s|__SUPABASE_URL_PLACEHOLDER__|$SUPABASE_URL|g" mapa.html
+          sed -i "s|__SUPABASE_KEY_PLACEHOLDER__|$SUPABASE_KEY|g" mapa.html
+          bundle exec jekyll build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 

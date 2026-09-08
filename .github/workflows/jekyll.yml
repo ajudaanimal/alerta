@@ -36,7 +36,6 @@ jobs:
           find . -name "*.html" -type f -exec sed -i "s|{{ site.env.SUPABASE_KEY }}|$SUPABASE_KEY|g" {} +
           bundle exec jekyll build
 
-          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 

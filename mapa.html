@@ -65,7 +65,7 @@ title: Alerta Animal — Mapa Geral
 <body>
 
 <div class="map-wrapper">  
-  <div class="map-sidebar">   
+  <div class="map-sidebar">    
     <div class="filter-section">      
       <div class="filter-header">        
         <span>🐾 Alerta Animal</span>        
@@ -107,8 +107,9 @@ title: Alerta Animal — Mapa Geral
 </div>
 
 <script>
-  const SUPABASE_URL = '';
-  const SUPABASE_KEY = ''; 
+  // Insira as suas chaves do Supabase em ambiente de produção
+  const SUPABASE_URL = '{{ site.supabase_url }}';
+  const SUPABASE_KEY = '{{ site.supabase_anon_key }}'; 
     
   let map, camadaPins, todasOcorrencias = [];
   const iconCache = {};

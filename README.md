@@ -1,3 +1,7 @@
+![animal](https://github.com/ajudaanimal/alerta/blob/main/_assets/img/animal.jpeg?raw=true)
+
+
+
 Sinalização de animais feridos ou doentes para emissão de pedidos de ajuda.
 
 Apesar dos esforços recentes em saúde público-veterinária e do crescente número de associações de resgate animal, os demais municípios do país não conseguem ainda atender com sucesso a todos os casos de animais feridos ou doentes a acontecer na sua região.
@@ -20,4 +24,3 @@ Para reportar uma situação de animal ferido ou doente, abra uma nova Ficha de 
 
 Para outros assuntos, por favor contate-nos via email.
 
-![animal](https://github.com/ajudaanimal/alerta/blob/main/_assets/img/animal.jpeg?raw=true)

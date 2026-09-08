@@ -1,4 +1,3 @@
-```liquid
 ---
 layout: null
 ---
@@ -47,5 +46,3 @@ layout: null
   </entry>
   {% endfor %}
 </feed>
-
-```

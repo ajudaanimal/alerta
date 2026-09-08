@@ -32,8 +32,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          find . -name "mapa.html" -type f -exec sed -i "s|https://iqnalqnddtbvqgbedvgo.supabase.co|$SUPABASE_URL|g" {} +
-          find . -name "mapa.html" -type f -exec sed -i "s|sua_chave_aqui|$SUPABASE_KEY|g" {} +
+          sed -i "s|const SUPABASE_KEY = '';|const SUPABASE_KEY = '$SUPABASE_KEY';|g" mapa.html
           bundle exec jekyll build
           
       - name: Upload artifact

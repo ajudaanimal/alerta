@@ -11,7 +11,7 @@ layout: null
   <title type="html">{{ site.title | xml_escape }}</title>
   <subtitle>{{ site.description | xml_escape }}</subtitle>
 
-  {% assign ocorrencias_ordenadas = site.ocorrencias | sort: "date" | reverse %}
+  {% assign ocorrencias_ordenadas = site.ocorrencias | default: empty | sort: "date" | reverse %}
   {% for post in ocorrencias_ordenadas limit:20 %}
   <entry>
     <title>{{ post.especie | default: "Animal" }} - {% if post.localidade %}{{ post.localidade }}{% elsif post.concelho %}{{ post.concelho }}{% elsif post.distrito %}{{ post.distrito }}{% else %}{{ post.localizacao }}{% endif %}</title>

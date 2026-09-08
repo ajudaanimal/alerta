@@ -41,10 +41,16 @@ jobs:
           cat _data/ocorrencias.json
           echo "------------------------------------------"
 
-          # Salvaguarda: se o ficheiro estiver vazio, escreve um array JSON vazio para não quebrar o Jekyll
           if [ ! -s _data/ocorrencias.json ]; then
             echo "[]" > _data/ocorrencias.json
           fi
+
+      - name: Compilar _config.yml a partir do ERB
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          ruby -rerb -e "File.write('_config.yml', ERB.new(File.read('_config.yml.erb')).result)"
 
       - name: Build with Jekyll
         env:

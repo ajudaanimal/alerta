@@ -1,14 +1,17 @@
-name: Build and Deploy Jekyll with Supabase Secret
+name: Deploy GitHub Pages com Supabase Secret
 
 on:
   push:
     branches: ["main"]
 
-# Permissões necessárias para o GitHub Pages fazer o deploy com segurança
 permissions:
   contents: read
   pages: write
   id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -17,20 +20,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-          bundler-cache: true
+      - name: Injetar Supabase Key no HTML
+        run: |
+          # Substitui a tag do Liquid diretamente pelo valor do secret no ficheiro index.html
+          sed -i "s|{{ site.env.SUPABASE_KEY }}|${{ secrets.SUPABASE_KEY }}|g" index.html
 
-      - name: Install Dependencies
-        run: bundle install
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
-      - name: Build Jekyll Site
-        env:
-          JEKYLL_ENV: production
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-        run: bundle exec jekyll build
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

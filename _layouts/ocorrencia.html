@@ -345,19 +345,19 @@ layout: default
 
 {% if est_caso contains 'RESOLVIDO' %}
     {% assign banner_class = "banner-resolved" %}
-    {% assign banner_text = "✓ " | append: (page.estado_caso | default: "Resolvido") %}
+    {% assign banner_text = page.estado_caso | default: "Resolvido" | prepend: "✓ " %}
     {% assign theme_color = "#16a34a" %}
 {% elsif t contains 'VERM' or est_fisico contains 'FERIDO' or est_fisico contains 'CRÍTICO' %}
     {% assign banner_class = "banner-red" %}
-    {% assign banner_text = "🚨 " | append: (page.triagem | default: "Emergência") | append: " — SOCORRO URGENTE NECESSÁRIO" %}
+    {% assign banner_text = page.triagem | default: "Emergência" | prepend: "🚨 " | append: " — SOCORRO URGENTE NECESSÁRIO" %}
     {% assign theme_color = "#dc2626" %}
 {% elsif t contains 'LARANJA' or est_fisico contains 'URGENTE' %}
     {% assign banner_class = "banner-orange" %}
-    {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Urgente") | append: " — SOCORRO URGENTE NECESSÁRIO" %}
+    {% assign banner_text = page.triagem | default: "Urgente" | prepend: "⚠️ " | append: " — SOCORRO URGENTE NECESSÁRIO" %}
     {% assign theme_color = "#f97316" %}
 {% else %}
     {% assign banner_class = "banner-yellow" %}
-    {% assign banner_text = "⚠️ " | append: (page.triagem | default: "Alerta") | append: " — NECESSITA DE SOCORRO MÉDICO" %}
+    {% assign banner_text = page.triagem | default: "Alerta" | prepend: "⚠️ " | append: " — NECESSITA DE SOCORRO MÉDICO" %}
     {% assign theme_color = "#ca8a04" %}
 {% endif %}
 

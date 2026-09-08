@@ -26,6 +26,17 @@ jobs:
           ruby-version: '3.2'
           bundler-cache: true
 
+      - name: Descarregar dados do Supabase para JSON estático
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          mkdir -p _data
+          curl -s "${SUPABASE_URL}/rest/v1/alerta_animal?select=*" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}" \
+            > _data/ocorrencias.json
+
       - name: Build with Jekyll
         run: |
           bundle exec jekyll build

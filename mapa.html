@@ -107,27 +107,7 @@ title: Alerta Animal — Mapa Geral
 </div>
 
 <script>
-  // Os dados são injetados diretamente pelo Jekyll a partir do JSON gerado pelo GitHub Actions
-  let todasOcorrencias = [
-    {% for item in site.data.ocorrencias %}
-      {
-        "Espécie": {{ item.Espécie | jsonify }},
-        "Concelho": {{ item.Concelho | jsonify }},
-        "Latitude": {{ item.Latitude | default: 0 }},
-        "Longitude": {{ item.Longitude | default: 0 }},
-        "Nível de Alerta": {{ item.Nível_de_Alerta | default: item['Nível de Alerta'] | jsonify }},
-        "Estado": {{ item.Estado | jsonify }},
-        "Situação": {{ item.Situação | jsonify }},
-        "Rua": {{ item.Rua | jsonify }},
-        "Nome do Animal": {{ item.Nome_do_Animal | default: item['Nome do Animal'] | jsonify }},
-        "Condição Física": {{ item.Condição_Física | default: item['Condição Física'] | default: item['Estado Físico'] | jsonify }},
-        "Observações": {{ item.Observações | default: item['Descrição'] | jsonify }},
-        "Data da Ocorrência": {{ item.Data_da_Ocorrência | default: item['Data da Ocorrência'] | default: item['Data'] | jsonify }},
-        "Link Anexo": {{ item.Link_Anexo | default: item['Link Anexo'] | default: item['foto'] | default: item['imagem'] | jsonify }}
-      },
-    {% endfor %}
-  ];
-
+let todasOcorrencias = [];
   let map, camadaPins = null;
   const iconCache = {};
 
@@ -142,11 +122,26 @@ title: Alerta Animal — Mapa Geral
 
     camadaPins = L.layerGroup().addTo(map);
 
-    popularFiltroEspecies();
-    aplicarFiltros();
+    // Carrega os dados de forma assíncrona e segura diretamente da Edge Function
+    carregarDadosDaApi();
 
     map.on('zoomend', () => aplicarFiltros());
   });
+
+  async function carregarDadosDaApi() {
+    try {
+      const response = await fetch('https://iqnalqnddtbvqgbedvgo.supabase.co/functions/v1/obter-ocorrencias');
+      if (!response.ok) throw new Error('Erro ao ligar ao servidor.');
+      
+      todasOcorrencias = await response.json();
+      
+      popularFiltroEspecies();
+      aplicarFiltros();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('listaOcorrencias').innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 12px;">Erro ao carregar ocorrências.</div>';
+    }
+  }
 
   function popularFiltroEspecies() {
     const select = document.getElementById('filtroEspecie');
@@ -221,13 +216,12 @@ title: Alerta Animal — Mapa Geral
     const filtrados = todasOcorrencias.filter(i => {
       const esp = (i['Espécie'] || '').toLowerCase();
       const conc = (i['Concelho'] || '').toLowerCase();
-      const rua = (i['Rua'] || '').toLowerCase();
       const nome = (i['Nome do Animal'] || '').toLowerCase();
       const estado = (i['Estado'] || '').trim();
       const situacao = (i['Situação'] || '').toUpperCase();
       const alerta = (i['Nível de Alerta'] || '').toUpperCase();
 
-      const matchTermo = !termo || conc.includes(termo) || rua.includes(termo) || nome.includes(termo) || esp.includes(termo);
+      const matchTermo = !termo || conc.includes(termo) || nome.includes(termo) || esp.includes(termo);
       const matchEspecie = !especieSel || i['Espécie'] === especieSel;
       const matchEstado = !estadoSel || estado.toLowerCase().includes(estadoSel.toLowerCase());
       const matchSituacao = !situacaoSel || situacao.includes(situacaoSel.toUpperCase());
@@ -259,7 +253,6 @@ title: Alerta Animal — Mapa Geral
 
       const especie = item['Espécie'] || 'Animal';
       const concelho = item['Concelho'] || 'Local desconhecido';
-      const rua = item['Rua'] || 'Morada não especificada';
       const foto = obterUrlFoto(item);
       const nomeAnimal = item['Nome do Animal'] ? ` (${item['Nome do Animal']})` : '';
       const condicaoFisica = item['Condição Física'] || 'N/D';
@@ -303,7 +296,7 @@ title: Alerta Animal — Mapa Geral
           <div class="popup-top-content">
             ${popupImgHtml}
             <div class="popup-info">
-              <p><strong>Local:</strong> ${concelho} (${rua})</p>
+              <p><strong>Local:</strong> ${concelho}</p>
               <p><strong>Condição Física:</strong> ${condicaoFisica}</p>
               <p><strong>Nível de Alerta:</strong> ${triagem.label}</p>
               ${dataOcorrencia ? `<p><strong>Data da Ocorrência:</strong> ${dataOcorrencia}</p>` : ''}

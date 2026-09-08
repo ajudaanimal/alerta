@@ -8,8 +8,7 @@ plugins:
   - jekyll-paginate
   - jekyll-seo-tag
 
-# Obriga o Jekyll a gerar a página mesmo que a hora pareça futura
-future: true 
+future: true
 
 collections:
   ocorrencias:
@@ -22,7 +21,3 @@ defaults:
       type: "ocorrencias"
     values:
       layout: "ocorrencia"
-
-env:
-  supabase_anon_key: <%= ENV['SUPABASE_KEY'] %>
-  supabase_url: <%= ENV['SUPABASE_URL'] %>

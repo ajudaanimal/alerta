@@ -112,6 +112,9 @@
         .btn-report { background-color: #d1fae5; color: #065f46; border-color: #6ee7b7; }
         html.dark-mode .btn-report { background-color: #022c22; color: #6ee7b7; border-color: #065f46; }
 
+        .btn-subscribe { background-color: #e0f2fe; color: #0369a1; border-color: #7dd3fc; }
+        html.dark-mode .btn-subscribe { background-color: #082f49; color: #7dd3fc; border-color: #0369a1; }
+
         .theme-toggle-btn {
             background: var(--pill-bg);
             border: 1px solid var(--border-color);
@@ -212,7 +215,8 @@
         
         <div class="header-right-group">
             <nav class="fs-nav-links" aria-label="Navegação Principal">
-                <a href="{{ '/' | relative_url }}" class="fs-pill">🏠 Alertas</a>
+                <a href="{{ '/' | relative_url }}" class="fs-pill" title="Alertas">🔔</a>
+                <a href="{{ '/subscrever/' | relative_url }}" class="fs-pill btn-subscribe">🔔 Subscrever</a>
                 <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill btn-emergency">📞 Contactos</a>
                 <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report">➕ Reportar</a>
             </nav>
@@ -232,6 +236,7 @@
             <div class="footer-top">
                 <span><strong>🐾 Ajuda Animal Portugal</strong> — Plataforma comunitária de sinalização e apoio.</span>
                 <div class="footer-links">
+                    <a href="{{ '/subscrever/' | relative_url }}">Subscrever Alertas</a>
                     <a href="{{ '/emergencia/' | relative_url }}">Contactos Úteis</a>
                     <a href="{{ '/veterinarios/' | relative_url }}">Veterinários</a>
                     <a href="https://github.com/ajudaanimal/alerta" target="_blank" rel="noopener noreferrer">GitHub</a>

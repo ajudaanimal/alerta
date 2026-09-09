@@ -1,6 +1,5 @@
 ---
 layout: null
-permalink: /feed/
 ---
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -12,31 +11,42 @@ permalink: /feed/
   <title type="html">{{ site.title | xml_escape }}</title>
   <subtitle>{{ site.description | xml_escape }}</subtitle>
 
-  {%- assign ocorrencias_ordenadas = site.ocorrencias | sort: "date" | reverse -%}
+  {% assign ocorrencias_ordenadas = site.collections.ocorrencias.docs | sort: "date" | reverse %}
   {% for post in ocorrencias_ordenadas limit:20 %}
+  
+  {% comment %} Lógica limpa para encontrar a localização mais restrita disponível sem inventar defaults {% endcomment %}
+  {% assign local_final = post.localidade %}
+  {% unless local_final != "" and local_final != nil %}
+    {% assign local_final = post.concelho %}
+    {% unless local_final != "" and local_final != nil %}
+      {% assign local_final = post.distrito %}
+      {% unless local_final != "" and local_final != nil %}
+        {% assign local_final = post.localizacao %}
+      {% endunless %}
+    {% endunless %}
+  {% endunless %}
+
   <entry>
-    <title>{{ post.especie | default: "Animal" }} - {% if post.localidade %}{{ post.localidade }}{% elsif post.concelho %}{{ post.concelho }}{% elsif post.distrito %}{{ post.distrito }}{% else %}{{ post.localizacao }}{% endif %}</title>
+    <title>{{ post.especie | default: "Animal" }} - {{ local_final }}</title>
     <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}" rel="alternate" type="text/html"/>
-    <published>{% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}{{ post.data_ocorrencia_inicial | date: "%Y-%m-%d" }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</published>
+    <published>{% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}{{ post.data_ocorrencia_inicial }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</published>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
     <id>{{ site.url }}{{ site.baseurl }}{{ post.url }}</id>
-    <summary type="html"><![CDATA[Alerta Animal - {% if post.distrito %}{{ post.distrito }}{% elsif post.concelho %}{{ post.concelho }}{% else %}{{ post.localizacao }}{% endif %} | Nível de Alerta: {{ post.nivel_alerta | default: "Desconhecido" }} | {{ post.especie }} - {{ post.situacao }} - {{ post.estado_fisico }} | Detalhes: {{ post.observacoes | strip_html | truncate: 120 }}]]></summary>
+    
+    <summary type="html"><![CDATA[Alerta Animal — {{ post.nivel_alerta | default: "Alerta" }} — {{ post.especie }} {{ post.situacao | downcase }} {% if post.estado_fisico != "" and post.estado_fisico != nil %}({{ post.estado_fisico | downcase }}){% endif %} em {{ local_final }}. {% if post.observacoes != "" and post.observacoes != nil %}Detalhes: {{ post.observacoes | strip_html | truncate: 140 }}{% endif %}]]></summary>
+    
     <content type="html"><![CDATA[
-      <p><strong>Alerta Animal - {% if post.distrito %}{{ post.distrito }}{% elsif post.concelho %}{{ post.concelho }}{% else %}{{ post.localizacao }}{% endif %}</strong><br />
-      <strong>Nível de Alerta:</strong> {{ post.nivel_alerta | default: "Desconhecido" }}<br />
-      <strong>Espécie:</strong> {{ post.especie }} — <strong>Situação:</strong> {{ post.situacao }} — <strong>Estado Físico:</strong> {{ post.estado_fisico }}</p>
+      <p>Alerta Animal — <strong>{{ post.nivel_alerta | default: "Alerta" }}</strong> — {{ post.especie }} {{ post.situacao | downcase }} {% if post.estado_fisico != "" and post.estado_fisico != nil %}({{ post.estado_fisico | downcase }}){% endif %} em <strong>{{ local_final }}</strong>.</p>
       
       {% if post.observacoes != "" and post.observacoes != nil %}
-      <p><strong>Detalhes:</strong><br />
-      {{ post.observacoes }}</p>
+      <p>Detalhes: {{ post.observacoes }}</p>
       {% endif %}
 
       {% if post.imagem != "" and post.imagem != nil %}
       <p><img src="{{ post.imagem }}" alt="Imagem da Ocorrência" /></p>
       {% endif %}
 
-      <p><a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">Ver ocorrência completa no site</a><br />
-      <em>Publicado a {{ post.date | date: "%d/%m/%Y" }}</em></p>
+      <p><a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">Ver ocorrência completa no site</a> {% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}(Ocorrência de {{ post.data_ocorrencia_inicial }}){% endif %}</p>
     ]]></content>
   </entry>
   {% endfor %}

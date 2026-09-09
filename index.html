@@ -669,80 +669,41 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return '🐦';
     return '🐾';
   }
+function initMap() {
+  if (mapInstance) return;
 
-  function initMap() {
-    if (mapInstance) return;
+  mapInstance = L.map('full-map', { 
+    attributionControl: false,
+    tap: false,
+    touchZoom: true,
+    scrollWheelZoom: true
+  });
 
-    mapInstance = L.map('full-map', { 
-      attributionControl: false,
-      tap: false,
-      touchZoom: true,
-      scrollWheelZoom: true
-    });
+  mapInstance.fitBounds(portugalBounds);
 
-    mapInstance.fitBounds(portugalBounds);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3494_1_8eeb09fcfa7dbb0a9063b727', {
+    maxZoom: 19,
+    subdomains: 'abcd',
+    updateWhenIdle: true,
+    keepBuffer: 6
+  }).addTo(mapInstance);
 
-    // Using CartoDB Voyager tiles for reliable loading and clean look
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3494_1_8eeb09fcfa7dbb0a9063b727', {
-      maxZoom: 19,
-      subdomains: 'abcd',
-      updateWhenIdle: true,
-      keepBuffer: 6
-    }).addTo(mapInstance);
+  setTimeout(() => {
+    mapInstance.invalidateSize();
+  }, 250);
 
-    // Force map to recalculate size after render
-    setTimeout(() => {
-      mapInstance.invalidateSize();
-    }, 250);
+  allMarkersLayerGroup = L.layerGroup().addTo(mapInstance);
 
-    allMarkersLayerGroup = L.layerGroup().addTo(mapInstance);
+  // Criar marcadores instantaneamente usando as coordenadas fixas do Jekyll
+  ocorrenciasData.forEach(function(item) {
+    var lat = parseFloat(item.lat);
+    var lon = parseFloat(item.lon);
 
-    var locaisValidos = ocorrenciasData.filter(function(item) {
-      return item.concelho && item.concelho !== "Não indicada" && item.concelho.trim() !== "";
-    });
-
-    var indexFila = 0;
-    function processarProximoLocal() {
-      if (indexFila >= locaisValidos.length) return;
-      var item = locaisValidos[indexFila];
-      var cacheKey = "geo_" + item.concelho.toLowerCase().trim();
-      var cachedCoords = localStorage.getItem(cacheKey);
-
-      if (cachedCoords) {
-        try {
-          var coords = JSON.parse(cachedCoords);
-          if (coords && typeof coords.lat === 'number' && typeof coords.lon === 'number') {
-            criarMarcador(coords.lat, coords.lon, item);
-            indexFila++;
-            processarProximoLocal();
-            return;
-          }
-        } catch(e) {
-          localStorage.removeItem(cacheKey);
-        }
-      }
-
-      var query = encodeURIComponent(item.concelho + ", Portugal");
-      fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-          if (data && data.length > 0) {
-            var lat = parseFloat(data[0].lat);
-            var lon = parseFloat(data[0].lon);
-            localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
-            criarMarcador(lat, lon, item);
-          }
-        })
-        .catch(function(err) { console.error(err); })
-        .finally(function() { 
-          indexFila++; 
-          setTimeout(processarProximoLocal, 400); 
-        });
+    if (!isNaN(lat) && !isNaN(lon)) {
+      criarMarcador(lat, lon, item);
     }
-
-    if (locaisValidos.length > 0) processarProximoLocal();
-  }
-
+  });
+}
   function criarMarcador(lat, lon, item) {
     var radiusMeters = 1200;
 

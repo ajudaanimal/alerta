@@ -14,7 +14,7 @@ layout: null
   {% assign ocorrencias_ordenadas = site.collections.ocorrencias.docs | sort: "date" | reverse %}
   {% for post in ocorrencias_ordenadas limit:20 %}
   
-  {% comment %} Lógica limpa para encontrar a localização mais restrita disponível sem inventar defaults {% endcomment %}
+  {% comment %} Lógica de localização em cascata limpa {% endcomment %}
   {% assign local_final = post.localidade %}
   {% unless local_final != "" and local_final != nil %}
     {% assign local_final = post.concelho %}

@@ -267,10 +267,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); border: 2px solid #ffffff; font-size: 14px; }
 
-  /* Leaflet Popup Styling */
-  .leaflet-popup-content-wrapper { border-radius: 8px; padding: 0; overflow: hidden; }
-  .leaflet-popup-content { margin: 10px !important; line-height: 1.4; }
-
   /* Mobile Bottom Navigation Bar */
   .app-bottom-nav {
     display: none;
@@ -659,28 +655,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       className: '',
       html: iconHtml,
       iconSize: [30, 30],
-      iconAnchor: [15, 15],
-      popupAnchor: [0, -15]
+      iconAnchor: [15, 15]
     });
 
     var marker = L.marker([lat, lon], { icon: customIcon });
     marker.options.colorKey = item.colorKey;
     marker.options.slug = item.slug;
 
-    var popupContent = `
-      <div style="width: 215px; font-family: inherit;">
-        <img src="${item.imagem}" style="width:100%; height:110px; object-fit:cover; border-radius:4px; margin-bottom:6px; display:block;" alt="">
-        <div style="font-weight:800; font-size:13px; color:#0f172a; margin-bottom:2px;">${item.especie}</div>
-        <div style="font-size:11px; color:#64748b; margin-bottom:4px;">📍 ${item.concelho}</div>
-        <div style="font-size:11px; font-weight:700; color:#0284c7; margin-bottom:8px;">🩺 ${item.estado_fisico} (${item.triagem})</div>
-        <button onclick="openFichaFromMap('${item.slug}')" style="width:100%; background: ${item.color}; color:#fff; border:none; padding:7px; border-radius:4px; font-weight:700; cursor:pointer; font-size:11.5px; text-align:center;">Ver Ficha Completa</button>
-      </div>
-    `;
-
-    marker.bindPopup(popupContent);
-
     marker.on('click', function() {
-      selectOccurrence(item.slug, false);
+      selectOccurrence(item.slug, true);
+      if (window.innerWidth <= 992) {
+        switchMobileTab('ficha');
+      }
     });
 
     markersBySlug[item.slug] = marker;

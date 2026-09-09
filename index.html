@@ -301,34 +301,36 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     .app-layout-wrapper {
       display: block;
       position: relative;
-      height: calc(100vh - 75px - 60px); /* Adjust for bottom nav */
+      height: calc(100vh - 75px - 60px);
     }
     .app-bottom-nav { display: flex; }
     
-    .app-left-panel, .app-right-panel {
-      position: absolute;
-      left: 0; top: 0; right: 0; bottom: 0;
-      width: 100% !important;
-      max-width: 100% !important;
-      z-index: 1100;
-      box-shadow: none;
-      transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .app-center-panel {
+    /* Painéis empilhados e animados horizontalmente de forma suave */
+    .app-left-panel, .app-right-panel, .app-center-panel {
       position: absolute;
       left: 0; top: 0; right: 0; bottom: 0;
       width: 100% !important;
       height: 100% !important;
-      z-index: 1000;
+      box-shadow: none;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     }
-    
-    /* Active mobile views control via classes on wrapper */
-    .app-layout-wrapper.mobile-view-list .app-left-panel { transform: translateY(0); z-index: 1300; }
-    .app-layout-wrapper.mobile-view-map .app-center-panel { z-index: 1300; }
-    .app-layout-wrapper.mobile-view-ficha .app-right-panel { transform: translateY(0); z-index: 1300; }
 
-    /* Hide desktop toggle buttons on mobile */
+    .app-left-panel { z-index: 1100; transform: translateX(-100%); }
+    .app-center-panel { z-index: 1000; transform: translateX(0); }
+    .app-right-panel { z-index: 1200; transform: translateX(100%); }
+    
+    /* Estados ativos via classes mobile (transição horizontal fluida) */
+    .app-layout-wrapper.mobile-view-list .app-left-panel { transform: translateX(0); }
+    .app-layout-wrapper.mobile-view-list .app-center-panel { transform: translateX(100%); }
+
+    .app-layout-wrapper.mobile-view-map .app-left-panel { transform: translateX(-100%); }
+    .app-layout-wrapper.mobile-view-map .app-center-panel { transform: translateX(0); }
+    .app-layout-wrapper.mobile-view-map .app-right-panel { transform: translateX(100%); }
+
+    .app-layout-wrapper.mobile-view-ficha .app-center-panel { transform: translateX(-100%); }
+    .app-layout-wrapper.mobile-view-ficha .app-right-panel { transform: translateX(0); }
+
+    /* Ocultar botões de desktop antigos em mobile */
     .app-left-panel .panel-header-bar .panel-action-btn,
     .app-right-panel .panel-header-bar .panel-action-btn,
     .collapsed-edge-bar {
@@ -372,7 +374,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% endif %}
 
           <div class="map-card-item map-row" id="card-item-{{ post.slug }}"
-               onclick="selectOccurrence('{{ post.slug }}', true)"
+               onclick="selectOccurrenceFromList('{{ post.slug }}')"
                data-color="{{ color_key }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
@@ -620,14 +622,29 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     marker.options.slug = item.slug;
 
     marker.on('click', function() {
-      selectOccurrence(item.slug, true);
+      // Ao clicar diretamente no ponto do mapa, popula a ficha e abre-a
+      selectOccurrence(item.slug, true, true);
     });
 
     markersBySlug[item.slug] = marker;
     return marker;
   }
 
-  function selectOccurrence(slug, updateHash = true) {
+  // 1. Clicar na lista: mostra o ponto no mapa PRIMEIRO (em mobile muda para a aba mapa e centra o ponto)
+  function selectOccurrenceFromList(slug) {
+    const item = ocorrenciasData.find(i => i.slug === slug);
+    if (!item) return;
+
+    history.pushState(null, null, '#' + slug);
+    highlightCardAndMapMarker(slug);
+
+    if (window.innerWidth <= 992) {
+      switchMobileTab('map'); // Mostra primeiro o mapa com o marcador focado
+    }
+  }
+
+  // 2. Clicar no ponto do mapa ou abrir diretamente: popula os dados e abre a ficha
+  function selectOccurrence(slug, updateHash = true, openFicha = false) {
     const item = ocorrenciasData.find(i => i.slug === slug);
     if (!item) return;
 
@@ -635,18 +652,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       history.pushState(null, null, '#' + slug);
     }
 
-    document.querySelectorAll('.map-card-item').forEach(el => el.classList.remove('selected'));
-    const cardEl = document.getElementById('card-item-' + slug);
-    if (cardEl) {
-      cardEl.classList.add('selected');
-      cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    const marker = markersBySlug[slug];
-    if (marker && mapInstance) {
-      var latLng = marker.getLatLng();
-      mapInstance.setView(latLng, 13, { animate: true });
-    }
+    highlightCardAndMapMarker(slug);
 
     const rightPanelInner = document.getElementById('appRightPanelInner');
     rightPanelInner.innerHTML = `
@@ -690,19 +696,35 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       </div>
     `;
 
-    // Em mobile, ao selecionar uma ocorrência, muda automaticamente para a aba "Ficha"
     if (window.innerWidth <= 992) {
-      switchMobileTab('ficha');
+      if (openFicha) {
+        switchMobileTab('ficha'); // Só abre a ficha se explicitamente pedido (ex: clique no mapa)
+      }
     } else {
       document.getElementById('appLayoutWrapper').classList.remove('hide-right');
       if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
     }
   }
 
+  function highlightCardAndMapMarker(slug) {
+    document.querySelectorAll('.map-card-item').forEach(el => el.classList.remove('selected'));
+    const cardEl = document.getElementById('card-item-' + slug);
+    if (cardEl) {
+      cardEl.classList.add('selected');
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    const marker = markersBySlug[slug];
+    if (marker && mapInstance) {
+      var latLng = marker.getLatLng();
+      mapInstance.setView(latLng, 13, { animate: true });
+    }
+  }
+
   function handleHashOnLoad() {
     const hash = window.location.hash.replace('#', '');
     if (hash && ocorrenciasData.some(i => i.slug === hash)) {
-      selectOccurrence(hash, false);
+      selectOccurrence(hash, false, false);
     }
   }
 

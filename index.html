@@ -203,13 +203,80 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     min-height: 46px;
     box-sizing: border-box;
     flex-shrink: 0;
+    z-index: 10;
   }
   .map-filter-header { font-size: 9.5px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
   .map-filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
   .filter-pill { font-size: 10.5px; padding: 3px 7px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-weight: 600; color: var(--text-main); }
   .filter-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
 
-  #full-map { width: 100%; flex: 1; }
+  .map-container-wrapper {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #full-map { width: 100%; height: 100%; }
+
+  /* Floating Bottom Preview Card on Map */
+  .map-preview-card {
+    display: none;
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 1000;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.15s ease;
+    box-sizing: border-box;
+    align-items: center;
+    gap: 10px;
+  }
+  .map-preview-card:hover { background: var(--header-bg); }
+  .map-preview-card img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+  }
+  .map-preview-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+  }
+  .map-preview-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .map-preview-loc {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .map-preview-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+  }
 
   .app-right-panel-inner {
     padding: 10px;
@@ -332,6 +399,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     .app-right-panel-inner {
       padding-bottom: 70px !important;
     }
+
+    /* Adjust map preview card position on mobile to stay above bottom nav bar */
+    .map-preview-card {
+      bottom: 60px;
+      left: 10px;
+      right: 10px;
+    }
   }
 </style>
 
@@ -427,7 +501,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     </button>
   </div>
 
-  <!-- CENTER WINDOW: Map and Filters -->
+  <!-- CENTER WINDOW: Map, Filters and Bottom Preview Card -->
   <div class="app-center-panel">
     <div class="map-external-filter">
       <div class="map-filter-header">TRIAGEM:</div>
@@ -439,7 +513,22 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       </div>
     </div>
     
-    <div id="full-map"></div>
+    <div class="map-container-wrapper">
+      <div id="full-map"></div>
+
+      <!-- Floating Map Preview Card (shows locality and item details above bottom bar) -->
+      <div class="map-preview-card" id="mapPreviewCard" onclick="openActiveFicha()">
+        <img id="mapPreviewImg" src="" alt="Animal">
+        <div class="map-preview-info">
+          <div class="map-preview-title">
+            <span id="mapPreviewSpecies">Animal</span>
+            <span id="mapPreviewBadge" class="map-badge badge-default">N/D</span>
+          </div>
+          <div class="map-preview-loc" id="mapPreviewLocality">📍 Localidade</div>
+          <div class="map-preview-sub" id="mapPreviewSub">Clique para abrir a ficha completa ↗</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- RIGHT WINDOW: Rich Details Sheet -->
@@ -491,6 +580,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let itemsBySlug = {};
   let activeColorFilter = 'all';
   let currentActiveCircle = null;
+  let currentSelectedSlug = null;
+  var portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
 
   const ocorrenciasData = [
     {% for item in sorted_scored %}
@@ -504,23 +595,28 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       {% assign theme_color = "#2563eb" %}
       {% assign color_key = "default" %}
       {% assign banner_class = "banner-red" %}
+      {% assign badge_class = "badge-default" %}
 
       {% if est_caso contains 'resolvido' %}
         {% assign theme_color = "#16a34a" %}
         {% assign color_key = "azul" %}
         {% assign banner_class = "banner-resolved" %}
+        {% assign badge_class = "badge-azul" %}
       {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
         {% assign theme_color = "#dc2626" %}
         {% assign color_key = "vermelho" %}
         {% assign banner_class = "banner-red" %}
+        {% assign badge_class = "badge-vermelho" %}
       {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
         {% assign theme_color = "#f97316" %}
         {% assign color_key = "laranja" %}
         {% assign banner_class = "banner-orange" %}
+        {% assign badge_class = "badge-laranja" %}
       {% elsif t contains 'amarelo' %}
         {% assign theme_color = "#d97706" %}
         {% assign color_key = "amarelo" %}
         {% assign banner_class = "banner-yellow" %}
+        {% assign badge_class = "badge-amarelo" %}
       {% endif %}
 
       {
@@ -541,6 +637,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         color: {{ theme_color | jsonify }},
         colorKey: {{ color_key | jsonify }},
         bannerClass: {{ banner_class | jsonify }},
+        badgeClass: {{ badge_class | jsonify }},
         imagem: {{ post.imagem | relative_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | jsonify }}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
@@ -582,7 +679,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       scrollWheelZoom: true
     });
 
-    var portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
     mapInstance.fitBounds(portugalBounds);
 
     L.control.attribution({ prefix: false })
@@ -644,19 +740,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function criarMarcador(lat, lon, item) {
-    var radiusMeters = 3000;
-    const esp = item.especie ? item.especie.toLowerCase() : '';
-    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) {
-      radiusMeters = 5000;
-    }
+    var radiusMeters = 1200;
 
     var circleArea = L.circle([lat, lon], {
       radius: radiusMeters,
-      color: item.color,
-      weight: 1.5,
-      opacity: 0.8,
-      fillColor: item.color,
-      fillOpacity: 0.18,
+      color: '#dc2626',      // Vermelho fixo para contorno visível
+      weight: 2,
+      opacity: 0.9,
+      fill: false,           // Sem preenchimento interior
+      fillOpacity: 0,
       dashArray: '4, 4'
     });
 
@@ -705,6 +797,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     const item = ocorrenciasData.find(i => i.slug === slug);
     if (!item) return;
 
+    currentSelectedSlug = slug;
+
     if (updateHash) {
       history.pushState(null, null, '#' + slug);
     }
@@ -727,9 +821,22 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       mapObj.circle.addTo(mapInstance);
       currentActiveCircle = mapObj.circle;
 
-      mapInstance.setView(latLng, 13, { animate: true });
+      mapInstance.setView(latLng, 14, { animate: true });
     }
 
+    // Populate and show floating bottom preview card on map
+    const previewCard = document.getElementById('mapPreviewCard');
+    document.getElementById('mapPreviewImg').src = item.imagem;
+    document.getElementById('mapPreviewSpecies').textContent = item.especie;
+    document.getElementById('mapPreviewLocality').textContent = '📍 ' + (item.concelho || 'Localização aproximada');
+    
+    const badgeEl = document.getElementById('mapPreviewBadge');
+    badgeEl.className = 'map-badge ' + item.badgeClass;
+    badgeEl.textContent = item.triagem;
+    
+    previewCard.style.display = 'flex';
+
+    // Populate right details sheet
     const rightPanelInner = document.getElementById('appRightPanelInner');
     rightPanelInner.innerHTML = `
       <div class="ficha-wrapper">
@@ -778,6 +885,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
+  function openActiveFicha() {
+    if (currentSelectedSlug) {
+      if (window.innerWidth <= 992) {
+        switchMobileTab('ficha');
+      } else {
+        const wrapper = document.getElementById('appLayoutWrapper');
+        wrapper.classList.remove('hide-right');
+        if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
+      }
+    }
+  }
+
   function handleHashOnLoad() {
     const hash = window.location.hash.replace('#', '');
     if (hash && ocorrenciasData.some(i => i.slug === hash)) {
@@ -799,6 +918,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       if (currentActiveCircle && mapInstance && mapInstance.hasLayer(currentActiveCircle)) {
         mapInstance.removeLayer(currentActiveCircle);
       }
+      const previewCard = document.getElementById('mapPreviewCard');
+      if (previewCard) previewCard.style.display = 'none';
+      currentSelectedSlug = null;
     }
     if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
   }
@@ -812,7 +934,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     if (tabName === 'list') document.getElementById('navBtnList').classList.add('active');
     if (tabName === 'map') {
       document.getElementById('navBtnMap').classList.add('active');
-      if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 200);
+      if (mapInstance) {
+        setTimeout(() => {
+          mapInstance.invalidateSize();
+          if (!currentActiveCircle) {
+            mapInstance.fitBounds(portugalBounds);
+          }
+        }, 200);
+      }
     }
     if (tabName === 'ficha') document.getElementById('navBtnFicha').classList.add('active');
   }

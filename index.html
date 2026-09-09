@@ -67,7 +67,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     flex-direction: column;
     position: relative;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .app-left-panel { border-right: 1px solid var(--border-color); }
@@ -84,6 +84,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 100%;
+    min-width: 0;
     overflow: hidden;
     transition: opacity 0.2s ease;
   }
@@ -342,7 +344,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
                data-color="{{ color_key }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
-            <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | relative_url }}" alt="" class="map-card-img" loading="lazy">
+            <img src="{{ post.imagem }}" alt="" class="map-card-img" loading="lazy">
             
             <div class="map-card-body">
               <div class="map-card-top-row">
@@ -455,7 +457,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         color: {{ theme_color | jsonify }},
         colorKey: {{ color_key | jsonify }},
         bannerClass: {{ banner_class | jsonify }},
-        imagem: {{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | relative_url | jsonify }}
+        imagem: {{ post.imagem | jsonify }}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   ];

@@ -40,6 +40,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --box-bg: #1f2937;
   }
 
+  /* --- DESKTOP LAYOUT --- */
   .app-layout-wrapper {
     display: grid;
     grid-template-columns: var(--left-width) 1fr var(--right-width);
@@ -62,7 +63,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     flex-direction: column;
     position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
   }
 
   .app-left-panel { border-right: 1px solid var(--border-color); }
@@ -70,99 +71,49 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .hide-left .app-left-panel .panel-collapsible-content,
   .hide-right .app-right-panel .panel-collapsible-content {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
+    opacity: 0; pointer-events: none; visibility: hidden;
   }
 
   .panel-collapsible-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    min-width: 0;
-    overflow: hidden;
+    display: flex; flex-direction: column; height: 100%; overflow: hidden; transition: opacity 0.2s ease;
   }
 
   .panel-header-bar {
-    padding: 10px 12px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-sizing: border-box;
-    height: 52px;
+    padding: 10px 12px; background: var(--header-bg); border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; gap: 8px; box-sizing: border-box; height: 52px;
   }
 
   .panel-action-btn {
-    background: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    flex-shrink: 0;
+    background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color);
+    border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px; font-weight: bold; flex-shrink: 0; transition: background 0.15s ease;
   }
   .panel-action-btn:hover { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
 
   .collapsed-edge-bar {
-    display: none;
-    position: absolute;
-    top: 0; bottom: 0; left: 0; right: 0;
-    background: var(--header-bg);
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    writing-mode: vertical-lr;
-    text-orientation: mixed;
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    gap: 8px;
-    border: none;
+    display: none; position: absolute; top: 0; bottom: 0; left: 0; right: 0;
+    background: var(--header-bg); align-items: center; justify-content: center;
+    cursor: pointer; writing-mode: vertical-lr; text-orientation: mixed;
+    font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 1px; gap: 8px; border: none;
   }
   .hide-left .app-left-panel .collapsed-edge-bar { display: flex; }
   .hide-right .app-right-panel .collapsed-edge-bar { display: flex; }
 
+  /* Lista e Elementos */
   .map-search-input {
-    width: 100%;
-    padding: 7px 10px;
-    background: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 12px;
-    box-sizing: border-box;
-    outline: none;
+    width: 100%; padding: 7px 10px; background: var(--card-bg); color: var(--text-main);
+    border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; outline: none;
   }
   .map-list-wrapper { width: 100%; overflow-y: auto; flex: 1; }
 
   .map-card-item {
-    display: flex;
-    gap: 10px;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border-color);
-    background: var(--card-bg);
-    align-items: center;
-    cursor: pointer;
+    display: flex; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--border-color);
+    background: var(--card-bg); align-items: center; cursor: pointer; user-select: none;
   }
   .map-card-item:hover, .map-card-item.selected { background: var(--header-bg); }
 
   .map-card-img {
-    width: 52px;
-    height: 52px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    flex-shrink: 0;
+    width: 52px; height: 52px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); flex-shrink: 0;
   }
   .map-card-body { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
   .map-card-top-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
@@ -177,53 +128,31 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .map-card-details-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); gap: 6px; }
 
-  .app-center-panel {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background: var(--bg-main);
-    position: relative;
-    min-width: 0;
-  }
-
+  /* Map & Filters */
+  .app-center-panel { display: flex; flex-direction: column; height: 100%; background: var(--bg-main); position: relative; min-width: 0; }
   .map-external-filter {
-    background: var(--card-bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 10px 12px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    min-height: 52px;
-    box-sizing: border-box;
+    background: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 10px 12px;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap; min-height: 52px; box-sizing: border-box;
   }
   .map-filter-header { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
   .map-filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
   .filter-pill { font-size: 11px; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-weight: 600; color: var(--text-main); }
   .filter-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
-
   #full-map { width: 100%; flex: 1; }
 
-  .app-right-panel-inner {
-    padding: 14px;
-    height: calc(100% - 52px);
-    overflow-y: auto;
-    box-sizing: border-box;
-    font-size: 12px;
+  /* Marker Pin com Ícone */
+  .marker-icon-pin {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
   }
 
-  .ficha-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--text-muted);
-    text-align: center;
-    gap: 10px;
-    padding: 20px;
-  }
-
+  /* Right Panel */
+  .app-right-panel-inner { padding: 14px; height: calc(100% - 52px); overflow-y: auto; box-sizing: border-box; font-size: 12px; }
+  .ficha-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; gap: 10px; padding: 20px; font-size: 12px; }
   .ficha-wrapper { display: flex; flex-direction: column; gap: 12px; }
   .report-header { color: #ffffff; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
   .report-header h1 { font-size: 14px; font-weight: 800; margin: 0; }
@@ -233,17 +162,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .banner-orange { background: #ffedd5; color: #7c2d12; }
   .banner-yellow { background: #fef9c3; color: #713f12; }
   
-  .ficha-img-container {
-    width: 100%;
-    max-height: 220px;
-    background: var(--box-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  .ficha-img-container { width: 100%; max-height: 220px; background: var(--box-bg); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
   .ficha-img-container img { width: 100%; height: 100%; object-fit: contain; display: block; }
   
   .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--box-bg); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; }
@@ -252,72 +171,59 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .section-title { font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin: 4px 0 0 0; }
   .content-box { font-size: 12px; background: var(--box-bg); padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; line-height: 1.5; color: var(--text-main); }
 
-  .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); border: 2px solid #ffffff; font-size: 14px; }
-
-  /* Mobile Bottom Navigation Bar (PWA Style) */
-  .app-bottom-nav {
+  /* --- PWA MOBILE BOTTOM NAV --- */
+  .mobile-bottom-nav {
     display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: fixed; bottom: 0; left: 0; right: 0;
     height: 60px;
-    background: var(--card-bg);
+    background: var(--header-bg);
     border-top: 1px solid var(--border-color);
-    z-index: 1500;
+    z-index: 9999;
     justify-content: space-around;
     align-items: center;
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
   }
-  .nav-tab-btn {
-    flex: 1;
-    height: 100%;
-    background: transparent;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-muted);
-    cursor: pointer;
-    gap: 3px;
-    text-transform: uppercase;
+  .nav-btn {
+    background: none; border: none; color: var(--text-muted);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: bold; cursor: pointer; flex: 1; height: 100%; justify-content: center;
   }
-  .nav-tab-btn span.tab-icon { font-size: 18px; }
-  .nav-tab-btn.active { color: var(--primary-color); }
+  .nav-btn.active { color: var(--primary-color); }
+  .nav-btn svg { width: 22px; height: 22px; fill: currentColor; }
 
+  /* --- MOBILE LAYOUT OVERRIDES --- */
   @media (max-width: 992px) {
-    .app-bottom-nav { display: flex; }
     .app-layout-wrapper {
       display: block;
+      height: calc(100dvh - 60px);
       position: relative;
-      height: calc(100vh - 75px - 60px);
     }
-    .app-left-panel, .app-right-panel, .app-center-panel {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      width: 100% !important;
-      max-width: none !important;
-      z-index: 100;
+    
+    .mobile-bottom-nav { display: flex; }
+
+    .app-left-panel, .app-center-panel, .app-right-panel {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      width: 100% !important; max-width: 100% !important;
+      border: none; box-shadow: none; transform: none !important;
       display: none;
     }
-    .app-left-panel.mobile-active,
-    .app-center-panel.mobile-active,
-    .app-right-panel.mobile-active {
-      display: flex !important;
-      z-index: 1200;
-    }
+
+    .app-layout-wrapper.mobile-view-list .app-left-panel { display: flex; z-index: 10; }
+    .app-layout-wrapper.mobile-view-map .app-center-panel { display: flex; z-index: 10; }
+    .app-layout-wrapper.mobile-view-details .app-right-panel { display: flex; z-index: 10; }
+
+    .collapsed-edge-bar { display: none !important; }
+    .panel-header-bar .panel-action-btn { display: none; }
   }
 </style>
 
-<div class="app-layout-wrapper hide-right" id="appLayoutWrapper">
+<div class="app-layout-wrapper hide-right mobile-view-map" id="appLayoutWrapper">
   
   <!-- LEFT WINDOW: Animal List -->
-  <div class="app-left-panel mobile-active" id="appLeftPanel">
+  <div class="app-left-panel" id="appLeftPanel">
     <div class="panel-collapsible-content">
       <div class="panel-header-bar">
+        <button class="panel-action-btn" onclick="toggleLeftPanel()" title="Recolher lista">◀</button>
         <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar espécie, concelho..." onkeyup="filterMapManifest()">
       </div>
 
@@ -345,17 +251,17 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
             {% assign color_key = "amarelo" %}
           {% endif %}
 
+          {% assign img_url = post.imagem %}
+          {% unless img_url contains 'http' %}
+            {% assign img_url = img_url | relative_url %}
+          {% endunless %}
+
           <div class="map-card-item map-row" id="card-item-{{ post.slug }}"
                onclick="selectOccurrence('{{ post.slug }}', true)"
                data-color="{{ color_key }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
-            <!-- CORREÇÃO DAS IMAGENS: Fallback seguro caso imagem não exista -->
-            {% if post.imagem and post.imagem != "" %}
-              <img src="{{ post.imagem | relative_url }}" alt="" class="map-card-img" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23e2e8f0%22/><text x=%2250%22 y=%2255%22 font-size=%2240%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>🐾</text></svg>';">
-            {% else %}
-              <div class="map-card-img" style="display:flex; align-items:center; justify-content:center; background:var(--box-bg); font-size:24px; color:var(--text-muted); border: 1px solid var(--border-color);">🐾</div>
-            {% endif %}
+            <img src="{{ img_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
             
             <div class="map-card-body">
               <div class="map-card-top-row">
@@ -373,10 +279,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         {% endfor %}
       </div>
     </div>
+    <button class="collapsed-edge-bar" onclick="toggleLeftPanel()" title="Expandir Lista">
+      <span>▶ LISTA DE OCORRÊNCIAS</span>
+    </button>
   </div>
 
   <!-- CENTER WINDOW: Map and Filters -->
-  <div class="app-center-panel" id="appCenterPanel">
+  <div class="app-center-panel">
     <div class="map-external-filter">
       <div class="map-filter-header">TRIAGEM:</div>
       <div class="map-filter-pills">
@@ -395,33 +304,37 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     <div class="panel-collapsible-content">
       <div class="panel-header-bar" style="justify-content: space-between;">
         <span style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Ficha de Ocorrência</span>
+        <button class="panel-action-btn" onclick="toggleRightPanel()" title="Recolher painel">▶</button>
       </div>
       
       <div class="app-right-panel-inner" id="appRightPanelInner">
         <div class="ficha-placeholder">
           <span style="font-size: 32px;">🐾</span>
           <strong>Selecione uma ocorrência</strong>
-          <p style="margin: 0; font-size: 11.5px;">Clique num registo da lista ou num marcador no mapa para inspecionar os detalhes.</p>
+          <p style="margin: 0; font-size: 11.5px;">Clique num registo da lista ou num marcador no mapa para inspecionar os detalhes completos e aceder à versão completa.</p>
         </div>
       </div>
     </div>
+    <button class="collapsed-edge-bar" onclick="toggleRightPanel()" title="Expandir Painel de Detalhes">
+      <span>◀ FICHA DO ANIMAL</span>
+    </button>
   </div>
 
 </div>
 
-<!-- Mobile Bottom Navigation Bar -->
-<div class="app-bottom-nav" id="appBottomNav">
-  <button class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
-    <span class="tab-icon">📋</span>
-    <span>Lista</span>
+<!-- PWA MOBILE BOTTOM NAV -->
+<div class="mobile-bottom-nav">
+  <button class="nav-btn" id="nav-btn-list" onclick="setMobileView('list')">
+    <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+    Lista
   </button>
-  <button class="nav-tab-btn" id="navBtnMap" onclick="switchMobileTab('map')">
-    <span class="tab-icon">🗺️</span>
-    <span>Mapa</span>
+  <button class="nav-btn active" id="nav-btn-map" onclick="setMobileView('map')">
+    <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+    Mapa
   </button>
-  <button class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
-    <span class="tab-icon">🐾</span>
-    <span>Ficha</span>
+  <button class="nav-btn" id="nav-btn-details" onclick="setMobileView('details')">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+    Ficha
   </button>
 </div>
 
@@ -440,6 +353,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       {% assign theme_color = "#2563eb" %}
       {% assign color_key = "default" %}
       {% assign banner_class = "banner-red" %}
+      {% assign animal_icon = "🐾" %}
 
       {% if est_caso contains 'resolvido' %}
         {% assign theme_color = "#16a34a" %}
@@ -459,6 +373,20 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         {% assign banner_class = "banner-yellow" %}
       {% endif %}
 
+      {% assign esp = post.especie | strip | downcase %}
+      {% if esp contains 'felino' or esp contains 'gato' %}
+        {% assign animal_icon = "🐱" %}
+      {% elsif esp contains 'canídeo' or esp contains 'canideo' or esp contains 'cão' or esp contains 'cao' %}
+        {% assign animal_icon = "🐶" %}
+      {% elsif esp contains 'ave' or esp contains 'pássaro' or esp contains 'passaro' %}
+        {% assign animal_icon = "🐦" %}
+      {% endif %}
+
+      {% assign img_url = post.imagem %}
+      {% unless img_url contains 'http' %}
+        {% assign img_url = img_url | relative_url %}
+      {% endunless %}
+
       {
         slug: {{ post.slug | jsonify }},
         id: {{ post.id | default: "N/D" | jsonify }},
@@ -477,12 +405,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         color: {{ theme_color | jsonify }},
         colorKey: {{ color_key | jsonify }},
         bannerClass: {{ banner_class | jsonify }},
-        // CORREÇÃO DAS IMAGENS NO JSON
-        {% if post.imagem and post.imagem != "" %}
-          imagem: {{ post.imagem | relative_url | jsonify }}
-        {% else %}
-          imagem: null
-        {% endif %}
+        animalIcon: {{ animal_icon | jsonify }},
+        imagem: {{ img_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | jsonify }}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   ];
@@ -493,25 +417,31 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     window.addEventListener('hashchange', handleHashOnLoad);
   });
 
-  function getSpeciesEmoji(especieStr) {
-    const esp = especieStr ? especieStr.toLowerCase() : '';
-    if (esp.includes('gato') || esp.includes('felino')) return '🐱';
-    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
-    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return '🐦';
-    return '🐾';
+  function setMobileView(view) {
+    const wrapper = document.getElementById('appLayoutWrapper');
+    wrapper.classList.remove('mobile-view-list', 'mobile-view-map', 'mobile-view-details');
+    wrapper.classList.add('mobile-view-' + view);
+    
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('nav-btn-' + view).classList.add('active');
+
+    if (view === 'map' && mapInstance) {
+      setTimeout(() => mapInstance.invalidateSize(), 150);
+    }
   }
 
   function initMap() {
     if (mapInstance) return;
 
-    // CORREÇÃO DO MAPA: Inicializar com setView em vez de fitBounds para evitar o colapso
-    // quando o container começa com display: none (mobile).
     mapInstance = L.map('full-map', { 
       attributionControl: false,
       tap: false,
       touchZoom: true,
       scrollWheelZoom: true
-    }).setView([39.6, -7.9], 6); // Definido estaticamente no centro de Portugal Continental
+    });
+
+    var portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
+    mapInstance.fitBounds(portugalBounds);
 
     L.control.attribution({ prefix: false })
       .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>')
@@ -580,15 +510,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function criarMarcador(lat, lon, item) {
-    var emojiIcon = getSpeciesEmoji(item.especie);
-    var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
+    var iconHtml = `
+      <div class="marker-icon-pin" style="background-color: ${item.color}; color: #ffffff;">
+        ${item.animalIcon}
+      </div>
+    `;
 
     var customIcon = L.divIcon({
       className: '',
       html: iconHtml,
-      iconSize: [30, 30],
-      iconAnchor: [15, 15],
-      popupAnchor: [0, -15]
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -18]
     });
 
     var marker = L.marker([lat, lon], { icon: customIcon });
@@ -597,9 +530,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     marker.on('click', function() {
       selectOccurrence(item.slug, true);
-      if (window.innerWidth <= 992) {
-        switchMobileTab('ficha');
-      }
     });
 
     markersBySlug[item.slug] = marker;
@@ -618,6 +548,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     const cardEl = document.getElementById('card-item-' + slug);
     if (cardEl) {
       cardEl.classList.add('selected');
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     const marker = markersBySlug[slug];
@@ -645,8 +576,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         </div>
 
         <div class="ficha-img-container">
-          <!-- CORREÇÃO DAS IMAGENS: SVG dinâmico caso ocorra erro (imagem partida) ou div de segurança se a imagem for null -->
-          ${item.imagem ? `<img src="${item.imagem}" alt="Fotografia do animal" onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23e2e8f0%22/><text x=%2250%22 y=%2255%22 font-size=%2240%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>🐾</text></svg>';">` : `<div style="display:flex; width:100%; height:100%; align-items:center; justify-content:center; font-size:64px; background:var(--box-bg); color:var(--text-muted);">🐾</div>`}
+          <img src="${item.imagem}" alt="Fotografia do animal" onerror="this.src='https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg'">
         </div>
 
         <div class="details-grid">
@@ -669,10 +599,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       </div>
     `;
 
-    if (window.innerWidth <= 992) {
-      switchMobileTab('ficha');
-    }
+    document.getElementById('appLayoutWrapper').classList.remove('hide-right');
     if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
+
+    if (window.innerWidth <= 992) {
+      setMobileView('details');
+    }
   }
 
   function handleHashOnLoad() {
@@ -682,27 +614,19 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  function switchMobileTab(tab) {
-    document.getElementById('appLeftPanel').classList.remove('mobile-active');
-    document.getElementById('appCenterPanel').classList.remove('mobile-active');
-    document.getElementById('appRightPanel').classList.remove('mobile-active');
+  function toggleLeftPanel() {
+    const wrapper = document.getElementById('appLayoutWrapper');
+    wrapper.classList.toggle('hide-left');
+    if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
+  }
 
-    document.getElementById('navBtnList').classList.remove('active');
-    document.getElementById('navBtnMap').classList.remove('active');
-    document.getElementById('navBtnFicha').classList.remove('active');
-
-    if (tab === 'list') {
-      document.getElementById('appLeftPanel').classList.add('mobile-active');
-      document.getElementById('navBtnList').classList.add('active');
-    } else if (tab === 'map') {
-      document.getElementById('appCenterPanel').classList.add('mobile-active');
-      document.getElementById('navBtnMap').classList.add('active');
-      // Força o Leaflet a repintar e a preencher a área depois da div ficar 'display: flex'
-      if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 100);
-    } else if (tab === 'ficha') {
-      document.getElementById('appRightPanel').classList.add('mobile-active');
-      document.getElementById('navBtnFicha').classList.add('active');
+  function toggleRightPanel() {
+    const wrapper = document.getElementById('appLayoutWrapper');
+    wrapper.classList.toggle('hide-right');
+    if (wrapper.classList.contains('hide-right')) {
+      history.pushState(null, null, window.location.pathname);
     }
+    if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
   }
 
   function filterMapByColor(colorKey, btnElement) {

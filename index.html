@@ -1,8 +1,11 @@
 ---
 layout: default
+layout_fullscreen: true
 title: "Alerta Animal — Painel de Ocorrências"
 description: "Plataforma de monitorização e alerta de ocorrências de animais"
 ---
+
+{% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
 
 <!-- Leaflet CSS & JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -14,6 +17,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   :root {
@@ -50,6 +56,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     box-sizing: border-box;
     overflow: hidden;
     transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
   }
 
   .app-layout-wrapper.hide-left { --left-width: 36px; }
@@ -80,7 +87,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .panel-header-bar {
     padding: 10px 12px; background: var(--header-bg); border-bottom: 1px solid var(--border-color);
-    display: flex; align-items: center; gap: 8px; box-sizing: border-box; height: 52px;
+    display: flex; align-items: center; gap: 8px; box-sizing: border-box; height: 52px; flex-shrink: 0;
   }
 
   .panel-action-btn {
@@ -129,16 +136,16 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-card-details-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); gap: 6px; }
 
   /* Map & Filters */
-  .app-center-panel { display: flex; flex-direction: column; height: 100%; background: var(--bg-main); position: relative; min-width: 0; }
+  .app-center-panel { display: flex; flex-direction: column; height: 100%; background: var(--bg-main); position: relative; min-width: 0; flex: 1; }
   .map-external-filter {
     background: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 10px 12px;
-    display: flex; gap: 8px; align-items: center; flex-wrap: wrap; min-height: 52px; box-sizing: border-box;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap; min-height: 52px; box-sizing: border-box; flex-shrink: 0;
   }
   .map-filter-header { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
   .map-filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
   .filter-pill { font-size: 11px; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-weight: 600; color: var(--text-main); }
   .filter-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
-  #full-map { width: 100%; flex: 1; }
+  #full-map { width: 100%; flex: 1; min-height: 250px; }
 
   /* Marker Pin com Ícone */
   .marker-icon-pin {
@@ -178,7 +185,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     height: 60px;
     background: var(--header-bg);
     border-top: 1px solid var(--border-color);
-    z-index: 9999;
+    z-index: 99999;
     justify-content: space-around;
     align-items: center;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
@@ -195,7 +202,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   @media (max-width: 992px) {
     .app-layout-wrapper {
       display: block;
-      height: calc(100dvh - 60px);
+      height: calc(100vh - 60px - 57px); /* Subtrai altura do header global e da nav mobile */
       position: relative;
     }
     
@@ -206,11 +213,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       width: 100% !important; max-width: 100% !important;
       border: none; box-shadow: none; transform: none !important;
       display: none;
+      height: 100%;
     }
 
-    .app-layout-wrapper.mobile-view-list .app-left-panel { display: flex; z-index: 10; }
-    .app-layout-wrapper.mobile-view-map .app-center-panel { display: flex; z-index: 10; }
-    .app-layout-wrapper.mobile-view-details .app-right-panel { display: flex; z-index: 10; }
+    .app-layout-wrapper.mobile-view-list .app-left-panel { display: flex; z-index: 20; }
+    .app-layout-wrapper.mobile-view-map .app-center-panel { display: flex; z-index: 20; }
+    .app-layout-wrapper.mobile-view-details .app-right-panel { display: flex; z-index: 20; }
 
     .collapsed-edge-bar { display: none !important; }
     .panel-header-bar .panel-action-btn { display: none; }
@@ -228,8 +236,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       </div>
 
       <div class="map-list-wrapper" id="mapManifestList">
-        {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
-        
         {% for post in sorted_posts %}
           {% assign t = post.triagem | strip | downcase %}
           {% assign est_fisico = post.estado_fisico | strip | downcase %}
@@ -315,7 +321,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         <div class="ficha-placeholder">
           <span style="font-size: 32px;">🐾</span>
           <strong>Selecione uma ocorrência</strong>
-          <p style="margin: 0; font-size: 11.5px;">Clique num registo da lista ou num marcador no mapa para inspecionar os detalhes completos e aceder à versão completa.</p>
+          <p style="margin: 0; font-size: 11.5px;">Clique num registo da lista ou num marcador no mapa para inspecionar os detalhes completos.</p>
         </div>
       </div>
     </div>
@@ -431,7 +437,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     wrapper.classList.add('mobile-view-' + view);
     
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('nav-btn-' + view).classList.add('active');
+    const activeBtn = document.getElementById('nav-btn-' + view);
+    if (activeBtn) activeBtn.classList.add('active');
 
     if (view === 'map' && mapInstance) {
       setTimeout(() => mapInstance.invalidateSize(), 150);
@@ -624,6 +631,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     if (window.innerWidth <= 992) {
       setMobileView('details');
+    }
+  }
+
+  function handleHashOnLoad() {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && ocorrenciasData.some(i => i.slug === hash)) {
+      selectOccurrence(hash, false);
     }
   }
 

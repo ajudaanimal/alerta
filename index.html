@@ -51,8 +51,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .app-layout-wrapper.hide-left { --left-width: 36px; }
-  .app-layout-wrapper.hide-right { --right-width: 36px; }
+  .app-layout-wrapper.hide-left {
+    --left-width: 36px;
+  }
+
+  .app-layout-wrapper.hide-right {
+    --right-width: 36px;
+  }
 
   .app-left-panel, .app-right-panel {
     background: var(--card-bg);
@@ -148,7 +153,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-card-item {
     display: flex;
     gap: 10px;
-    padding: 12px;
+    padding: 10px 12px;
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
     transition: background 0.15s ease;
@@ -263,81 +268,42 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); border: 2px solid #ffffff; font-size: 14px; }
 
-  /* Mobile Bottom Navigation Bar (PWA Style) */
-  .app-bottom-nav {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: var(--card-bg);
-    border-top: 1px solid var(--border-color);
-    z-index: 1500;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
-  }
-  .nav-tab-btn {
-    flex: 1;
-    height: 100%;
-    background: transparent;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-muted);
-    cursor: pointer;
-    gap: 3px;
-    text-transform: uppercase;
-  }
-  .nav-tab-btn span.tab-icon { font-size: 18px; }
-  .nav-tab-btn.active { color: var(--primary-color); }
-
   @media (max-width: 992px) {
     .app-layout-wrapper {
-      display: block;
+      display: flex;
       position: relative;
-      height: calc(100vh - 75px - 60px); /* Adjust for bottom nav */
     }
-    .app-bottom-nav { display: flex; }
-    
-    .app-left-panel, .app-right-panel {
+    .app-left-panel {
       position: absolute;
-      left: 0; top: 0; right: 0; bottom: 0;
-      width: 100% !important;
-      max-width: 100% !important;
+      left: 0; top: 0; bottom: 0;
+      width: 85%;
+      max-width: 340px;
       z-index: 1100;
-      box-shadow: none;
-      transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 4px 0 15px rgba(0,0,0,0.2);
+      transform: translateX(0);
+      transition: transform 0.3s ease;
     }
-    .app-center-panel {
+    .app-layout-wrapper.hide-left .app-left-panel {
+      transform: translateX(-100%);
+    }
+    .app-right-panel {
       position: absolute;
-      left: 0; top: 0; right: 0; bottom: 0;
-      width: 100% !important;
-      height: 100% !important;
-      z-index: 1000;
+      right: 0; top: 0; bottom: 0;
+      width: 90%;
+      max-width: 420px;
+      z-index: 1200;
+      box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+      transform: translateX(0);
+      transition: transform 0.3s ease;
     }
-    
-    /* Active mobile views control via classes on wrapper */
-    .app-layout-wrapper.mobile-view-list .app-left-panel { transform: translateY(0); z-index: 1300; }
-    .app-layout-wrapper.mobile-view-map .app-center-panel { z-index: 1300; }
-    .app-layout-wrapper.mobile-view-ficha .app-right-panel { transform: translateY(0); z-index: 1300; }
-
-    /* Hide desktop toggle buttons on mobile */
-    .app-left-panel .panel-header-bar .panel-action-btn,
-    .app-right-panel .panel-header-bar .panel-action-btn,
-    .collapsed-edge-bar {
-      display: none !important;
+    .app-layout-wrapper.hide-right .app-right-panel {
+      transform: translateX(100%);
     }
+    .app-center-panel { width: 100%; flex: 1; }
   }
 </style>
 
-<div class="app-layout-wrapper mobile-view-list" id="appLayoutWrapper">
+<div class="app-layout-wrapper hide-right" id="appLayoutWrapper">
   
   <!-- LEFT WINDOW: Animal List -->
   <div class="app-left-panel" id="appLeftPanel">
@@ -376,7 +342,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
                data-color="{{ color_key }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
-            <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
+            <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | relative_url }}" alt="" class="map-card-img" loading="lazy">
             
             <div class="map-card-body">
               <div class="map-card-top-row">
@@ -437,22 +403,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 </div>
 
-<!-- Mobile Bottom Navigation Bar -->
-<div class="app-bottom-nav" id="appBottomNav">
-  <button class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
-    <span class="tab-icon">📋</span>
-    <span>Lista</span>
-  </button>
-  <button class="nav-tab-btn" id="navBtnMap" onclick="switchMobileTab('map')">
-    <span class="tab-icon">🗺️</span>
-    <span>Mapa</span>
-  </button>
-  <button class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
-    <span class="tab-icon">🐾</span>
-    <span>Ficha</span>
-  </button>
-</div>
-
 <script>
   let mapInstance;
   let allMarkersLayerGroup;
@@ -505,7 +455,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         color: {{ theme_color | jsonify }},
         colorKey: {{ color_key | jsonify }},
         bannerClass: {{ banner_class | jsonify }},
-        imagem: {{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | jsonify }}
+        imagem: {{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | relative_url | jsonify }}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   ];
@@ -690,13 +640,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       </div>
     `;
 
-    // Em mobile, ao selecionar uma ocorrência, muda automaticamente para a aba "Ficha"
-    if (window.innerWidth <= 992) {
-      switchMobileTab('ficha');
-    } else {
-      document.getElementById('appLayoutWrapper').classList.remove('hide-right');
-      if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
-    }
+    document.getElementById('appLayoutWrapper').classList.remove('hide-right');
+    if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
   }
 
   function handleHashOnLoad() {
@@ -719,20 +664,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       history.pushState(null, null, window.location.pathname);
     }
     if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
-  }
-
-  function switchMobileTab(tabName) {
-    const wrapper = document.getElementById('appLayoutWrapper');
-    wrapper.classList.remove('mobile-view-list', 'mobile-view-map', 'mobile-view-ficha');
-    wrapper.classList.add('mobile-view-' + tabName);
-
-    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-    if (tabName === 'list') document.getElementById('navBtnList').classList.add('active');
-    if (tabName === 'map') {
-      document.getElementById('navBtnMap').classList.add('active');
-      if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 200);
-    }
-    if (tabName === 'ficha') document.getElementById('navBtnFicha').classList.add('active');
   }
 
   function filterMapByColor(colorKey, btnElement) {

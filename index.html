@@ -222,19 +222,20 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     font-size: 12px;
   }
 
-  .ficha-wrapper { display: flex; flex-direction: column; gap: 12px; }
-  .report-header { color: #ffffff; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
-  .report-header h1 { font-size: 14px; font-weight: 800; margin: 0; }
-  .status-banner { padding: 8px 10px; font-weight: 800; text-align: center; font-size: 11px; text-transform: uppercase; border-radius: 4px; }
+  .ficha-wrapper { display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; }
+  .report-header { color: #ffffff; padding: 10px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .report-header h1 { font-size: 13px; font-weight: 800; margin: 0; }
+  .status-banner { padding: 6px 10px; font-weight: 800; text-align: center; font-size: 11px; text-transform: uppercase; border-radius: 4px; }
   .banner-resolved { background: #dcfce7; color: #14532d; }
   .banner-red { background: #fee2e2; color: #7f1d1d; }
   .banner-orange { background: #ffedd5; color: #7c2d12; }
   .banner-yellow { background: #fef9c3; color: #713f12; }
   
+  /* Ajuste da imagem para mostrar inteira (contain) sem cortes verticais/horizontais */
   .ficha-img-container {
     width: 100%;
-    max-height: 220px;
-    background: var(--box-bg);
+    height: 180px;
+    background: #000000;
     border: 1px solid var(--border-color);
     border-radius: 6px;
     overflow: hidden;
@@ -250,75 +251,41 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: block;
   }
   
-  .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--box-bg); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; }
-  .detail-item { display: flex; flex-direction: column; gap: 2px; font-size: 11.5px; }
-  .detail-item strong { color: var(--text-muted); font-size: 9.5px; text-transform: uppercase; }
-  .section-title { font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin: 4px 0 0 0; }
-  .content-box { font-size: 12px; background: var(--box-bg); padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; line-height: 1.5; color: var(--text-main); }
+  .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: var(--box-bg); border: 1px solid var(--border-color); padding: 8px 10px; border-radius: 6px; }
+  .detail-item { display: flex; flex-direction: column; gap: 1px; font-size: 11px; }
+  .detail-item strong { color: var(--text-muted); font-size: 9px; text-transform: uppercase; }
+  .section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin: 2px 0 0 0; }
+  .content-box { font-size: 11.5px; background: var(--box-bg); padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 6px; line-height: 1.4; color: var(--text-main); }
 
   .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); border: 2px solid #ffffff; font-size: 14px; }
 
-  /* Mobile Bottom Navigation Bar */
-  .app-bottom-nav {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: var(--card-bg);
-    border-top: 1px solid var(--border-color);
-    z-index: 3000;
-    justify-content: space-around;
-    align-items: center;
-  }
-  .nav-tab-btn {
-    flex: 1;
-    height: 100%;
-    background: transparent;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-muted);
-    cursor: pointer;
-    gap: 3px;
-    text-transform: uppercase;
-  }
-  .nav-tab-btn span.tab-icon { font-size: 18px; }
-  .nav-tab-btn.active { color: var(--primary-color); }
-
+  /* Mobile Layout padrão fluído e funcional */
   @media (max-width: 992px) {
     .app-layout-wrapper {
       display: flex !important;
-      height: calc(100vh - 120px) !important;
-      position: relative;
+      flex-direction: column !important;
+      height: calc(100vh - 60px) !important;
+      overflow-y: auto !important;
     }
-    .app-bottom-nav { display: flex; }
-
-    /* Ocultar todos os painéis por defeito em mobile */
-    .app-left-panel, .app-center-panel, .app-right-panel {
-      display: none !important;
+    .app-left-panel {
       width: 100% !important;
-      height: 100% !important;
-      position: absolute;
-      top: 0;
-      left: 0;
+      height: 280px !important;
+      flex-shrink: 0;
+      border-right: none;
+      border-bottom: 1px solid var(--border-color);
     }
-
-    /* Mostrar unicamente o painel correspondente à aba ativa em mobile */
-    body.mobile-tab-list .app-left-panel,
-    body.mobile-tab-map .app-center-panel,
-    body.mobile-tab-ficha .app-right-panel {
-      display: flex !important;
+    .app-center-panel {
+      width: 100% !important;
+      height: 320px !important;
+      flex-shrink: 0;
     }
-
-    .app-left-panel .panel-header-bar .panel-action-btn,
-    .app-right-panel .panel-header-bar .panel-action-btn,
-    .collapsed-edge-bar {
+    .app-right-panel {
+      width: 100% !important;
+      height: auto !important;
+      flex: 1;
+      border-left: none;
+    }
+    .collapsed-edge-bar, .panel-action-btn {
       display: none !important;
     }
   }
@@ -424,22 +391,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 </div>
 
-<!-- Mobile Bottom Navigation Bar -->
-<div class="app-bottom-nav" id="appBottomNav">
-  <button class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
-    <span class="tab-icon">📋</span>
-    <span>Lista</span>
-  </button>
-  <button class="nav-tab-btn" id="navBtnMap" onclick="switchMobileTab('map')">
-    <span class="tab-icon">🗺️</span>
-    <span>Mapa</span>
-  </button>
-  <button class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
-    <span class="tab-icon">🐾</span>
-    <span>Ficha</span>
-  </button>
-</div>
-
 <script>
   let mapInstance;
   let allMarkersLayerGroup;
@@ -499,9 +450,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   document.addEventListener("DOMContentLoaded", function() {
     initMap();
-    if (window.innerWidth <= 992) {
-      switchMobileTab('list');
-    }
     handleHashOnLoad();
     window.addEventListener('hashchange', handleHashOnLoad);
   });
@@ -610,7 +558,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     marker.options.slug = item.slug;
 
     marker.on('click', function() {
-      selectOccurrence(item.slug, true, true);
+      selectOccurrenceFromList(item.slug);
     });
 
     markersBySlug[item.slug] = marker;
@@ -618,10 +566,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function selectOccurrenceFromList(slug) {
-    selectOccurrence(slug, true, true);
+    selectOccurrence(slug, true);
   }
 
-  function selectOccurrence(slug, updateHash = true, openFicha = false) {
+  function selectOccurrence(slug, updateHash = true) {
     const item = ocorrenciasData.find(i => i.slug === slug);
     if (!item) return;
 
@@ -667,20 +615,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           ${item.observacoes}
         </div>
 
-        <div style="margin-top: 6px; display: flex; justify-content: flex-end;">
-          <a href="${item.url}" target="_blank" style="background: ${item.color}; color: #ffffff; padding: 8px 14px; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-block; font-size: 11.5px;">Abrir Ficha Completa ↗</a>
+        <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
+          <a href="${item.url}" target="_blank" style="background: ${item.color}; color: #ffffff; padding: 7px 12px; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-block; font-size: 11px;">Abrir Ficha Completa ↗</a>
         </div>
       </div>
     `;
 
-    if (window.innerWidth <= 992) {
-      if (openFicha) {
-        switchMobileTab('ficha');
-      }
-    } else {
-      document.getElementById('appLayoutWrapper').classList.remove('hide-right');
-      if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
-    }
+    document.getElementById('appLayoutWrapper').classList.remove('hide-right');
+    if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
   }
 
   function highlightCardAndMapMarker(slug) {
@@ -701,7 +643,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   function handleHashOnLoad() {
     const hash = window.location.hash.replace('#', '');
     if (hash && ocorrenciasData.some(i => i.slug === hash)) {
-      selectOccurrence(hash, false, false);
+      selectOccurrence(hash, false);
     }
   }
 
@@ -718,21 +660,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       history.pushState(null, null, window.location.pathname);
     }
     if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
-  }
-
-  function switchMobileTab(tabName) {
-    document.body.classList.remove('mobile-tab-list', 'mobile-tab-map', 'mobile-tab-ficha');
-    document.body.classList.add('mobile-tab-' + tabName);
-
-    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-    if (tabName === 'list') document.getElementById('navBtnList').classList.add('active');
-    if (tabName === 'map') {
-      document.getElementById('navBtnMap').classList.add('active');
-      if (mapInstance) {
-        setTimeout(() => { mapInstance.invalidateSize(); }, 150);
-      }
-    }
-    if (tabName === 'ficha') document.getElementById('navBtnFicha').classList.add('active');
   }
 
   function filterMapByColor(colorKey, btnElement) {

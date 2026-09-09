@@ -21,3 +21,6 @@ defaults:
       type: "ocorrencias"
     values:
       layout: "ocorrencia"
+      
+include:
+  - feed.xsl

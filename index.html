@@ -251,17 +251,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
             {% assign color_key = "amarelo" %}
           {% endif %}
 
-          {% assign img_url = post.imagem %}
-          {% unless img_url contains 'http' %}
-            {% assign img_url = img_url | relative_url %}
-          {% endunless %}
+          {% if post.imagem and post.imagem != "" %}
+            {% assign img_url = post.imagem %}
+            {% unless img_url contains 'http' %}
+              {% assign img_url = img_url | relative_url %}
+            {% endunless %}
+          {% else %}
+            {% assign img_url = 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' %}
+          {% endif %}
 
           <div class="map-card-item map-row" id="card-item-{{ post.slug }}"
                onclick="selectOccurrence('{{ post.slug }}', true)"
                data-color="{{ color_key }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
-            <img src="{{ img_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
+            <img src="{{ img_url }}" alt="" class="map-card-img" loading="lazy">
             
             <div class="map-card-body">
               <div class="map-card-top-row">
@@ -382,10 +386,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         {% assign animal_icon = "🐦" %}
       {% endif %}
 
-      {% assign img_url = post.imagem %}
-      {% unless img_url contains 'http' %}
-        {% assign img_url = img_url | relative_url %}
-      {% endunless %}
+      {% if post.imagem and post.imagem != "" %}
+        {% assign img_url = post.imagem %}
+        {% unless img_url contains 'http' %}
+          {% assign img_url = img_url | relative_url %}
+        {% endunless %}
+      {% else %}
+        {% assign img_url = 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' %}
+      {% endif %}
 
       {
         slug: {{ post.slug | jsonify }},
@@ -406,7 +414,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         colorKey: {{ color_key | jsonify }},
         bannerClass: {{ banner_class | jsonify }},
         animalIcon: {{ animal_icon | jsonify }},
-        imagem: {{ img_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | jsonify }}
+        imagem: {{ img_url | jsonify }}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   ];
@@ -427,6 +435,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     if (view === 'map' && mapInstance) {
       setTimeout(() => mapInstance.invalidateSize(), 150);
+    }
+  }
+
+  function backToMap() {
+    if (window.innerWidth <= 992) {
+      setMobileView('map');
+    } else {
+      toggleRightPanel();
     }
   }
 
@@ -560,6 +576,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     const rightPanelInner = document.getElementById('appRightPanelInner');
     rightPanelInner.innerHTML = `
       <div class="ficha-wrapper">
+        <div style="display: flex; align-items: center;">
+          <button onclick="backToMap()" style="background: var(--header-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;">← Voltar ao Mapa</button>
+        </div>
+
         <header class="report-header" style="background-color: ${item.color};">
           <div>
             <h1>${item.especie} — ${item.estado_fisico}</h1>

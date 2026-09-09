@@ -1,0 +1,173 @@
+---
+layout: default
+title: "Subscrever Alertas — Alerta Animal"
+description: "Mantenha-se atualizado sobre novas ocorrências e alertas de animais através de RSS ou Newsletter."
+---
+
+<style>
+  .subscribe-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+
+  .subscribe-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .subscribe-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0 0 8px 0;
+  }
+
+  .subscribe-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .subscribe-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  @media (min-width: 640px) {
+    .subscribe-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .subscribe-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .subscribe-card:hover {
+    border-color: var(--primary-color, #0284c7);
+    transform: translateY(-2px);
+  }
+
+  .subscribe-card-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+
+  .subscribe-card h2 {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0 0 8px 0;
+  }
+
+  .subscribe-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .subscribe-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--pill-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .subscribe-btn:hover {
+    background: var(--border-color);
+  }
+
+  .subscribe-btn.primary {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+  }
+
+  .subscribe-btn.primary:hover {
+    background: #0369a1;
+  }
+
+  .newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .newsletter-input {
+    padding: 10px 12px;
+    background: var(--bg-color);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  .newsletter-input:focus {
+    border-color: #0284c7;
+  }
+</style>
+
+<div class="subscribe-container">
+  <div class="subscribe-header">
+    <h1>Subscrever Alertas</h1>
+    <p>Escolha a melhor forma de acompanhar as novas ocorrências e atualizações de animais em situação vulnerável.</p>
+  </div>
+
+  <div class="subscribe-grid">
+    
+    <!-- Opção 1: Feed RSS -->
+    <div class="subscribe-card">
+      <div>
+        <div class="subscribe-card-icon">📡</div>
+        <h2>Feed RSS</h2>
+        <p>Ideal para leitores de RSS (Feedly, Inoreader, etc.). Receba atualizações instantâneas sempre que uma nova ocorrência for publicada na plataforma.</p>
+      </div>
+      <a href="{{ '/feed.xml' | relative_url }}" class="subscribe-btn" target="_blank">
+        Subscricão RSS ↗
+      </a>
+    </div>
+
+    <!-- Opção 2: Newsletter -->
+    <div class="subscribe-card">
+      <div>
+        <div class="subscribe-card-icon">✉️</div>
+        <h2>Newsletter</h2>
+        <p>Receba resumos periódicos diretamente no seu e-mail com os alertas mais recentes e avisos importantes de emergência.</p>
+      </div>
+      
+      <!-- Podes ligar este formulário a serviços como Formspree, Substack ou Mailchimp alterando o 'action' -->
+      <form action="https://formspree.io/f/o" method="POST" class="newsletter-form">
+        <input type="email" name="email" class="newsletter-input" placeholder="O seu endereço de e-mail" required>
+        <button type="submit" class="subscribe-btn primary">Subscrever E-mail</button>
+      </form>
+    </div>
+
+  </div>
+</div>

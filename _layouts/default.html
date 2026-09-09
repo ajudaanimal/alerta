@@ -59,7 +59,7 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Cabeçalho Global Normalizado */
+        /* Cabeçalho Global */
         .site-global-header {
             display: flex;
             justify-content: space-between;
@@ -67,9 +67,8 @@
             padding: 10px 16px;
             background: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
-            gap: 12px;
-            box-sizing: border-box;
-            width: 100%;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .site-title {
@@ -78,42 +77,33 @@
             text-decoration: none;
             color: var(--text-main);
             white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .header-right-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            margin-left: auto;
+            flex-wrap: wrap;
         }
 
         .fs-nav-links {
             display: flex;
             align-items: center;
             gap: 6px;
+            flex-wrap: wrap;
         }
 
         .fs-pill {
             background: var(--pill-bg);
             color: var(--pill-text);
-            padding: 6px 12px;
-            border-radius: 8px;
+            padding: 5px 10px;
+            border-radius: 16px;
             text-decoration: none;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 600;
             border: 1px solid var(--border-color);
             white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            line-height: 1;
-            transition: background 0.15s ease, border-color 0.15s ease;
-        }
-
-        .fs-pill:hover {
-            opacity: 0.9;
         }
 
         .btn-emergency { background-color: #fee2e2; color: #991b1b; border-color: #fca5a5; }
@@ -129,23 +119,13 @@
             background: var(--pill-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
+            padding: 5px 8px;
+            border-radius: 16px;
             cursor: pointer;
             font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: background 0.15s ease;
         }
 
-        .theme-toggle-btn:hover {
-            background: var(--border-color);
-        }
-
-        /* COMPORTAMENTO PADRÃO (Páginas normais) */
+        /* COMPORTAMENTO PADRÃO (Páginas normais como Emergência, Textos, etc.) */
         .site-main-content {
             padding: 24px 16px;
             max-width: 900px;
@@ -155,7 +135,7 @@
             flex: 1;
         }
 
-        /* COMPORTAMENTO FULLSCREEN */
+        /* COMPORTAMENTO FULLSCREEN (Aplicado apenas quando a página pede layout de mapa/ecrã inteiro) */
         body.layout-fullscreen .site-main-content {
             max-width: 100% !important;
             padding: 0 !important;
@@ -216,22 +196,13 @@
             font-size: 12px;
         }
 
-        /* Ajustes Responsivos para Mobile */
-        @media (max-width: 640px) {
+        @media (max-width: 600px) {
             .site-global-header {
                 padding: 8px 10px;
             }
             .fs-pill {
                 font-size: 11px;
-                padding: 5px 8px;
-                border-radius: 6px;
-            }
-            .site-title {
-                font-size: 13.5px;
-            }
-            /* Ocultar texto secundário de botões em ecrãs muito apertados se necessário, mantendo o ícone/compacto */
-            .btn-subscribe .btn-text, .btn-emergency .btn-text {
-                /* display: none; -> Descomentar se preferir apenas ícones em mobile extremo */
+                padding: 4px 8px;
             }
         }
     </style>
@@ -240,14 +211,14 @@
 
     <!-- Cabeçalho Global -->
     <header class="site-global-header">
-        <a href="{{ '/' | relative_url }}" class="site-title"><span>🐾</span> Alerta Animal</a>
+        <a href="{{ '/' | relative_url }}" class="site-title">🐾 Alerta Animal</a>
         
         <div class="header-right-group">
             <nav class="fs-nav-links" aria-label="Navegação Principal">
-                <a href="{{ '/' | relative_url }}" class="fs-pill" title="Mapa">🗺️ Mapa</a>
-                <a href="{{ '/subscrever/' | relative_url }}" class="fs-pill btn-subscribe" title="Subscrição">🔔 <span class="btn-text">Subscrever</span></a>
-                <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill btn-emergency" title="Contactos de Emergência">📞 <span class="btn-text">Contactos</span></a>
-                <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report" title="Reportar Ocorrência">➕ <span class="btn-text">Reportar</span></a>
+                <a href="{{ '/' | relative_url }}" class="fs-pill" title="Mapa">🗺️</a>
+                <a href="{{ '/subscrever/' | relative_url }}" class="fs-pill btn-subscribe">🔔 Subscrever</a>
+                <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill btn-emergency">📞 Contactos</a>
+                <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill btn-report">➕ Reportar</a>
             </nav>
             
             <button type="button" class="theme-toggle-btn" onclick="toggleGlobalDarkMode()" title="Alternar Tema">🌓</button>

@@ -43,12 +43,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .app-layout-wrapper {
     display: grid;
     grid-template-columns: var(--left-width) 1fr var(--right-width);
-    height: calc(100vh - 75px);
+    height: calc(100vh - 60px);
     width: 100%;
     background: var(--bg-main);
     box-sizing: border-box;
     overflow: hidden;
-    transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: grid-template-columns 0.3s ease;
   }
 
   .app-layout-wrapper.hide-left { --left-width: 36px; }
@@ -62,7 +62,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     flex-direction: column;
     position: relative;
-    transition: all 0.3s ease;
   }
 
   .app-left-panel { border-right: 1px solid var(--border-color); }
@@ -70,9 +69,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .hide-left .app-left-panel .panel-collapsible-content,
   .hide-right .app-right-panel .panel-collapsible-content {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
+    display: none !important;
   }
 
   .panel-collapsible-content {
@@ -80,7 +77,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     flex-direction: column;
     height: 100%;
     overflow: hidden;
-    transition: opacity 0.2s ease;
   }
 
   .panel-header-bar {
@@ -92,6 +88,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     gap: 8px;
     box-sizing: border-box;
     height: 52px;
+    flex-shrink: 0;
   }
 
   .panel-action-btn {
@@ -108,7 +105,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     font-size: 14px;
     font-weight: bold;
     flex-shrink: 0;
-    transition: background 0.15s ease;
   }
   .panel-action-btn:hover { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
 
@@ -151,10 +147,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     padding: 12px;
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
-    transition: background 0.15s ease;
     align-items: center;
     cursor: pointer;
-    user-select: none;
   }
   .map-card-item:hover, .map-card-item.selected { background: var(--header-bg); }
 
@@ -198,6 +192,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     flex-wrap: wrap;
     min-height: 52px;
     box-sizing: border-box;
+    flex-shrink: 0;
   }
   .map-filter-header { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
   .map-filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
@@ -273,10 +268,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     height: 60px;
     background: var(--card-bg);
     border-top: 1px solid var(--border-color);
-    z-index: 2000;
+    z-index: 3000;
     justify-content: space-around;
     align-items: center;
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
   }
   .nav-tab-btn {
     flex: 1;
@@ -300,33 +294,26 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   @media (max-width: 992px) {
     .app-layout-wrapper {
       display: block;
+      height: calc(100vh - 60px);
       position: relative;
-      height: calc(100vh - 75px - 60px);
     }
     .app-bottom-nav { display: flex; }
-    
-    .app-left-panel, .app-right-panel, .app-center-panel {
-      position: absolute;
-      left: 0; top: 0; right: 0; bottom: 0;
+
+    /* Ocultar todos os painéis por defeito em mobile */
+    .app-left-panel, .app-center-panel, .app-right-panel {
+      display: none !important;
       width: 100% !important;
       height: 100% !important;
-      box-shadow: none;
-      visibility: hidden;
-      pointer-events: none;
-      opacity: 0;
-      transform: translateX(20px);
-      transition: opacity 0.25s ease, transform 0.25s ease;
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
-    /* Gestão rigorosa de visibilidade por aba ativa para evitar sobreposição fantasma */
+    /* Mostrar unicamente o painel correspondente à aba ativa */
     .app-layout-wrapper.mobile-view-list .app-left-panel,
     .app-layout-wrapper.mobile-view-map .app-center-panel,
     .app-layout-wrapper.mobile-view-ficha .app-right-panel {
-      visibility: visible;
-      pointer-events: auto;
-      opacity: 1;
-      transform: translateX(0);
-      z-index: 1500;
+      display: flex !important;
     }
 
     .app-left-panel .panel-header-bar .panel-action-btn,

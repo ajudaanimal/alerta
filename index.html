@@ -67,8 +67,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     flex-direction: column;
     position: relative;
-    /* Animação horizontal A»B«C garantida pela mudança de larguras no grid */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
   }
 
   .app-left-panel { border-right: 1px solid var(--border-color); }
@@ -85,8 +84,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 100%;
-    min-width: 0;
     overflow: hidden;
     transition: opacity 0.2s ease;
   }
@@ -284,7 +281,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       z-index: 1100;
       box-shadow: 4px 0 15px rgba(0,0,0,0.2);
       transform: translateX(0);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.3s ease;
     }
     .app-layout-wrapper.hide-left .app-left-panel {
       transform: translateX(-100%);
@@ -297,7 +294,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       z-index: 1200;
       box-shadow: -4px 0 15px rgba(0,0,0,0.2);
       transform: translateX(0);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.3s ease;
     }
     .app-layout-wrapper.hide-right .app-right-panel {
       transform: translateX(100%);
@@ -345,7 +342,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
                data-color="{{ color_key }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
-            <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | relative_url }}" alt="" class="map-card-img" loading="lazy" referrerpolicy="no-referrer">
+            <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | relative_url }}" alt="" class="map-card-img" loading="lazy">
             
             <div class="map-card-body">
               <div class="map-card-top-row">
@@ -620,7 +617,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         </div>
 
         <div class="ficha-img-container">
-          <img src="${item.imagem}" alt="Fotografia do animal" referrerpolicy="no-referrer">
+          <img src="${item.imagem}" alt="Fotografia do animal">
         </div>
 
         <div class="details-grid">
@@ -691,9 +688,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     var rows = document.querySelectorAll('.map-card-item');
     rows.forEach(function(row) {
-      var rColumn = row.getAttribute('data-color');
+      var rColor = row.getAttribute('data-color');
       var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
-      var matchesColor = (activeColorFilter === 'all' || rColumn === activeColorFilter);
+      var matchesColor = (activeColorFilter === 'all' || rColor === activeColorFilter);
       var matchesSearch = tags.includes(searchQuery);
 
       row.style.display = (matchesColor && matchesSearch) ? "flex" : "none";

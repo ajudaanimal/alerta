@@ -43,7 +43,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .app-layout-wrapper {
     display: grid;
     grid-template-columns: var(--left-width) 1fr var(--right-width);
-    height: calc(100vh - 75px);
+    height: calc(100vh - 53px);
     width: 100%;
     background: var(--bg-main);
     box-sizing: border-box;
@@ -300,37 +300,41 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   @media (max-width: 992px) {
     .app-layout-wrapper {
       display: block;
-      position: relative;
-      height: calc(100vh - 75px - 60px);
+      position: fixed;
+      top: 53px;
+      left: 0;
+      right: 0;
+      bottom: 60px;
+      height: auto !important;
     }
     .app-bottom-nav { display: flex; }
     
-    /* Painéis empilhados e animados horizontalmente de forma suave */
+    /* Painéis em mobile posicionados de forma absoluta no espaço entre o header e o bottom nav */
     .app-left-panel, .app-right-panel, .app-center-panel {
       position: absolute;
       left: 0; top: 0; right: 0; bottom: 0;
       width: 100% !important;
       height: 100% !important;
       box-shadow: none;
-      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+      transition: transform 0.25s ease-in-out, opacity 0.2s ease;
+      visibility: hidden;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(15px);
     }
 
-    .app-left-panel { z-index: 1100; transform: translateX(-100%); }
-    .app-center-panel { z-index: 1000; transform: translateX(0); }
-    .app-right-panel { z-index: 1200; transform: translateX(100%); }
-    
-    /* Estados ativos via classes mobile (transição horizontal fluida) */
-    .app-layout-wrapper.mobile-view-list .app-left-panel { transform: translateX(0); }
-    .app-layout-wrapper.mobile-view-list .app-center-panel { transform: translateX(100%); }
+    /* Estados ativos controlados pelas classes mobile */
+    .app-layout-wrapper.mobile-view-list .app-left-panel,
+    .app-layout-wrapper.mobile-view-map .app-center-panel,
+    .app-layout-wrapper.mobile-view-ficha .app-right-panel {
+      visibility: visible;
+      pointer-events: auto;
+      opacity: 1;
+      transform: translateX(0);
+      z-index: 1200;
+    }
 
-    .app-layout-wrapper.mobile-view-map .app-left-panel { transform: translateX(-100%); }
-    .app-layout-wrapper.mobile-view-map .app-center-panel { transform: translateX(0); }
-    .app-layout-wrapper.mobile-view-map .app-right-panel { transform: translateX(100%); }
-
-    .app-layout-wrapper.mobile-view-ficha .app-center-panel { transform: translateX(-100%); }
-    .app-layout-wrapper.mobile-view-ficha .app-right-panel { transform: translateX(0); }
-
-    /* Ocultar botões de desktop antigos em mobile */
+    /* Ocultar botões de desktop em mobile */
     .app-left-panel .panel-header-bar .panel-action-btn,
     .app-right-panel .panel-header-bar .panel-action-btn,
     .collapsed-edge-bar {
@@ -622,7 +626,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     marker.options.slug = item.slug;
 
     marker.on('click', function() {
-      // Ao clicar diretamente no ponto do mapa, popula a ficha e abre-a
       selectOccurrence(item.slug, true, true);
     });
 
@@ -630,7 +633,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     return marker;
   }
 
-  // 1. Clicar na lista: mostra o ponto no mapa PRIMEIRO (em mobile muda para a aba mapa e centra o ponto)
   function selectOccurrenceFromList(slug) {
     const item = ocorrenciasData.find(i => i.slug === slug);
     if (!item) return;
@@ -639,11 +641,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     highlightCardAndMapMarker(slug);
 
     if (window.innerWidth <= 992) {
-      switchMobileTab('map'); // Mostra primeiro o mapa com o marcador focado
+      switchMobileTab('map');
     }
   }
 
-  // 2. Clicar no ponto do mapa ou abrir diretamente: popula os dados e abre a ficha
   function selectOccurrence(slug, updateHash = true, openFicha = false) {
     const item = ocorrenciasData.find(i => i.slug === slug);
     if (!item) return;
@@ -698,7 +699,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     if (window.innerWidth <= 992) {
       if (openFicha) {
-        switchMobileTab('ficha'); // Só abre a ficha se explicitamente pedido (ex: clique no mapa)
+        switchMobileTab('ficha');
       }
     } else {
       document.getElementById('appLayoutWrapper').classList.remove('hide-right');
@@ -752,7 +753,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     if (tabName === 'list') document.getElementById('navBtnList').classList.add('active');
     if (tabName === 'map') {
       document.getElementById('navBtnMap').classList.add('active');
-      if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 200);
+      if (mapInstance) {
+        setTimeout(() => mapInstance.invalidateSize(), 150);
+      }
     }
     if (tabName === 'ficha') document.getElementById('navBtnFicha').classList.add('active');
   }

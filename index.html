@@ -9,763 +9,768 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <style>
-.site-main-content {
-max-width: 100% !important;
-padding: 0 !important;
-margin: 0 !important;
-width: 100% !important;
-}
+  .site-main-content {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
 
-:root {
---bg-main: #f8fafc;
---card-bg: #ffffff;
---text-main: #0f172a;
---text-muted: #64748b;
---border-color: #cbd5e1;
---header-bg: #f1f5f9;
---primary-color: #0284c7;
---box-bg: #f8fafc;
---left-width: 340px;
---right-width: 420px;
-}
+  :root {
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #cbd5e1;
+    --header-bg: #f1f5f9;
+    --primary-color: #0284c7;
+    --box-bg: #f8fafc;
+    --left-width: 340px;
+    --right-width: 420px;
+  }
 
-html.dark-mode, body.dark-mode, [data-theme="dark"] {
---bg-main: #090d16;
---card-bg: #111827;
---text-main: #f8fafc;
---text-muted: #94a3b8;
---border-color: #1f2937;
---header-bg: #1f2937;
---primary-color: #38bdf8;
---box-bg: #1f2937;
-}
+  html.dark-mode, body.dark-mode, [data-theme="dark"] {
+    --bg-main: #090d16;
+    --card-bg: #111827;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #1f2937;
+    --header-bg: #1f2937;
+    --primary-color: #38bdf8;
+    --box-bg: #1f2937;
+  }
 
-.app-layout-wrapper {
-display: grid;
-grid-template-columns: var(--left-width) 1fr var(--right-width);
-height: calc(100vh - 75px);
-width: 100%;
-background: var(--bg-main);
-box-sizing: border-box;
-overflow: hidden;
-transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+  .app-layout-wrapper {
+    display: grid;
+    grid-template-columns: var(--left-width) 1fr var(--right-width);
+    height: calc(100vh - 75px);
+    width: 100%;
+    background: var(--bg-main);
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-.app-layout-wrapper.hide-left { --left-width: 36px; }
-.app-layout-wrapper.hide-right { --right-width: 36px; }
+  .app-layout-wrapper.hide-left { --left-width: 36px; }
+  .app-layout-wrapper.hide-right { --right-width: 36px; }
 
-.app-left-panel, .app-right-panel {
-background: var(--card-bg);
-height: 100%;
-overflow: hidden;
-box-sizing: border-box;
-display: flex;
-flex-direction: column;
-position: relative;
-transition: all 0.3s ease;
-}
+  .app-left-panel, .app-right-panel {
+    background: var(--card-bg);
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 0.3s ease;
+  }
 
-.app-left-panel { border-right: 1px solid var(--border-color); }
-.app-right-panel { border-left: 1px solid var(--border-color); }
+  .app-left-panel { border-right: 1px solid var(--border-color); }
+  .app-right-panel { border-left: 1px solid var(--border-color); }
 
-.hide-left .app-left-panel .panel-collapsible-content,
-.hide-right .app-right-panel .panel-collapsible-content {
-opacity: 0;
-pointer-events: none;
-visibility: hidden;
-}
+  .hide-left .app-left-panel .panel-collapsible-content,
+  .hide-right .app-right-panel .panel-collapsible-content {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
 
-.panel-collapsible-content {
-display: flex;
-flex-direction: column;
-height: 100%;
-overflow: hidden;
-transition: opacity 0.2s ease;
-}
+  .panel-collapsible-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    transition: opacity 0.2s ease;
+  }
 
-.panel-header-bar {
-padding: 10px 12px;
-background: var(--header-bg);
-border-bottom: 1px solid var(--border-color);
-display: flex;
-align-items: center;
-gap: 8px;
-box-sizing: border-box;
-height: 52px;
-}
+  .panel-header-bar {
+    padding: 10px 12px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
+    height: 52px;
+  }
 
-.panel-action-btn {
-background: var(--card-bg);
-color: var(--text-main);
-border: 1px solid var(--border-color);
-border-radius: 6px;
-width: 32px;
-height: 32px;
-display: flex;
-align-items: center;
-justify-content: center;
-cursor: pointer;
-font-size: 14px;
-font-weight: bold;
-flex-shrink: 0;
-transition: background 0.15s ease;
-}
-.panel-action-btn:hover { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+  .panel-action-btn {
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+  .panel-action-btn:hover { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
 
-.collapsed-edge-bar {
-display: none;
-position: absolute;
-top: 0; bottom: 0; left: 0; right: 0;
-background: var(--header-bg);
-align-items: center;
-justify-content: center;
-cursor: pointer;
-writing-mode: vertical-lr;
-text-orientation: mixed;
-font-size: 11px;
-font-weight: 800;
-color: var(--text-muted);
-letter-spacing: 1px;
-gap: 8px;
-border: none;
-}
-.hide-left .app-left-panel .collapsed-edge-bar { display: flex; }
-.hide-right .app-right-panel .collapsed-edge-bar { display: flex; }
+  .collapsed-edge-bar {
+    display: none;
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    background: var(--header-bg);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    gap: 8px;
+    border: none;
+  }
+  .hide-left .app-left-panel .collapsed-edge-bar { display: flex; }
+  .hide-right .app-right-panel .collapsed-edge-bar { display: flex; }
 
-.map-search-input {
-width: 100%;
-padding: 7px 10px;
-background: var(--card-bg);
-color: var(--text-main);
-border: 1px solid var(--border-color);
-border-radius: 6px;
-font-size: 12px;
-box-sizing: border-box;
-outline: none;
-}
-.map-list-wrapper { width: 100%; overflow-y: auto; flex: 1; }
+  .map-search-input {
+    width: 100%;
+    padding: 7px 10px;
+    background: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 12px;
+    box-sizing: border-box;
+    outline: none;
+  }
+  .map-list-wrapper { width: 100%; overflow-y: auto; flex: 1; }
 
-.map-card-item {
-display: flex;
-gap: 10px;
-padding: 12px;
-border-bottom: 1px solid var(--border-color);
-background: var(--card-bg);
-transition: background 0.15s ease;
-align-items: center;
-cursor: pointer;
-user-select: none;
-}
-.map-card-item:hover, .map-card-item.selected { background: var(--header-bg); }
+  .map-card-item {
+    display: flex;
+    gap: 10px;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--card-bg);
+    transition: background 0.15s ease;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .map-card-item:hover, .map-card-item.selected { background: var(--header-bg); }
 
-.map-card-img {
-width: 52px;
-height: 52px;
-object-fit: cover;
-border-radius: 6px;
-border: 1px solid var(--border-color);
-flex-shrink: 0;
-}
-.map-card-body { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
-.map-card-top-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
-.map-card-title { font-size: 13px; font-weight: 800; color: var(--text-main); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .map-card-img {
+    width: 52px;
+    height: 52px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+  }
+  .map-card-body { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+  .map-card-top-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+  .map-card-title { font-size: 13px; font-weight: 800; color: var(--text-main); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  
+  .map-badge { font-size: 8.5px; font-weight: 800; text-transform: uppercase; padding: 2px 5px; border-radius: 3px; }
+  .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+  .badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
+  .badge-amarelo  { background: rgba(217, 119, 6, 0.2); color: #d97706; }
+  .badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+  .badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-.map-badge { font-size: 8.5px; font-weight: 800; text-transform: uppercase; padding: 2px 5px; border-radius: 3px; }
-.badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-.badge-laranja  { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
-.badge-amarelo  { background: rgba(217, 119, 6, 0.2); color: #d97706; }
-.badge-azul     { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
-.badge-default  { background: rgba(100, 116, 139, 0.15); color: #64748b; }
+  .map-card-details-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); gap: 6px; }
 
-.map-card-details-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); gap: 6px; }
+  .app-center-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--bg-main);
+    position: relative;
+    min-width: 0;
+  }
 
-.app-center-panel {
-display: flex;
-flex-direction: column;
-height: 100%;
-background: var(--bg-main);
-position: relative;
-min-width: 0;
-}
+  .map-external-filter {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 52px;
+    box-sizing: border-box;
+  }
+  .map-filter-header { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
+  .map-filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+  .filter-pill { font-size: 11px; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-weight: 600; color: var(--text-main); }
+  .filter-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
 
-.map-external-filter {
-background: var(--card-bg);
-border-bottom: 1px solid var(--border-color);
-padding: 10px 12px;
-display: flex;
-gap: 8px;
-align-items: center;
-flex-wrap: wrap;
-min-height: 52px;
-box-sizing: border-box;
-}
-.map-filter-header { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
-.map-filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
-.filter-pill { font-size: 11px; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-weight: 600; color: var(--text-main); }
-.filter-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+  #full-map { width: 100%; flex: 1; }
 
-#full-map { width: 100%; flex: 1; }
+  .app-right-panel-inner {
+    padding: 14px;
+    height: calc(100% - 52px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    font-size: 12px;
+  }
 
-.app-right-panel-inner {
-padding: 14px;
-height: calc(100% - 52px);
-overflow-y: auto;
-box-sizing: border-box;
-font-size: 12px;
-}
+  .ficha-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-muted);
+    text-align: center;
+    gap: 10px;
+    padding: 20px;
+    font-size: 12px;
+  }
 
-.ficha-placeholder {
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-height: 100%;
-color: var(--text-muted);
-text-align: center;
-gap: 10px;
-padding: 20px;
-font-size: 12px;
-}
+  .ficha-wrapper { display: flex; flex-direction: column; gap: 12px; }
+  .report-header { color: #ffffff; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .report-header h1 { font-size: 14px; font-weight: 800; margin: 0; }
+  .status-banner { padding: 8px 10px; font-weight: 800; text-align: center; font-size: 11px; text-transform: uppercase; border-radius: 4px; }
+  .banner-resolved { background: #dcfce7; color: #14532d; }
+  .banner-red { background: #fee2e2; color: #7f1d1d; }
+  .banner-orange { background: #ffedd5; color: #7c2d12; }
+  .banner-yellow { background: #fef9c3; color: #713f12; }
+  
+  .ficha-img-container {
+    width: 100%;
+    max-height: 220px;
+    background: var(--box-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+  .ficha-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  
+  .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--box-bg); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; }
+  .detail-item { display: flex; flex-direction: column; gap: 2px; font-size: 11.5px; }
+  .detail-item strong { color: var(--text-muted); font-size: 9.5px; text-transform: uppercase; }
+  .section-title { font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin: 4px 0 0 0; }
+  .content-box { font-size: 12px; background: var(--box-bg); padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; line-height: 1.5; color: var(--text-main); }
 
-.ficha-wrapper { display: flex; flex-direction: column; gap: 12px; }
-.report-header { color: #ffffff; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
-.report-header h1 { font-size: 14px; font-weight: 800; margin: 0; }
-.status-banner { padding: 8px 10px; font-weight: 800; text-align: center; font-size: 11px; text-transform: uppercase; border-radius: 4px; }
-.banner-resolved { background: #dcfce7; color: #14532d; }
-.banner-red { background: #fee2e2; color: #7f1d1d; }
-.banner-orange { background: #ffedd5; color: #7c2d12; }
-.banner-yellow { background: #fef9c3; color: #713f12; }
+  .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); border: 2px solid #ffffff; font-size: 14px; }
 
-.ficha-img-container {
-width: 100%;
-max-height: 220px;
-background: var(--box-bg);
-border: 1px solid var(--border-color);
-border-radius: 6px;
-overflow: hidden;
-display: flex;
-align-items: center;
-justify-content: center;
-box-sizing: border-box;
-}
-.ficha-img-container img {
-width: 100%;
-height: 100%;
-object-fit: contain;
-display: block;
-}
+  /* Mobile Bottom Navigation Bar (PWA Style) */
+  .app-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    z-index: 1500;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+  }
+  .nav-tab-btn {
+    flex: 1;
+    height: 100%;
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    gap: 3px;
+    text-transform: uppercase;
+  }
+  .nav-tab-btn span.tab-icon { font-size: 18px; }
+  .nav-tab-btn.active { color: var(--primary-color); }
 
-.details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--box-bg); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; }
-.detail-item { display: flex; flex-direction: column; gap: 2px; font-size: 11.5px; }
-.detail-item strong { color: var(--text-muted); font-size: 9.5px; text-transform: uppercase; }
-.section-title { font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin: 4px 0 0 0; }
-.content-box { font-size: 12px; background: var(--box-bg); padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; line-height: 1.5; color: var(--text-main); }
+  @media (max-width: 992px) {
+    .app-layout-wrapper {
+      display: block;
+      position: relative;
+      height: calc(100vh - 75px - 60px); /* Adjust for bottom nav */
+    }
+    .app-bottom-nav { display: flex; }
+    
+    .app-left-panel, .app-right-panel {
+      position: absolute;
+      left: 0; top: 0; right: 0; bottom: 0;
+      width: 100% !important;
+      max-width: 100% !important;
+      z-index: 1100;
+      box-shadow: none;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .app-center-panel {
+      position: absolute;
+      left: 0; top: 0; right: 0; bottom: 0;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: 1000;
+    }
+    
+    /* Active mobile views control via classes on wrapper */
+    .app-layout-wrapper.mobile-view-list .app-left-panel { transform: translateY(0); z-index: 1300; }
+    .app-layout-wrapper.mobile-view-map .app-center-panel { z-index: 1300; }
+    .app-layout-wrapper.mobile-view-ficha .app-right-panel { transform: translateY(0); z-index: 1300; }
 
-.species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); border: 2px solid #ffffff; font-size: 14px; }
-
-/* Mobile Bottom Navigation Bar (PWA Style) */
-.app-bottom-nav {
-display: none;
-position: fixed;
-bottom: 0;
-left: 0;
-right: 0;
-height: 60px;
-background: var(--card-bg);
-border-top: 1px solid var(--border-color);
-z-index: 1500;
-justify-content: space-around;
-align-items: center;
-box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
-}
-.nav-tab-btn {
-flex: 1;
-height: 100%;
-background: transparent;
-border: none;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-font-size: 10px;
-font-weight: 700;
-color: var(--text-muted);
-cursor: pointer;
-gap: 3px;
-text-transform: uppercase;
-}
-.nav-tab-btn span.tab-icon { font-size: 18px; }
-.nav-tab-btn.active { color: var(--primary-color); }
-
-@media (max-width: 992px) {
-.app-layout-wrapper {
-display: block;
-position: relative;
-height: calc(100vh - 75px - 60px);
-}
-
-.app-bottom-nav { display: flex; }
-
-.app-left-panel, .app-right-panel, .app-center-panel {
-position: absolute;
-left: 0; top: 0; right: 0; bottom: 0;
-width: 100% !important;
-height: 100% !important;
-max-width: 100% !important;
-box-shadow: none;
-z-index: 1000;
-transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.app-left-panel { transform: translateY(100%); }
-.app-right-panel { transform: translateY(100%); }
-.app-center-panel { transform: translateY(100%); }
-
-.app-layout-wrapper.mobile-view-list .app-left-panel { transform: translateY(0); z-index: 1300; }
-.app-layout-wrapper.mobile-view-map .app-center-panel { transform: translateY(0); z-index: 1300; }
-.app-layout-wrapper.mobile-view-ficha .app-right-panel { transform: translateY(0); z-index: 1300; }
-
-.app-left-panel .panel-header-bar .panel-action-btn,
-.app-right-panel .panel-header-bar .panel-action-btn,
-.collapsed-edge-bar {
-display: none !important;
-}
-}
+    /* Hide desktop toggle buttons on mobile */
+    .app-left-panel .panel-header-bar .panel-action-btn,
+    .app-right-panel .panel-header-bar .panel-action-btn,
+    .collapsed-edge-bar {
+      display: none !important;
+    }
+  }
 </style>
 
 <div class="app-layout-wrapper mobile-view-list" id="appLayoutWrapper">
+  
+  <!-- LEFT WINDOW: Animal List -->
+  <div class="app-left-panel" id="appLeftPanel">
+    <div class="panel-collapsible-content">
+      <div class="panel-header-bar">
+        <button class="panel-action-btn" onclick="toggleLeftPanel()" title="Recolher lista">◀</button>
+        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar espécie, concelho..." onkeyup="filterMapManifest()">
+      </div>
 
-<!-- LEFT WINDOW: Animal List -->
-<div class="app-left-panel" id="appLeftPanel">
-<div class="panel-collapsible-content">
-<div class="panel-header-bar">
-<button class="panel-action-btn" onclick="toggleLeftPanel()" title="Recolher lista">◀</button>
-<input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar espécie, concelho..." onkeyup="filterMapManifest()">
-</div>
+      <div class="map-list-wrapper" id="mapManifestList">
+        {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
+        
+        {% for post in sorted_posts %}
+          {% assign t = post.triagem | strip | downcase %}
+          {% assign est_fisico = post.estado_fisico | strip | downcase %}
+          {% assign est_caso = post.estado_caso | strip | downcase %}
 
-<div class="map-list-wrapper" id="mapManifestList">
-{% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
+          {% assign badge_class = "badge-default" %}
+          {% assign color_key = "default" %}
+          {% if est_caso contains 'resolvido' %}
+            {% assign badge_class = "badge-azul" %}
+            {% assign color_key = "azul" %}
+          {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
+            {% assign badge_class = "badge-vermelho" %}
+            {% assign color_key = "vermelho" %}
+          {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
+            {% assign badge_class = "badge-laranja" %}
+            {% assign color_key = "laranja" %}
+          {% elsif t contains 'amarelo' %}
+            {% assign badge_class = "badge-amarelo" %}
+            {% assign color_key = "amarelo" %}
+          {% endif %}
 
-{% for post in sorted_posts %}
-{% assign t = post.triagem | strip | downcase %}
-{% assign est_fisico = post.estado_fisico | strip | downcase %}
-{% assign est_caso = post.estado_caso | strip | downcase %}
+          <div class="map-card-item map-row" id="card-item-{{ post.slug }}"
+               onclick="selectOccurrence('{{ post.slug }}', true)"
+               data-color="{{ color_key }}"
+               data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
+            
+            <img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
+            
+            <div class="map-card-body">
+              <div class="map-card-top-row">
+                <div class="map-card-title">{{ post.especie | default: "Animal" }}</div>
+                <div class="map-card-tags">
+                  <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
+                </div>
+              </div>
+              <div class="map-card-details-row">
+                <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</span>
+                <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 {{ post.concelho | default: post.localidade | default: "N/D" }}</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <button class="collapsed-edge-bar" onclick="toggleLeftPanel()" title="Expandir Lista">
+      <span>▶ LISTA DE OCORRÊNCIAS</span>
+    </button>
+  </div>
 
-{% assign badge_class = "badge-default" %}
-{% assign color_key = "default" %}
-{% if est_caso contains 'resolvido' %}
-{% assign badge_class = "badge-azul" %}
-{% assign color_key = "azul" %}
-{% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
-{% assign badge_class = "badge-vermelho" %}
-{% assign color_key = "vermelho" %}
-{% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
-{% assign badge_class = "badge-laranja" %}
-{% assign color_key = "laranja" %}
-{% elsif t contains 'amarelo' %}
-{% assign badge_class = "badge-amarelo" %}
-{% assign color_key = "amarelo" %}
-{% endif %}
+  <!-- CENTER WINDOW: Map and Filters -->
+  <div class="app-center-panel">
+    <div class="map-external-filter">
+      <div class="map-filter-header">TRIAGEM:</div>
+      <div class="map-filter-pills">
+        <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
+        <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)">🔴 Vermelho</button>
+        <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)">🟠 Laranja</button>
+        <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)">🟡 Amarelo</button>
+      </div>
+    </div>
+    
+    <div id="full-map"></div>
+  </div>
 
-<div class="map-card-item map-row" id="card-item-{{ post.slug }}"
-onclick="selectOccurrence('{{ post.slug }}', true)"
-data-color="{{ color_key }}"
-data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
-
-<img src="{{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
-
-<div class="map-card-body">
-<div class="map-card-top-row">
-<div class="map-card-title">{{ post.especie | default: "Animal" }}</div>
-<div class="map-card-tags">
-<span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
-</div>
-</div>
-<div class="map-card-details-row">
-<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</span>
-<span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 {{ post.concelho | default: post.localidade | default: "N/D" }}</span>
-</div>
-</div>
-</div>
-{% endfor %}
-</div>
-</div>
-<button class="collapsed-edge-bar" onclick="toggleLeftPanel()" title="Expandir Lista">
-<span>▶ LISTA DE OCORRÊNCIAS</span>
-</button>
-</div>
-
-<!-- CENTER WINDOW: Map and Filters -->
-<div class="app-center-panel">
-<div class="map-external-filter">
-<div class="map-filter-header">TRIAGEM:</div>
-<div class="map-filter-pills">
-<button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
-<button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)">🔴 Vermelho</button>
-<button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)">🟠 Laranja</button>
-<button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)">🟡 Amarelo</button>
-</div>
-</div>
-
-<div id="full-map"></div>
-</div>
-
-<!-- RIGHT WINDOW: Rich Details Sheet -->
-<div class="app-right-panel" id="appRightPanel">
-<div class="panel-collapsible-content">
-<div class="panel-header-bar" style="justify-content: space-between;">
-<span style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Ficha de Ocorrência</span>
-<button class="panel-action-btn" onclick="toggleRightPanel()" title="Recolher painel">▶</button>
-</div>
-
-<div class="app-right-panel-inner" id="appRightPanelInner">
-<div class="ficha-placeholder">
-<span style="font-size: 32px;">🐾</span>
-<strong>Selecione uma ocorrência</strong>
-<p style="margin: 0; font-size: 11.5px;">Clique num registo da lista ou num marcador no mapa para inspecionar os detalhes completos e aceder à versão completa.</p>
-</div>
-</div>
-</div>
-<button class="collapsed-edge-bar" onclick="toggleRightPanel()" title="Expandir Painel de Detalhes">
-<span>◀ FICHA DO ANIMAL</span>
-</button>
-</div>
+  <!-- RIGHT WINDOW: Rich Details Sheet -->
+  <div class="app-right-panel" id="appRightPanel">
+    <div class="panel-collapsible-content">
+      <div class="panel-header-bar" style="justify-content: space-between;">
+        <span style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Ficha de Ocorrência</span>
+        <button class="panel-action-btn" onclick="toggleRightPanel()" title="Recolher painel">▶</button>
+      </div>
+      
+      <div class="app-right-panel-inner" id="appRightPanelInner">
+        <div class="ficha-placeholder">
+          <span style="font-size: 32px;">🐾</span>
+          <strong>Selecione uma ocorrência</strong>
+          <p style="margin: 0; font-size: 11.5px;">Clique num registo da lista ou num marcador no mapa para inspecionar os detalhes completos e aceder à versão completa.</p>
+        </div>
+      </div>
+    </div>
+    <button class="collapsed-edge-bar" onclick="toggleRightPanel()" title="Expandir Painel de Detalhes">
+      <span>◀ FICHA DO ANIMAL</span>
+    </button>
+  </div>
 
 </div>
 
 <!-- Mobile Bottom Navigation Bar -->
 <div class="app-bottom-nav" id="appBottomNav">
-<button class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
-<span class="tab-icon">📋</span>
-<span>Lista</span>
-</button>
-<button class="nav-tab-btn" id="navBtnMap" onclick="switchMobileTab('map')">
-<span class="tab-icon">🗺️</span>
-<span>Mapa</span>
-</button>
-<button class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
-<span class="tab-icon">🐾</span>
-<span>Ficha</span>
-</button>
+  <button class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
+    <span class="tab-icon">📋</span>
+    <span>Lista</span>
+  </button>
+  <button class="nav-tab-btn" id="navBtnMap" onclick="switchMobileTab('map')">
+    <span class="tab-icon">🗺️</span>
+    <span>Mapa</span>
+  </button>
+  <button class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
+    <span class="tab-icon">🐾</span>
+    <span>Ficha</span>
+  </button>
 </div>
 
 <script>
-let mapInstance;
-let allMarkersLayerGroup;
-let allMarkersData = [];
-let markersBySlug = {};
-let activeColorFilter = 'all';
+  let mapInstance;
+  let allMarkersLayerGroup;
+  let allMarkersData = [];
+  let markersBySlug = {};
+  let activeColorFilter = 'all';
 
-const ocorrenciasData = [
-{% for post in sorted_posts %}
-{% assign t = post.triagem | strip | downcase %}
-{% assign est_caso = post.estado_caso | strip | downcase %}
-{% assign est_fisico = post.estado_fisico | strip | downcase %}
-{% assign theme_color = "#2563eb" %}
-{% assign color_key = "default" %}
-{% assign banner_class = "banner-red" %}
+  const ocorrenciasData = [
+    {% for post in sorted_posts %}
+      {% assign t = post.triagem | strip | downcase %}
+      {% assign est_caso = post.estado_caso | strip | downcase %}
+      {% assign est_fisico = post.estado_fisico | strip | downcase %}
+      {% assign theme_color = "#2563eb" %}
+      {% assign color_key = "default" %}
+      {% assign banner_class = "banner-red" %}
 
-{% if est_caso contains 'resolvido' %}
-{% assign theme_color = "#16a34a" %}
-{% assign color_key = "azul" %}
-{% assign banner_class = "banner-resolved" %}
-{% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
-{% assign theme_color = "#dc2626" %}
-{% assign color_key = "vermelho" %}
-{% assign banner_class = "banner-red" %}
-{% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
-{% assign theme_color = "#f97316" %}
-{% assign color_key = "laranja" %}
-{% assign banner_class = "banner-orange" %}
-{% elsif t contains 'amarelo' %}
-{% assign theme_color = "#d97706" %}
-{% assign color_key = "amarelo" %}
-{% assign banner_class = "banner-yellow" %}
-{% endif %}
+      {% if est_caso contains 'resolvido' %}
+        {% assign theme_color = "#16a34a" %}
+        {% assign color_key = "azul" %}
+        {% assign banner_class = "banner-resolved" %}
+      {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
+        {% assign theme_color = "#dc2626" %}
+        {% assign color_key = "vermelho" %}
+        {% assign banner_class = "banner-red" %}
+      {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
+        {% assign theme_color = "#f97316" %}
+        {% assign color_key = "laranja" %}
+        {% assign banner_class = "banner-orange" %}
+      {% elsif t contains 'amarelo' %}
+        {% assign theme_color = "#d97706" %}
+        {% assign color_key = "amarelo" %}
+        {% assign banner_class = "banner-yellow" %}
+      {% endif %}
 
-{
-slug: {{ post.slug | jsonify }},
-id: {{ post.id | default: "N/D" | jsonify }},
-especie: {{ post.especie | default: "Animal" | jsonify }},
-concelho: {{ post.concelho | default: post.localidade | default: post.distrito | default: '' | jsonify }},
-freguesia: {{ post.freguesia | default: post.localidade | default: '' | jsonify }},
-distrito: {{ post.distrito | default: '' | jsonify }},
-estado_fisico: {{ post.estado_fisico | default: "Estado N/D" | jsonify }},
-estado_caso: {{ post.estado_caso | default: "N/D" | jsonify }},
-triagem: {{ post.triagem | default: "N/D" | jsonify }},
-situacao: {{ post.situacao | default: "N/D" | jsonify }},
-idade: {{ post.idade | default: "Não indicada" | jsonify }},
-data: {{ post.date | date: "%d/%m/%Y" | jsonify }},
-observacoes: {{ post.observacoes | default: "Sem observações adicionais registadas." | jsonify }},
-url: {{ post.url | relative_url | jsonify }},
-color: {{ theme_color | jsonify }},
-colorKey: {{ color_key | jsonify }},
-bannerClass: {{ banner_class | jsonify }},
-imagem: {{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | jsonify }}
-}{% unless forloop.last %},{% endunless %}
-{% endfor %}
-];
+      {
+        slug: {{ post.slug | jsonify }},
+        id: {{ post.id | default: "N/D" | jsonify }},
+        especie: {{ post.especie | default: "Animal" | jsonify }},
+        concelho: {{ post.concelho | default: post.localidade | default: post.distrito | default: '' | jsonify }},
+        freguesia: {{ post.freguesia | default: post.localidade | default: '' | jsonify }},
+        distrito: {{ post.distrito | default: '' | jsonify }},
+        estado_fisico: {{ post.estado_fisico | default: "Estado N/D" | jsonify }},
+        estado_caso: {{ post.estado_caso | default: "N/D" | jsonify }},
+        triagem: {{ post.triagem | default: "N/D" | jsonify }},
+        situacao: {{ post.situacao | default: "N/D" | jsonify }},
+        idade: {{ post.idade | default: "Não indicada" | jsonify }},
+        data: {{ post.date | date: "%d/%m/%Y" | jsonify }},
+        observacoes: {{ post.observacoes | default: "Sem observações adicionais registadas." | jsonify }},
+        url: {{ post.url | relative_url | jsonify }},
+        color: {{ theme_color | jsonify }},
+        colorKey: {{ color_key | jsonify }},
+        bannerClass: {{ banner_class | jsonify }},
+        imagem: {{ post.imagem | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | jsonify }}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ];
 
-document.addEventListener("DOMContentLoaded", function() {
-initMap();
-handleHashOnLoad();
-window.addEventListener('hashchange', handleHashOnLoad);
-});
+  document.addEventListener("DOMContentLoaded", function() {
+    initMap();
+    handleHashOnLoad();
+    window.addEventListener('hashchange', handleHashOnLoad);
+  });
 
-function getSpeciesEmoji(especieStr) {
-const esp = especieStr ? especieStr.toLowerCase() : '';
-if (esp.includes('gato') || esp.includes('felino')) return '🐱';
-if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
-if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return '🐦';
-return '🐾';
-}
+  function getSpeciesEmoji(especieStr) {
+    const esp = especieStr ? especieStr.toLowerCase() : '';
+    if (esp.includes('gato') || esp.includes('felino')) return '🐱';
+    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
+    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return '🐦';
+    return '🐾';
+  }
 
-function initMap() {
-if (mapInstance) return;
+  function initMap() {
+    if (mapInstance) return;
 
-mapInstance = L.map('full-map', { 
-attributionControl: false,
-tap: false,
-touchZoom: true,
-scrollWheelZoom: true
-});
+    mapInstance = L.map('full-map', { 
+      attributionControl: false,
+      tap: false,
+      touchZoom: true,
+      scrollWheelZoom: true
+    });
 
-var portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
-mapInstance.fitBounds(portugalBounds);
+    var portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
+    mapInstance.fitBounds(portugalBounds);
 
-L.control.attribution({ prefix: false })
-.addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>')
-.addTo(mapInstance);
+    L.control.attribution({ prefix: false })
+      .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>')
+      .addTo(mapInstance);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-maxZoom: 19,
-updateWhenIdle: true,
-keepBuffer: 6
-}).addTo(mapInstance);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+      maxZoom: 19,
+      updateWhenIdle: true,
+      keepBuffer: 6
+    }).addTo(mapInstance);
 
-allMarkersLayerGroup = L.layerGroup().addTo(mapInstance);
+    allMarkersLayerGroup = L.layerGroup().addTo(mapInstance);
 
-var locaisValidos = ocorrenciasData.filter(function(item) {
-return item.concelho && item.concelho !== "Não indicada" && item.concelho.trim() !== "";
-});
+    var locaisValidos = ocorrenciasData.filter(function(item) {
+      return item.concelho && item.concelho !== "Não indicada" && item.concelho.trim() !== "";
+    });
 
-var indexFila = 0;
-function processarProximoLocal() {
-if (indexFila >= locaisValidos.length) return;
-var item = locaisValidos[indexFila];
-var cacheKey = "geo_" + item.concelho.toLowerCase().trim();
-var cachedCoords = localStorage.getItem(cacheKey);
+    var indexFila = 0;
+    function processarProximoLocal() {
+      if (indexFila >= locaisValidos.length) return;
+      var item = locaisValidos[indexFila];
+      var cacheKey = "geo_" + item.concelho.toLowerCase().trim();
+      var cachedCoords = localStorage.getItem(cacheKey);
 
-if (cachedCoords) {
-try {
-var coords = JSON.parse(cachedCoords);
-if (coords && typeof coords.lat === 'number' && typeof coords.lon === 'number') {
-var m = criarMarcador(coords.lat, coords.lon, item);
-allMarkersData.push(m);
-if (activeColorFilter === 'all' || m.options.colorKey === activeColorFilter) {
-allMarkersLayerGroup.addLayer(m);
-}
-indexFila++;
-processarProximoLocal();
-return;
-}
-} catch(e) {
-localStorage.removeItem(cacheKey);
-}
-}
+      if (cachedCoords) {
+        try {
+          var coords = JSON.parse(cachedCoords);
+          if (coords && typeof coords.lat === 'number' && typeof coords.lon === 'number') {
+            var m = criarMarcador(coords.lat, coords.lon, item);
+            allMarkersData.push(m);
+            if (activeColorFilter === 'all' || m.options.colorKey === activeColorFilter) {
+              allMarkersLayerGroup.addLayer(m);
+            }
+            indexFila++;
+            processarProximoLocal();
+            return;
+          }
+        } catch(e) {
+          localStorage.removeItem(cacheKey);
+        }
+      }
 
-var query = encodeURIComponent(item.concelho + ", Portugal");
-fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
-.then(function(res) { return res.json(); })
-.then(function(data) {
-if (data && data.length > 0) {
-var lat = parseFloat(data[0].lat);
-var lon = parseFloat(data[0].lon);
-localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
-var m = criarMarcador(lat, lon, item);
-allMarkersData.push(m);
-if (activeColorFilter === 'all' || m.options.colorKey === activeColorFilter) {
-allMarkersLayerGroup.addLayer(m);
-}
-}
-})
-.catch(function(err) { console.error(err); })
-.finally(function() { 
-indexFila++; 
-setTimeout(processarProximoLocal, 400); 
-});
-}
+      var query = encodeURIComponent(item.concelho + ", Portugal");
+      fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1')
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          if (data && data.length > 0) {
+            var lat = parseFloat(data[0].lat);
+            var lon = parseFloat(data[0].lon);
+            localStorage.setItem(cacheKey, JSON.stringify({ lat: lat, lon: lon }));
+            var m = criarMarcador(lat, lon, item);
+            allMarkersData.push(m);
+            if (activeColorFilter === 'all' || m.options.colorKey === activeColorFilter) {
+              allMarkersLayerGroup.addLayer(m);
+            }
+          }
+        })
+        .catch(function(err) { console.error(err); })
+        .finally(function() { 
+          indexFila++; 
+          setTimeout(processarProximoLocal, 400); 
+        });
+    }
 
-if (locaisValidos.length > 0) processarProximoLocal();
-}
+    if (locaisValidos.length > 0) processarProximoLocal();
+  }
 
-function criarMarcador(lat, lon, item) {
-var emojiIcon = getSpeciesEmoji(item.especie);
-var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
+  function criarMarcador(lat, lon, item) {
+    var emojiIcon = getSpeciesEmoji(item.especie);
+    var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
 
-var customIcon = L.divIcon({
-className: '',
-html: iconHtml,
-iconSize: [30, 30],
-iconAnchor: [15, 15],
-popupAnchor: [0, -15]
-});
+    var customIcon = L.divIcon({
+      className: '',
+      html: iconHtml,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+      popupAnchor: [0, -15]
+    });
 
-var marker = L.marker([lat, lon], { icon: customIcon });
-marker.options.colorKey = item.colorKey;
-marker.options.slug = item.slug;
+    var marker = L.marker([lat, lon], { icon: customIcon });
+    marker.options.colorKey = item.colorKey;
+    marker.options.slug = item.slug;
 
-marker.on('click', function() {
-selectOccurrence(item.slug, true);
-});
+    marker.on('click', function() {
+      selectOccurrence(item.slug, true);
+    });
 
-markersBySlug[item.slug] = marker;
-return marker;
-}
+    markersBySlug[item.slug] = marker;
+    return marker;
+  }
 
-function selectOccurrence(slug, updateHash = true) {
-const item = ocorrenciasData.find(i => i.slug === slug);
-if (!item) return;
+  function selectOccurrence(slug, updateHash = true) {
+    const item = ocorrenciasData.find(i => i.slug === slug);
+    if (!item) return;
 
-if (updateHash) {
-history.pushState(null, null, '#' + slug);
-}
+    if (updateHash) {
+      history.pushState(null, null, '#' + slug);
+    }
 
-document.querySelectorAll('.map-card-item').forEach(el => el.classList.remove('selected'));
-const cardEl = document.getElementById('card-item-' + slug);
-if (cardEl) {
-cardEl.classList.add('selected');
-cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
+    document.querySelectorAll('.map-card-item').forEach(el => el.classList.remove('selected'));
+    const cardEl = document.getElementById('card-item-' + slug);
+    if (cardEl) {
+      cardEl.classList.add('selected');
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 
-const marker = markersBySlug[slug];
-if (marker && mapInstance) {
-var latLng = marker.getLatLng();
-mapInstance.setView(latLng, 13, { animate: true });
-}
+    const marker = markersBySlug[slug];
+    if (marker && mapInstance) {
+      var latLng = marker.getLatLng();
+      mapInstance.setView(latLng, 13, { animate: true });
+    }
 
-const rightPanelInner = document.getElementById('appRightPanelInner');
-rightPanelInner.innerHTML = `
-<div class="ficha-wrapper">
-<header class="report-header" style="background-color: ${item.color};">
-<div>
-<h1>${item.especie} — ${item.estado_fisico}</h1>
-<div style="font-size:11px; opacity:0.9;">📍 ${item.concelho}</div>
-</div>
-<div style="text-align:right; font-size:11px;">
-<div>${item.data}</div>
-<strong>ID: ${item.id}</strong>
-</div>
-</header>
+    const rightPanelInner = document.getElementById('appRightPanelInner');
+    rightPanelInner.innerHTML = `
+      <div class="ficha-wrapper">
+        <header class="report-header" style="background-color: ${item.color};">
+          <div>
+            <h1>${item.especie} — ${item.estado_fisico}</h1>
+            <div style="font-size:11px; opacity:0.9;">📍 ${item.concelho}</div>
+          </div>
+          <div style="text-align:right; font-size:11px;">
+            <div>${item.data}</div>
+            <strong>ID: ${item.id}</strong>
+          </div>
+        </header>
 
-<div class="status-banner ${item.bannerClass}">
-${item.triagem} — ${item.estado_fisico}
-</div>
+        <div class="status-banner ${item.bannerClass}">
+          ${item.triagem} — ${item.estado_fisico}
+        </div>
 
-<div class="ficha-img-container">
-<img src="${item.imagem}" alt="Fotografia do animal">
-</div>
+        <div class="ficha-img-container">
+          <img src="${item.imagem}" alt="Fotografia do animal">
+        </div>
 
-<div class="details-grid">
-<div class="detail-item"><strong>Localidade</strong><span>${item.freguesia || 'Não indicada'}</span></div>
-<div class="detail-item"><strong>Concelho</strong><span>${item.concelho || 'Não indicado'}</span></div>
-<div class="detail-item"><strong>Distrito</strong><span>${item.distrito || 'Não indicado'}</span></div>
-<div class="detail-item"><strong>Idade</strong><span>${item.idade}</span></div>
-<div class="detail-item"><strong>Situação</strong><span>${item.situacao}</span></div>
-<div class="detail-item"><strong>Estado Caso</strong><span>${item.estado_caso}</span></div>
-</div>
+        <div class="details-grid">
+          <div class="detail-item"><strong>Localidade</strong><span>${item.freguesia || 'Não indicada'}</span></div>
+          <div class="detail-item"><strong>Concelho</strong><span>${item.concelho || 'Não indicado'}</span></div>
+          <div class="detail-item"><strong>Distrito</strong><span>${item.distrito || 'Não indicado'}</span></div>
+          <div class="detail-item"><strong>Idade</strong><span>${item.idade}</span></div>
+          <div class="detail-item"><strong>Situação</strong><span>${item.situacao}</span></div>
+          <div class="detail-item"><strong>Estado Caso</strong><span>${item.estado_caso}</span></div>
+        </div>
 
-<h2 class="section-title">🩺 Observações</h2>
-<div class="content-box">
-${item.observacoes}
-</div>
+        <h2 class="section-title">🩺 Observações</h2>
+        <div class="content-box">
+          ${item.observacoes}
+        </div>
 
-<div style="margin-top: 6px; display: flex; justify-content: flex-end;">
-<a href="${item.url}" target="_blank" style="background: ${item.color}; color: #ffffff; padding: 8px 14px; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-block; font-size: 11.5px;">Abrir Ficha Completa ↗</a>
-</div>
-</div>
-`;
+        <div style="margin-top: 6px; display: flex; justify-content: flex-end;">
+          <a href="${item.url}" target="_blank" style="background: ${item.color}; color: #ffffff; padding: 8px 14px; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-block; font-size: 11.5px;">Abrir Ficha Completa ↗</a>
+        </div>
+      </div>
+    `;
 
-if (window.innerWidth <= 992) {
-switchMobileTab('ficha');
-} else {
-document.getElementById('appLayoutWrapper').classList.remove('hide-right');
-if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
-}
-}
+    // Em mobile, ao selecionar uma ocorrência, muda automaticamente para a aba "Ficha"
+    if (window.innerWidth <= 992) {
+      switchMobileTab('ficha');
+    } else {
+      document.getElementById('appLayoutWrapper').classList.remove('hide-right');
+      if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
+    }
+  }
 
-function handleHashOnLoad() {
-const hash = window.location.hash.replace('#', '');
-if (hash && ocorrenciasData.some(i => i.slug === hash)) {
-selectOccurrence(hash, false);
-}
-}
+  function handleHashOnLoad() {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && ocorrenciasData.some(i => i.slug === hash)) {
+      selectOccurrence(hash, false);
+    }
+  }
 
-function toggleLeftPanel() {
-const wrapper = document.getElementById('appLayoutWrapper');
-wrapper.classList.toggle('hide-left');
-if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
-}
+  function toggleLeftPanel() {
+    const wrapper = document.getElementById('appLayoutWrapper');
+    wrapper.classList.toggle('hide-left');
+    if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
+  }
 
-function toggleRightPanel() {
-const wrapper = document.getElementById('appLayoutWrapper');
-wrapper.classList.toggle('hide-right');
-if (wrapper.classList.contains('hide-right')) {
-history.pushState(null, null, window.location.pathname);
-}
-if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
-}
+  function toggleRightPanel() {
+    const wrapper = document.getElementById('appLayoutWrapper');
+    wrapper.classList.toggle('hide-right');
+    if (wrapper.classList.contains('hide-right')) {
+      history.pushState(null, null, window.location.pathname);
+    }
+    if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
+  }
 
-function switchMobileTab(tabName) {
-const wrapper = document.getElementById('appLayoutWrapper');
-wrapper.classList.remove('mobile-view-list', 'mobile-view-map', 'mobile-view-ficha');
-wrapper.classList.add('mobile-view-' + tabName);
+  function switchMobileTab(tabName) {
+    const wrapper = document.getElementById('appLayoutWrapper');
+    wrapper.classList.remove('mobile-view-list', 'mobile-view-map', 'mobile-view-ficha');
+    wrapper.classList.add('mobile-view-' + tabName);
 
-document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-if (tabName === 'list') document.getElementById('navBtnList').classList.add('active');
-if (tabName === 'map') {
-document.getElementById('navBtnMap').classList.add('active');
-if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 200);
-}
-if (tabName === 'ficha') document.getElementById('navBtnFicha').classList.add('active');
-}
+    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+    if (tabName === 'list') document.getElementById('navBtnList').classList.add('active');
+    if (tabName === 'map') {
+      document.getElementById('navBtnMap').classList.add('active');
+      if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 200);
+    }
+    if (tabName === 'ficha') document.getElementById('navBtnFicha').classList.add('active');
+  }
 
-function filterMapByColor(colorKey, btnElement) {
-document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
-btnElement.classList.add('active');
-activeColorFilter = colorKey;
-applyCombinedFilters();
-}
+  function filterMapByColor(colorKey, btnElement) {
+    document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+    btnElement.classList.add('active');
+    activeColorFilter = colorKey;
+    applyCombinedFilters();
+  }
 
-function applyCombinedFilters() {
-var searchQuery = normalizeText(document.getElementById('mapSearchInput').value);
+  function applyCombinedFilters() {
+    var searchQuery = normalizeText(document.getElementById('mapSearchInput').value);
+    
+    if (mapInstance && allMarkersLayerGroup) {
+      allMarkersLayerGroup.clearLayers();
+      allMarkersData.forEach(function(marker) {
+        var matchesColor = (activeColorFilter === 'all' || marker.options.colorKey === activeColorFilter);
+        if (matchesColor) {
+          allMarkersLayerGroup.addLayer(marker);
+        }
+      });
+    }
 
-if (mapInstance && allMarkersLayerGroup) {
-allMarkersLayerGroup.clearLayers();
-allMarkersData.forEach(function(marker) {
-var matchesColor = (activeColorFilter === 'all' || marker.options.colorKey === activeColorFilter);
-if (matchesColor) {
-allMarkersLayerGroup.addLayer(marker);
-}
-});
-}
+    var rows = document.querySelectorAll('.map-card-item');
+    rows.forEach(function(row) {
+      var rColor = row.getAttribute('data-color');
+      var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
+      var matchesColor = (activeColorFilter === 'all' || rColor === activeColorFilter);
+      var matchesSearch = tags.includes(searchQuery);
 
-var rows = document.querySelectorAll('.map-card-item');
-rows.forEach(function(row) {
-var rColor = row.getAttribute('data-color');
-var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
-var matchesColor = (activeColorFilter === 'all' || rColor === activeColorFilter);
-var matchesSearch = tags.includes(searchQuery);
+      row.style.display = (matchesColor && matchesSearch) ? "flex" : "none";
+    });
+  }
 
-row.style.display = (matchesColor && matchesSearch) ? "flex" : "none";
-});
-}
+  function normalizeText(text) {
+    return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+  }
 
-function normalizeText(text) {
-return text ? text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
-}
-
-function filterMapManifest() {
-applyCombinedFilters();
-}
+  function filterMapManifest() {
+    applyCombinedFilters();
+  }
 </script>

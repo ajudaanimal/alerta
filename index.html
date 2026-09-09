@@ -159,6 +159,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
   .map-card-item:hover, .map-card-item.selected { background: var(--header-bg); }
 
+  /* Left list image: cropped/zoom to fill square */
   .map-card-img {
     width: 52px;
     height: 52px;
@@ -238,9 +239,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .banner-orange { background: #ffedd5; color: #7c2d12; }
   .banner-yellow { background: #fef9c3; color: #713f12; }
   
+  /* Right panel image container: object-fit contain so it's not cropped */
   .ficha-img-container {
     width: 100%;
-    max-height: 220px;
+    height: 200px;
     background: var(--box-bg);
     border: 1px solid var(--border-color);
     border-radius: 6px;
@@ -251,8 +253,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     box-sizing: border-box;
   }
   .ficha-img-container img {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
     display: block;
   }
@@ -264,6 +266,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .content-box { font-size: 12px; background: var(--box-bg); padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; line-height: 1.5; color: var(--text-main); }
 
   .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); border: 2px solid #ffffff; font-size: 14px; }
+
+  /* Leaflet Popup Styling */
+  .leaflet-popup-content-wrapper { border-radius: 8px; padding: 0; overflow: hidden; }
+  .leaflet-popup-content { margin: 10px !important; line-height: 1.4; }
 
   /* Mobile Bottom Navigation Bar */
   .app-bottom-nav {
@@ -299,7 +305,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .nav-tab-btn span.tab-icon { font-size: 18px; }
   .nav-tab-btn.active { color: var(--primary-color); }
 
-  /* Mobile Responsive Views (Clean Display Toggle instead of Vertical Animation Bugs) */
+  /* Mobile Responsive Views */
   @media (max-width: 992px) {
     .app-layout-wrapper {
       display: block;
@@ -330,6 +336,34 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 </style>
 
+{% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
+{% assign scored_posts = "" | split: "" %}
+
+{% for post in sorted_posts %}
+  {% assign t = post.triagem | strip | downcase %}
+  {% assign est_fisico = post.estado_fisico | strip | downcase %}
+  {% assign t_score = 10 %}
+  {% assign ef_score = 10 %}
+
+  {% if t contains 'vermelho' %}{% assign t_score = 1 %}
+  {% elsif t contains 'laranja' %}{% assign t_score = 2 %}
+  {% elsif t contains 'amarelo' %}{% assign t_score = 3 %}
+  {% elsif t contains 'azul' %}{% assign t_score = 4 %}
+  {% endif %}
+
+  {% if est_fisico contains 'crítico' or est_fisico contains 'critico' %}{% assign ef_score = 1 %}
+  {% elsif est_fisico contains 'ferido' %}{% assign ef_score = 2 %}
+  {% elsif est_fisico contains 'vulnerável' or est_fisico contains 'vulneravel' %}{% assign ef_score = 3 %}
+  {% else %}{% assign ef_score = 4 %}
+  {% endif %}
+
+  {% assign sar_score = t_score | times: 100 | plus: ef_score %}
+  {% assign scored_post = sar_score | append: "___" | append: forloop.index0 %}
+  {% assign scored_posts = scored_posts | push: scored_post %}
+{% endfor %}
+
+{% assign sorted_scored = scored_posts | sort %}
+
 <div class="app-layout-wrapper mobile-view-list" id="appLayoutWrapper">
   
   <!-- LEFT WINDOW: Animal List -->
@@ -341,9 +375,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       </div>
 
       <div class="map-list-wrapper" id="mapManifestList">
-        {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
-        
-        {% for post in sorted_posts %}
+        {% for item in sorted_scored %}
+          {% assign parts = item | split: "___" %}
+          {% assign original_index = parts[1] | times: 1 %}
+          {% assign post = sorted_posts[original_index] %}
+
           {% assign t = post.triagem | strip | downcase %}
           {% assign est_fisico = post.estado_fisico | strip | downcase %}
           {% assign est_caso = post.estado_caso | strip | downcase %}
@@ -365,7 +401,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% endif %}
 
           <div class="map-card-item map-row" id="card-item-{{ post.slug }}"
-               onclick="selectOccurrence('{{ post.slug }}', true)"
+               onclick="handleListItemClick('{{ post.slug }}')"
                data-color="{{ color_key }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
@@ -457,7 +493,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let activeColorFilter = 'all';
 
   const ocorrenciasData = [
-    {% for post in sorted_posts %}
+    {% for item in sorted_scored %}
+      {% assign parts = item | split: "___" %}
+      {% assign original_index = parts[1] | times: 1 %}
+      {% assign post = sorted_posts[original_index] %}
+
       {% assign t = post.triagem | strip | downcase %}
       {% assign est_caso = post.estado_caso | strip | downcase %}
       {% assign est_fisico = post.estado_fisico | strip | downcase %}
@@ -627,13 +667,39 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     marker.options.colorKey = item.colorKey;
     marker.options.slug = item.slug;
 
+    var popupContent = `
+      <div style="width: 215px; font-family: inherit;">
+        <img src="${item.imagem}" style="width:100%; height:110px; object-fit:cover; border-radius:4px; margin-bottom:6px; display:block;" alt="">
+        <div style="font-weight:800; font-size:13px; color:#0f172a; margin-bottom:2px;">${item.especie}</div>
+        <div style="font-size:11px; color:#64748b; margin-bottom:4px;">📍 ${item.concelho}</div>
+        <div style="font-size:11px; font-weight:700; color:#0284c7; margin-bottom:8px;">🩺 ${item.estado_fisico} (${item.triagem})</div>
+        <button onclick="openFichaFromMap('${item.slug}')" style="width:100%; background: ${item.color}; color:#fff; border:none; padding:7px; border-radius:4px; font-weight:700; cursor:pointer; font-size:11.5px; text-align:center;">Ver Ficha Completa</button>
+      </div>
+    `;
+
+    marker.bindPopup(popupContent);
+
     marker.on('click', function() {
-      selectOccurrence(item.slug, true);
+      selectOccurrence(item.slug, false);
     });
 
     markersBySlug[item.slug] = marker;
     return marker;
   }
+
+  function handleListItemClick(slug) {
+    selectOccurrence(slug, true);
+    if (window.innerWidth <= 992) {
+      switchMobileTab('map');
+    }
+  }
+
+  window.openFichaFromMap = function(slug) {
+    selectOccurrence(slug, true);
+    if (window.innerWidth <= 992) {
+      switchMobileTab('ficha');
+    }
+  };
 
   function selectOccurrence(slug, updateHash = true) {
     const item = ocorrenciasData.find(i => i.slug === slug);
@@ -650,7 +716,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // Robust map reaction: Check if marker is already loaded, otherwise fetch on-demand immediately
     const marker = markersBySlug[slug];
     if (marker && mapInstance) {
       var latLng = marker.getLatLng();
@@ -719,7 +784,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     if (window.innerWidth <= 992) {
       const backBtn = document.getElementById('mobileBackToMapBtn');
       if (backBtn) backBtn.style.display = 'block';
-      switchMobileTab('map');
     } else {
       document.getElementById('appLayoutWrapper').classList.remove('hide-right');
       if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);

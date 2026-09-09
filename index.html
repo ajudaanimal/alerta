@@ -265,7 +265,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
                data-color="{{ color_key }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
-            <img src="{{ img_url }}" alt="" class="map-card-img" loading="lazy">
+            <img src="{{ img_url }}" alt="" class="map-card-img" loading="lazy" referrerpolicy="no-referrer">
             
             <div class="map-card-body">
               <div class="map-card-top-row">
@@ -596,7 +596,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         </div>
 
         <div class="ficha-img-container">
-          <img src="${item.imagem}" alt="Fotografia do animal" onerror="this.src='https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg'">
+          <img src="${item.imagem}" alt="Fotografia do animal" referrerpolicy="no-referrer" onerror="this.src='https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg'">
         </div>
 
         <div class="details-grid">

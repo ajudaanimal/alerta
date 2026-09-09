@@ -681,7 +681,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     mapInstance.fitBounds(portugalBounds);
 
     // Using CartoDB Voyager tiles for reliable loading and clean look
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=A_TUA_CHAVE_AQUI', {
       maxZoom: 19,
       subdomains: 'abcd',
       updateWhenIdle: true,

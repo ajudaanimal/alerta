@@ -56,7 +56,7 @@
             overflow-x: hidden;
         }
 
-        /* Cabeçalho Global Minificado (Linha e meia / compacto) */
+        /* Cabeçalho Global Minificado */
         .site-global-header {
             display: flex;
             justify-content: space-between;
@@ -127,7 +127,7 @@
 
         /* Conteúdo Principal */
         .site-main-content {
-            padding: 20px 16px;
+            padding: 24px 16px;
             max-width: 900px;
             width: 100%;
             margin: 0 auto;
@@ -141,49 +141,59 @@
             padding: 0 !important;
             margin: 0 !important;
             width: 100% !important;
-            height: calc(100vh - 38px - 26px) !important;
+            height: calc(100vh - 38px) !important;
             flex: none !important;
         }
+        
+        body.layout-fullscreen .site-global-footer {
+            display: none; /* Em modo fullscreen (app mapa), o rodapé global desliga-se para dar lugar à interface nativa da app */
+        }
 
-        /* Rodapé Global Técnico e Hiper-minificado (Uma linha) */
+        /* Rodapé Global Limpo e Compacto */
         .site-global-footer {
             background: var(--card-bg);
             border-top: 1px solid var(--border-color);
-            padding: 0 12px;
-            font-size: 11px;
+            padding: 8px 16px;
+            font-size: 12px;
             color: var(--text-muted);
-            height: 26px;
             box-sizing: border-box;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            z-index: 2000;
-        }
-
-        .footer-left {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .footer-links {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .footer-links a {
             color: var(--text-muted);
             text-decoration: none;
+            font-weight: 500;
         }
         .footer-links a:hover {
             color: var(--text-main);
             text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .footer-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
         }
     </style>
 </head>
@@ -191,12 +201,12 @@
 
     <!-- Cabeçalho Global Minificado -->
     <header class="site-global-header">
-        <a href="{{ '/' | relative_url }}" class="site-title">🐾 Alerta</a>
+        <a href="{{ '/' | relative_url }}" class="site-title">🐾 Alerta Animal</a>
         
         <div class="header-right-group">
             <nav class="fs-nav-links" aria-label="Navegação Principal">
                 <a href="{{ '/' | relative_url }}" class="fs-pill" title="Mapa">🗺️</a>
-                <a href="{{ '/subscrever/' | relative_url }}" class="fs-pill" title="Subscritores">🔔</a>
+                <a href="{{ '/subscrever/' | relative_url }}" class="fs-pill" title="Subscrever Alertas">🔔</a>
                 <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill" title="Contactos de Emergência">📞</a>
                 <a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill" title="Reportar Ocorrência">➕</a>
             </nav>
@@ -209,15 +219,18 @@
         {{ content }}
     </main>
 
-    <!-- Rodapé Global Minificado -->
+    <!-- Rodapé Global Restaurado e Organizado -->
     <footer class="site-global-footer">
-        <div class="footer-left">
-            <span><strong>🐾 Ajuda Animal</strong> — Emergência: 112 / GNR (SEPNA)</span>
-        </div>
-        <div class="footer-links">
-            <a href="{{ '/emergencia/' | relative_url }}">Contactos</a>
-            <a href="https://github.com/ajudaanimal/alerta" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <span>&copy; {{ 'now' | date: "%Y" }}</span>
+        <div class="footer-container">
+            <div>
+                <span><strong>🐾 Ajuda Animal Portugal</strong></span>
+            </div>
+            <div class="footer-links">
+                <a href="{{ '/subscrever/' | relative_url }}">Subscrever</a>
+                <a href="{{ '/emergencia/' | relative_url }}">Contactos Úteis</a>
+                <a href="https://github.com/ajudaanimal/alerta" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <span>&copy; {{ 'now' | date: "%Y" }}</span>
+            </div>
         </div>
     </footer>
 

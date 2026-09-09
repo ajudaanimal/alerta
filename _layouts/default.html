@@ -135,21 +135,17 @@
             flex: 1;
         }
 
-        /* Comportamento Fullscreen para o Mapa/Dashboard */
+        /* Comportamento Fullscreen para o Desktop (Index) */
         body.layout-fullscreen .site-main-content {
             max-width: 100% !important;
             padding: 0 !important;
             margin: 0 !important;
             width: 100% !important;
-            height: calc(100vh - 38px) !important;
+            height: calc(100vh - 38px - 33px) !important; /* Desconta o Header e o Rodapé Global em desktop */
             flex: none !important;
         }
-        
-        body.layout-fullscreen .site-global-footer {
-            display: none; /* Em modo fullscreen (app mapa), o rodapé global desliga-se para dar lugar à interface nativa da app */
-        }
 
-        /* Rodapé Global Limpo e Compacto */
+        /* Rodapé Global */
         .site-global-footer {
             background: var(--card-bg);
             border-top: 1px solid var(--border-color);
@@ -188,7 +184,14 @@
             text-decoration: underline;
         }
 
-        @media (max-width: 600px) {
+        /* Ajustes específicos para Mobile em modo Fullscreen (Index) */
+        @media (max-width: 992px) {
+            body.layout-fullscreen .site-global-footer {
+                display: none !important; /* Oculta o rodapé global em mobile no index para evitar conflito com a barra inferior da app */
+            }
+            body.layout-fullscreen .site-main-content {
+                height: calc(100vh - 38px - 52px) !important; /* Header + Barra de navegação inferior móvel da app */
+            }
             .footer-container {
                 flex-direction: column;
                 align-items: flex-start;
@@ -219,7 +222,7 @@
         {{ content }}
     </main>
 
-    <!-- Rodapé Global Restaurado e Organizado -->
+    <!-- Rodapé Global -->
     <footer class="site-global-footer">
         <div class="footer-container">
             <div>

@@ -258,7 +258,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .species-pin { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); border: 2px solid #ffffff; font-size: 14px; }
 
-  /* Mobile Bottom Navigation Bar (PWA Style) */
+  /* Mobile Bottom Navigation Bar */
   .app-bottom-nav {
     display: none;
     position: fixed;
@@ -293,8 +293,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   @media (max-width: 992px) {
     .app-layout-wrapper {
-      display: block;
-      height: calc(100vh - 60px);
+      display: flex !important;
+      height: calc(100vh - 120px) !important;
       position: relative;
     }
     .app-bottom-nav { display: flex; }
@@ -309,10 +309,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       left: 0;
     }
 
-    /* Mostrar unicamente o painel correspondente à aba ativa */
-    .app-layout-wrapper.mobile-view-list .app-left-panel,
-    .app-layout-wrapper.mobile-view-map .app-center-panel,
-    .app-layout-wrapper.mobile-view-ficha .app-right-panel {
+    /* Mostrar unicamente o painel correspondente à aba ativa em mobile */
+    body.mobile-tab-list .app-left-panel,
+    body.mobile-tab-map .app-center-panel,
+    body.mobile-tab-ficha .app-right-panel {
       display: flex !important;
     }
 
@@ -324,7 +324,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 </style>
 
-<div class="app-layout-wrapper mobile-view-list" id="appLayoutWrapper">
+<div class="app-layout-wrapper" id="appLayoutWrapper">
   
   <!-- LEFT WINDOW: Animal List -->
   <div class="app-left-panel" id="appLeftPanel">
@@ -499,6 +499,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   document.addEventListener("DOMContentLoaded", function() {
     initMap();
+    if (window.innerWidth <= 992) {
+      switchMobileTab('list');
+    }
     handleHashOnLoad();
     window.addEventListener('hashchange', handleHashOnLoad);
   });
@@ -615,15 +618,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function selectOccurrenceFromList(slug) {
-    const item = ocorrenciasData.find(i => i.slug === slug);
-    if (!item) return;
-
-    history.pushState(null, null, '#' + slug);
-    highlightCardAndMapMarker(slug);
-
-    if (window.innerWidth <= 992) {
-      switchMobileTab('map');
-    }
+    selectOccurrence(slug, true, true);
   }
 
   function selectOccurrence(slug, updateHash = true, openFicha = false) {
@@ -726,18 +721,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function switchMobileTab(tabName) {
-    const wrapper = document.getElementById('appLayoutWrapper');
-    wrapper.classList.remove('mobile-view-list', 'mobile-view-map', 'mobile-view-ficha');
-    wrapper.classList.add('mobile-view-' + tabName);
+    document.body.classList.remove('mobile-tab-list', 'mobile-tab-map', 'mobile-tab-ficha');
+    document.body.classList.add('mobile-tab-' + tabName);
 
     document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
     if (tabName === 'list') document.getElementById('navBtnList').classList.add('active');
     if (tabName === 'map') {
       document.getElementById('navBtnMap').classList.add('active');
       if (mapInstance) {
-        setTimeout(() => {
-          mapInstance.invalidateSize();
-        }, 150);
+        setTimeout(() => { mapInstance.invalidateSize(); }, 150);
       }
     }
     if (tabName === 'ficha') document.getElementById('navBtnFicha').classList.add('active');

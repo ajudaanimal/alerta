@@ -637,11 +637,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         colorKey: {{ color_key | jsonify }},
         bannerClass: {{ banner_class | jsonify }},
         badgeClass: {{ badge_class | jsonify }},
-        imagem: {{ post.imagem | relative_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | jsonify }}
+        imagem: {{ post.imagem | relative_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | jsonify }},
+        lat: {{ post.lat | default: "" | jsonify }},
+        lon: {{ post.lon | default: "" | jsonify }}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   ];
-
+  
   document.addEventListener("DOMContentLoaded", function() {
     initMap();
     handleHashOnLoad();

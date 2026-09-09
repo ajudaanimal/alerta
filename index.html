@@ -14,6 +14,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   :root {
@@ -43,12 +45,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .app-layout-wrapper {
     display: grid;
     grid-template-columns: var(--left-width) 1fr var(--right-width);
-    height: calc(100vh - 60px);
+    height: 100%;
     width: 100%;
     background: var(--bg-main);
     box-sizing: border-box;
     overflow: hidden;
     transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex: 1;
   }
 
   .app-layout-wrapper.hide-left { --left-width: 36px; }
@@ -302,7 +305,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     .app-layout-wrapper {
       display: block;
       position: relative;
-      height: calc(100vh - 50px - 52px);
+      height: calc(100vh - 38px - 52px);
     }
     .app-bottom-nav { display: flex; }
     
@@ -487,7 +490,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let allMarkersData = [];
   let itemsBySlug = {};
   let activeColorFilter = 'all';
-  let currentActiveCircle = null; // círculo de incerteza ativo no momento
+  let currentActiveCircle = null;
 
   const ocorrenciasData = [
     {% for item in sorted_scored %}
@@ -641,14 +644,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function criarMarcador(lat, lon, item) {
-    // Raio menor: 3 km para gatos, 5 km para cães, 3 km por defeito
     var radiusMeters = 3000;
     const esp = item.especie ? item.especie.toLowerCase() : '';
     if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) {
       radiusMeters = 5000;
     }
 
-    // Círculo de área aproximada (guardado em memória, só é adicionado ao mapa ao clicar)
     var circleArea = L.circle([lat, lon], {
       radius: radiusMeters,
       color: item.color,
@@ -719,16 +720,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     if (mapObj && mapInstance) {
       var latLng = mapObj.marker.getLatLng();
       
-      // Remover círculo ativo anterior, se existir
       if (currentActiveCircle && mapInstance.hasLayer(currentActiveCircle)) {
         mapInstance.removeLayer(currentActiveCircle);
       }
       
-      // Adicionar novo círculo de busca ao mapa
       mapObj.circle.addTo(mapInstance);
       currentActiveCircle = mapObj.circle;
 
-      // Centrar perfeitamente no mapa com zoom adequado
       mapInstance.setView(latLng, 13, { animate: true });
     }
 

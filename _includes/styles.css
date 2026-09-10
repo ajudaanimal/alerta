@@ -181,7 +181,7 @@
     min-width: 0;
   }
 
-  .map-external-filter {
+  .map-top-filters {
     background: var(--card-bg);
     border-bottom: 1px solid var(--border-color);
     padding: 8px 10px;
@@ -194,10 +194,31 @@
     flex-shrink: 0;
     z-index: 10;
   }
-  .map-filter-header { font-size: 9.5px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
-  .map-filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
-  .filter-pill { font-size: 10.5px; padding: 3px 7px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--card-bg); cursor: pointer; font-weight: 600; color: var(--text-main); }
-  .filter-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+
+  .filter-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-main);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .filter-pill:hover {
+    border-color: var(--primary-color);
+  }
+  .filter-pill.active {
+    background: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+  }
 
   .map-container-wrapper {
     position: relative;
@@ -393,61 +414,4 @@
       left: 10px;
       right: 10px;
     }
-
-    .list-controls-bar {
-    padding: 8px 10px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-  .list-filter-row {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none;
-  }
-  .list-filter-row::-webkit-scrollbar {
-    display: none;
-  }
-  .species-pill {
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    background: var(--card-bg);
-    cursor: pointer;
-    font-weight: 700;
-    color: var(--text-main);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-    transition: all 0.15s ease;
-  }
-  .species-pill:hover {
-    border-color: var(--primary-color);
-  }
-  .species-pill.active {
-    background: var(--primary-color);
-    color: #ffffff;
-    border-color: var(--primary-color);
-  }
-  .list-sort-select {
-    width: 100%;
-    padding: 6px 10px;
-    background: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    font-size: 11px;
-    font-weight: 600;
-    box-sizing: border-box;
-    outline: none;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-    cursor: pointer;
-  }
-  .list-sort-select:focus {
-    border-color: var(--primary-color);
   }

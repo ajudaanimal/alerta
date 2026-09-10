@@ -33,16 +33,15 @@ permalink:
   {% endunless %}
 
   <entry>
-    <title>{{ post.especie | default: "Animal" }} - {{ local_final }}</title>
+    <title>{{ post.especie | default: "Animal" | upcase }} - {{ post.nivel_alerta | default: "DESCONHECIDO" | upcase }} - {{ local_final | upcase }}</title>
     <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}" rel="alternate" type="text/html"/>
     <published>{% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}{{ post.data_ocorrencia_inicial | date: "%Y-%m-%dT00:00:00Z" }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</published>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
     <id>{{ site.url }}{{ site.baseurl }}{{ post.url }}</id>
-    <summary type="html"><![CDATA[Alerta Animal - {{ local_final }} | Nível de Alerta: {{ post.nivel_alerta | default: "Desconhecido" }} | {{ post.especie }} - {{ post.situacao }} - {{ post.estado_fisico }} | Detalhes: {{ post.observacoes | strip_html | truncate: 120 }}]]></summary>
+    <summary type="html"><![CDATA[{{ post.estado_fisico }} — Situação: {{ post.situacao }} | {{ post.observacoes | strip_html | truncate: 120 }}]]></summary>
     <content type="html"><![CDATA[
-      <p><strong>Alerta Animal - {{ local_final }}</strong><br />
-      <strong>Nível de Alerta:</strong> {{ post.nivel_alerta | default: "Desconhecido" }}<br />
-      <strong>Espécie:</strong> {{ post.especie }} — <strong>Situação:</strong> {{ post.situacao }} — <strong>Estado Físico:</strong> {{ post.estado_fisico }}</p>
+      <p><strong>Estado Físico:</strong> {{ post.estado_fisico }}<br />
+      <strong>Situação:</strong> {{ post.situacao }}</p>
       
       {% if post.observacoes != "" and post.observacoes != nil %}
       <p><strong>Detalhes:</strong><br />

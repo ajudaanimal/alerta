@@ -195,7 +195,7 @@
     z-index: 10;
   }
 
-  .filter-pill {
+  .filter-pill, .species-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -210,15 +210,37 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     transition: all 0.15s ease;
     white-space: nowrap;
+    user-select: none;
   }
-  .filter-pill:hover {
+  .filter-pill:hover, .species-pill:hover {
     border-color: var(--primary-color);
   }
-  .filter-pill.active {
+  .filter-pill.active, .species-pill.active {
     background: var(--primary-color);
     color: #ffffff;
     border-color: var(--primary-color);
   }
+
+  .filter-color-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .filter-color-dot:hover {
+    transform: scale(1.15);
+  }
+  .filter-color-dot.active {
+    box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--primary-color);
+  }
+
+  .dot-vermelho { background: #dc2626; }
+  .dot-laranja  { background: #ea580c; }
+  .dot-amarelo  { background: #d97706; }
+  .dot-azul     { background: #2563eb; }
 
   .map-container-wrapper {
     position: relative;
@@ -319,7 +341,7 @@
   
   .ficha-img-container {
     width: 100%;
-    height: 140px;
+    height: 180px;
     background: var(--box-bg);
     border: 1px solid var(--border-color);
     border-radius: 6px;
@@ -330,9 +352,11 @@
     box-sizing: border-box;
   }
   .ficha-img-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     display: block;
   }
   

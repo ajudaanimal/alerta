@@ -3,6 +3,7 @@ let mapInstance;
   let allMarkersData = [];
   let itemsBySlug = {};
   let activeColorFilter = 'all';
+  let activeSpeciesFilter = 'all';
   let currentActiveCircle = null;
   let currentSelectedSlug = null;
   var portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
@@ -55,6 +56,7 @@ let mapInstance;
         triagem: {{ post.triagem | default: "N/D" | jsonify }},
         situacao: {{ post.situacao | default: "N/D" | jsonify }},
         idade: {{ post.idade | default: "Não indicada" | jsonify }},
+        dateRaw: {{ post.date | date: "%s" | default: 0 | jsonify }},
         data: {{ post.date | date: "%d/%m/%Y" | jsonify }},
         observacoes: {{ post.observacoes | default: "Sem observações adicionais registadas." | jsonify }},
         url: {{ post.url | relative_url | jsonify }},
@@ -93,6 +95,14 @@ let mapInstance;
     if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
     if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return '🐦';
     return '🐾';
+  }
+
+  function getSpeciesCategory(especieStr) {
+    const esp = especieStr ? especieStr.toLowerCase() : '';
+    if (esp.includes('gato') || esp.includes('felino')) return 'felino';
+    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return 'canideo';
+    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return 'ave';
+    return 'outro';
   }
 
   function initMap() {
@@ -166,13 +176,15 @@ let mapInstance;
       marker: marker,
       circle: circleArea,
       colorKey: item.colorKey,
+      speciesKey: getSpeciesCategory(item.especie),
       slug: item.slug
     };
 
     allMarkersData.push(mapObj);
     itemsBySlug[item.slug] = mapObj;
 
-    if (activeColorFilter === 'all' || item.colorKey === activeColorFilter) {
+    if ((activeColorFilter === 'all' || item.colorKey === activeColorFilter) && 
+        (activeSpeciesFilter === 'all' || getSpeciesCategory(item.especie) === activeSpeciesFilter)) {
       allMarkersLayerGroup.addLayer(marker);
     }
   }
@@ -342,6 +354,32 @@ let mapInstance;
     applyCombinedFilters();
   }
 
+  function filterMapBySpecies(speciesKey, btnElement) {
+    document.querySelectorAll('.species-pill').forEach(function(p) { p.classList.remove('active'); });
+    btnElement.classList.add('active');
+    activeSpeciesFilter = speciesKey;
+    applyCombinedFilters();
+  }
+
+  function sortManifestList() {
+    const sortBy = document.getElementById('listSortSelect').value;
+    const listContainer = document.getElementById('mapManifestList');
+    const rows = Array.from(listContainer.querySelectorAll('.map-card-item'));
+
+    rows.sort(function(a, b) {
+      if (sortBy === 'priority') {
+        return parseInt(a.getAttribute('data-priority')) - parseInt(b.getAttribute('data-priority'));
+      } else if (sortBy === 'date-desc') {
+        return parseInt(b.getAttribute('data-date')) - parseInt(a.getAttribute('data-date'));
+      } else if (sortBy === 'date-asc') {
+        return parseInt(a.getAttribute('data-date')) - parseInt(b.getAttribute('data-date'));
+      }
+      return 0;
+    });
+
+    rows.forEach(row => listContainer.appendChild(row));
+  }
+
   function applyCombinedFilters() {
     var searchQuery = normalizeText(document.getElementById('mapSearchInput').value);
     
@@ -349,7 +387,8 @@ let mapInstance;
       allMarkersLayerGroup.clearLayers();
       allMarkersData.forEach(function(itemObj) {
         var matchesColor = (activeColorFilter === 'all' || itemObj.colorKey === activeColorFilter);
-        if (matchesColor) {
+        var matchesSpecies = (activeSpeciesFilter === 'all' || itemObj.speciesKey === activeSpeciesFilter);
+        if (matchesColor && matchesSpecies) {
           allMarkersLayerGroup.addLayer(itemObj.marker);
         }
       });
@@ -358,11 +397,14 @@ let mapInstance;
     var rows = document.querySelectorAll('.map-card-item');
     rows.forEach(function(row) {
       var rColor = row.getAttribute('data-color');
+      var rSpecies = row.getAttribute('data-species');
       var tags = normalizeText(row.getAttribute('data-search-tags') || '') + " " + normalizeText(row.innerText);
+      
       var matchesColor = (activeColorFilter === 'all' || rColor === activeColorFilter);
+      var matchesSpecies = (activeSpeciesFilter === 'all' || rSpecies === activeSpeciesFilter);
       var matchesSearch = tags.includes(searchQuery);
 
-      row.style.display = (matchesColor && matchesSearch) ? "flex" : "none";
+      row.style.display = (matchesColor && matchesSpecies && matchesSearch) ? "flex" : "none";
     });
   }
 

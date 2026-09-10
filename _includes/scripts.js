@@ -348,16 +348,26 @@ let mapInstance;
   }
 
   function filterMapByColor(colorKey, btnElement) {
-    document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
-    btnElement.classList.add('active');
-    activeColorFilter = colorKey;
+    if (btnElement.classList.contains('active')) {
+      btnElement.classList.remove('active');
+      activeColorFilter = 'all';
+    } else {
+      document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+      btnElement.classList.add('active');
+      activeColorFilter = colorKey;
+    }
     applyCombinedFilters();
   }
 
   function filterMapBySpecies(speciesKey, btnElement) {
-    document.querySelectorAll('.species-pill').forEach(function(p) { p.classList.remove('active'); });
-    btnElement.classList.add('active');
-    activeSpeciesFilter = speciesKey;
+    if (btnElement.classList.contains('active')) {
+      btnElement.classList.remove('active');
+      activeSpeciesFilter = 'all';
+    } else {
+      document.querySelectorAll('.species-pill').forEach(function(p) { p.classList.remove('active'); });
+      btnElement.classList.add('active');
+      activeSpeciesFilter = speciesKey;
+    }
     applyCombinedFilters();
   }
 

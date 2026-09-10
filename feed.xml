@@ -11,6 +11,9 @@ layout: null
   <id>{{ site.url }}{{ site.baseurl }}/feed.xml</id>
   <title type="html">{{ site.title | xml_escape }}</title>
   <subtitle>{{ site.description | xml_escape }}</subtitle>
+  <author>
+    <name>{{ site.author.name | default: site.title }}</name>
+  </author>
 
   {% assign ocorrencias_ordenadas = site.ocorrencias | sort: "date" | reverse %}
   {% for post in ocorrencias_ordenadas limit:20 %}
@@ -29,7 +32,7 @@ layout: null
   <entry>
     <title>{{ post.especie | default: "Animal" }} - {{ local_final }}</title>
     <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}" rel="alternate" type="text/html"/>
-    <published>{% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}{{ post.data_ocorrencia_inicial | date: "%Y-%m-%d" }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</published>
+    <published>{% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}{{ post.data_ocorrencia_inicial | date: "%Y-%m-%dT00:00:00Z" }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</published>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
     <id>{{ site.url }}{{ site.baseurl }}{{ post.url }}</id>
     <summary type="html"><![CDATA[Alerta Animal - {{ local_final }} | Nível de Alerta: {{ post.nivel_alerta | default: "Desconhecido" }} | {{ post.especie }} - {{ post.situacao }} - {{ post.estado_fisico }} | Detalhes: {{ post.observacoes | strip_html | truncate: 120 }}]]></summary>

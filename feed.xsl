@@ -87,7 +87,7 @@ layout: null
           <h1>🐾 <xsl:value-of select="atom:title"/></h1>
           <p class="subtitle"><xsl:value-of select="atom:subtitle"/></p>
           <div class="rss-info">
-            <strong>ℹ️ Como usar este canal:</strong> Podes copiar o endereço abaixo e adicioná-lo ao teu leitor de RSS preferido ou a plataformas de integração (Make/Zapier) para automatizar a partilha de resgates:<br/>
+            <strong>ℹ️ Como usar este canal:</strong> Podes copiar o endereço abaixo e adicioná-lo ao teu leitor de RSS preferido ou a plataformas de integração (Make/Zapier):<br/>
             <code><xsl:value-of select="atom:link[@rel='self']/@href"/></code>
           </div>
         </header>

@@ -395,35 +395,36 @@
     }
 
     .list-controls-bar {
-    padding: 6px 10px;
+    padding: 8px 10px;
     background: var(--header-bg);
     border-bottom: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     flex-shrink: 0;
   }
   .list-filter-row {
     display: flex;
-    gap: 4px;
+    gap: 6px;
     align-items: center;
     overflow-x: auto;
     white-space: nowrap;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
   }
   .list-filter-row::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
   }
   .species-pill {
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 4px;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 16px;
     border: 1px solid var(--border-color);
     background: var(--card-bg);
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-main);
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: all 0.15s ease;
   }
   .species-pill:hover {
     border-color: var(--primary-color);
@@ -435,13 +436,18 @@
   }
   .list-sort-select {
     width: 100%;
-    padding: 4px 6px;
+    padding: 6px 10px;
     background: var(--card-bg);
     color: var(--text-main);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 10.5px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
     box-sizing: border-box;
     outline: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    cursor: pointer;
   }
+  .list-sort-select:focus {
+    border-color: var(--primary-color);
   }

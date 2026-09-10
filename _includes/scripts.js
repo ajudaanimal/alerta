@@ -230,7 +230,7 @@ let mapInstance;
     const previewCard = document.getElementById('mapPreviewCard');
     document.getElementById('mapPreviewImg').src = item.imagem;
     document.getElementById('mapPreviewSpecies').textContent = item.especie;
-    document.getElementById('mapPreviewLocality').textContent = '📍 ' + (item.concelho || 'Localização aproximada');
+    document.getElementById('mapPreviewLocality').textContent = '📍 ' + (item.concelho || item.distrito || '');
     
     const badgeEl = document.getElementById('mapPreviewBadge');
     badgeEl.className = 'map-badge ' + item.badgeClass;
@@ -244,7 +244,7 @@ let mapInstance;
         <header class="report-header" style="background-color: ${item.color};">
           <div>
             <h1>${item.especie}</h1>
-            <div style="font-size:10.5px; opacity:0.9;">📍 ${item.concelho} (Localização aproximada)</div>
+            <div style="font-size:10.5px; opacity:0.9;">📍 ${item.concelho}</div>
           </div>
           <div style="text-align:right; font-size:10.5px;">
             <div>${item.data}</div>

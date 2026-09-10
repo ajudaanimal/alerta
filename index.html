@@ -45,12 +45,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   <!-- LEFT WINDOW: Animal List -->
   <div class="app-left-panel" id="appLeftPanel">
     <div class="panel-collapsible-content">
-      <div class="panel-header-bar" style="flex-direction: column; align-items: stretch; gap: 8px; padding-bottom: 8px;">
-        <div style="display: flex; align-items: center; gap: 6px; width: 100%;">
-          <button class="panel-action-btn" onclick="toggleLeftPanel()" title="Recolher lista">◀</button>
-          <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar espécie, concelho..." onkeyup="filterMapManifest()" style="flex: 1;">
-        </div>
-               
+      <div class="panel-header-bar" style="display: flex; align-items: center; gap: 6px; padding: 8px;">
+        <button class="panel-action-btn" onclick="toggleLeftPanel()" title="Recolher lista">◀</button>
+        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar espécie, concelho..." onkeyup="filterMapManifest()" style="flex: 1;">
+      </div>
 
       <div class="map-list-wrapper" id="mapManifestList">
         {% for item in sorted_scored %}
@@ -118,19 +116,19 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   
   <!-- CENTER WINDOW: Map, Filters and Bottom Preview Card -->
   <div class="app-center-panel">
-    <div class="map-top-filters" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-    <span style="font-size: 10px; font-weight: 800; color: var(--text-muted);">TRIAGEM:</span>
-    <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
-    <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)"><span style="display:inline-block; width:10px; height:10px; background:#dc2626; border-radius:50%; margin-right:4px;"></span>Vermelho</button>
-    <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)"><span style="display:inline-block; width:10px; height:10px; background:#f97316; border-radius:50%; margin-right:4px;"></span>Laranja</button>
-    <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)"><span style="display:inline-block; width:10px; height:10px; background:#d97706; border-radius:50%; margin-right:4px;"></span>Amarelo</button>
+    <div class="map-top-filters" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+      <span style="font-size: 10px; font-weight: 800; color: var(--text-muted);">TRIAGEM:</span>
+      <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)"><span style="display:inline-block; width:10px; height:10px; background:#dc2626; border-radius:50%; margin-right:4px;"></span>Vermelho</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)"><span style="display:inline-block; width:10px; height:10px; background:#f97316; border-radius:50%; margin-right:4px;"></span>Laranja</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)"><span style="display:inline-block; width:10px; height:10px; background:#d97706; border-radius:50%; margin-right:4px;"></span>Amarelo</button>
 
-    <span style="font-size: 10px; font-weight: 800; color: var(--text-muted); margin-left: 8px;">ESPÉCIE:</span>
-    <button type="button" class="filter-pill active" onclick="filterMapBySpecies('all', this)">Todas</button>
-    <button type="button" class="filter-pill" onclick="filterMapBySpecies('felino', this)">🐱</button>
-    <button type="button" class="filter-pill" onclick="filterMapBySpecies('canideo', this)">🐶</button>
-    <button type="button" class="filter-pill" onclick="filterMapBySpecies('ave', this)">🐦</button>
-  </div>
+      <span style="font-size: 10px; font-weight: 800; color: var(--text-muted); margin-left: 6px;">ESPÉCIE:</span>
+      <button type="button" class="filter-pill active" onclick="filterMapBySpecies('all', this)">Todas</button>
+      <button type="button" class="filter-pill" onclick="filterMapBySpecies('felino', this)">🐱</button>
+      <button type="button" class="filter-pill" onclick="filterMapBySpecies('canideo', this)">🐶</button>
+      <button type="button" class="filter-pill" onclick="filterMapBySpecies('ave', this)">🐦</button>
+    </div>
     
     <div class="map-container-wrapper">
       <div id="full-map"></div>
@@ -187,7 +185,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     <span>Mapa</span>
   </button>
   <button class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
-    <span class="tab-icon">🐾</span>
+    <span class="nav-tab-icon">🐾</span>
     <span>Ficha</span>
   </button>
 </div>

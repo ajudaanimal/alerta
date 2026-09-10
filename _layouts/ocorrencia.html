@@ -2,295 +2,135 @@
 layout: default
 ---
 
+{% comment %} Filtro de Lixo e Dados Vazios {% endcomment %}
+{% assign loc = page.localidade %}{% if loc == "Não indicado" or loc == "Não indicada" or loc == "N/D" %}{% assign loc = "" %}{% endif %}
+{% assign conc = page.concelho %}{% if conc == "Não indicado" or conc == "Não indicada" or conc == "N/D" %}{% assign conc = "" %}{% endif %}
+{% assign dist = page.distrito %}{% if dist == "Não indicado" or dist == "Não indicada" or dist == "N/D" %}{% assign dist = "" %}{% endif %}
+{% assign idade = page.idade %}{% if idade == "Não indicado" or idade == "Não indicada" or idade == "N/D" %}{% assign idade = "" %}{% endif %}
+
+{% comment %} Lógica do Banner Dinâmico {% endcomment %}
+{% assign est_caso = page.estado_caso | strip | upcase %}
+{% assign nivel_alerta = page.nivel_alerta | strip | upcase %}
+{% assign est_fisico = page.estado_fisico | strip | upcase %}
+
+{% if est_caso contains 'RESOLVIDO' %}
+    {% assign banner_class = "banner-resolved" %}
+    {% assign banner_text = "✓ OCORRÊNCIA RESOLVIDA — ANIMAL EM SEGURANÇA" %}
+{% elsif nivel_alerta contains 'VERMELHO' or nivel_alerta contains 'URGENTE' or est_fisico contains 'FERIDO' or est_fisico contains 'CRÍTICO' %}
+    {% assign banner_class = "banner-red" %}
+    {% assign banner_text = "🚨 EMERGÊNCIA — NECESSITA RESGATE IMEDIATO" %}
+{% elsif nivel_alerta contains 'LARANJA' %}
+    {% assign banner_class = "banner-orange" %}
+    {% assign banner_text = "⚠️ " | append: page.nivel_alerta | append: " — SOCORRO URGENTE" %}
+{% else %}
+    {% assign banner_class = "banner-yellow" %}
+    {% assign banner_text = "⚠️ " | append: page.nivel_alerta | append: " — NECESSITA AVALIAÇÃO" %}
+{% endif %}
+
 <style>
-  .report-header-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    border-radius: 8px 8px 0 0;
-    overflow: hidden;
-    border: 1px solid var(--border-color, #cbd5e1);
-  }
-  .report-header {
-    margin: 0;
-    border-radius: 0;
-    border-bottom: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    color: #fff;
-  }
-  .status-banner {
-    margin: 0;
-    border-radius: 0;
-    border-top: none;
-    padding: 10px 16px;
-    font-weight: bold;
-    text-align: center;
-    font-size: 0.9rem;
-  }
-  .banner-resolved { background-color: #16a34a; color: #fff; }
-  .banner-red { background-color: #dc2626; color: #fff; }
-  .banner-orange { background-color: #ea580c; color: #fff; }
-  .banner-yellow { background-color: #ca8a04; color: #fff; }
-  .banner-default { background-color: #475569; color: #fff; }
-  
-  .page-wrapper {
-    max-width: 800px;
-    margin: 20px auto;
-    background: var(--card-bg, #ffffff);
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    border: 1px solid var(--border-color, #cbd5e1);
-    font-family: system-ui, -apple-system, sans-serif;
-    color: var(--text-main, #0f172a);
-  }
-  .report-body {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  .top-section {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  .animal-img-container {
-    width: 100%;
-    max-width: 350px;
-    height: 250px;
-    border-radius: 6px;
-    overflow: hidden;
-    border: 1px solid var(--border-color, #cbd5e1);
-    background: var(--header-bg, #f1f5f9);
-  }
-  .animal-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .unified-highlight-box {
-    flex: 1;
-    background: var(--box-bg, #f8fafc);
-    border: 1px solid var(--border-color, #cbd5e1);
-    border-radius: 6px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-width: 250px;
-  }
-  .box-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color, #cbd5e1);
-    padding-bottom: 8px;
-    font-size: 0.9rem;
-  }
-  .box-row:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-  .box-row label {
-    color: var(--text-muted, #64748b);
-    font-weight: 600;
-  }
-  .section-title {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-top: 10px;
-    margin-bottom: 4px;
-    border-bottom: 2px solid var(--border-color, #cbd5e1);
-    padding-bottom: 4px;
-  }
-  .content-box {
-    background: var(--box-bg, #f8fafc);
-    border: 1px solid var(--border-color, #cbd5e1);
-    border-radius: 6px;
-    padding: 12px;
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-  .report-footer {
-    background: var(--header-bg, #f1f5f9);
-    padding: 16px;
-    border-top: 1px solid var(--border-color, #cbd5e1);
-    border-radius: 0 0 8px 8px;
-    font-size: 0.85rem;
-  }
-  .btn-group {
-    display: flex;
-    gap: 8px;
-  }
-  .btn {
-    background: var(--card-bg, #ffffff);
-    color: var(--text-main, #0f172a);
-    border: 1px solid var(--border-color, #cbd5e1);
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
-  .btn:hover {
-    background: var(--primary-color, #0284c7);
-    color: #fff;
-    border-color: var(--primary-color, #0284c7);
-  }
+  .ficha-wrapper { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; font-family: system-ui, sans-serif; }
+  .ficha-header { background: #1e293b; color: #fff; padding: 16px; text-align: center; }
+  .ficha-header h1 { margin: 0; font-size: 1.4rem; }
+  .ficha-header p { margin: 4px 0 0; font-size: 0.9rem; opacity: 0.9; }
+  .status-banner { padding: 12px 16px; font-weight: 900; text-align: center; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; }
+  .banner-resolved { background-color: #16a34a; }
+  .banner-red { background-color: #dc2626; }
+  .banner-orange { background-color: #ea580c; }
+  .banner-yellow { background-color: #ca8a04; color: #000; } /* Cor preta para legibilidade no amarelo */
+  .ficha-body { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+  .top-section { display: flex; gap: 20px; flex-wrap: wrap; }
+  .img-col { flex: 1; min-width: 280px; max-width: 350px; }
+  .animal-img { width: 100%; height: 250px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; }
+  .info-pills { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .pill { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; color: #334155; }
+  .alert-box-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 10px; }
+  .big-alert-box { background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+  .big-alert-box h3 { margin: 0; font-size: 0.9rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+  .big-alert-box .big-value { margin: 4px 0 20px; font-size: 1.8rem; font-weight: 900; color: #0f172a; }
+  .big-alert-box .big-value:last-child { margin-bottom: 0; }
+  .section-title { font-size: 1.1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 10px; color: #0f172a; font-weight: bold; }
+  .content-block { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 16px; line-height: 1.5; font-size: 0.95rem; }
+  .ficha-footer { background: #f1f5f9; padding: 16px; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
 </style>
 
-<div class="page-wrapper">
-    <div class="report-header-group">
-        <!-- 1. Cabeçalho e Identificação -->
-        <header class="report-header" style="background-color: var(--theme-color, #2563eb);">
-            <div>
-                <h1 style="margin: 0; font-size: 1.25rem;">{{ page.especie | default: "Animal" }} {% if page.situacao %}— {{ page.situacao }}{% endif %}</h1>
-                <div style="font-size: 0.85rem; margin-top: 4px; opacity: 0.9;">
-                    📍 {{ page.localidade | default: page.concelho | default: page.localizacao | default: "Portugal" }}
-                </div>
-            </div>
-            <div style="text-align: right;">
-                <h3 style="margin: 0; font-size: 0.8rem; font-weight: normal; opacity: 0.9;">{{ page.data_ocorrencia_inicial | default: page.date | date: "%d/%m/%Y" }}</h3>
-                <h2 style="margin: 0; font-size: 1.1rem;">{{ page.distrito | default: "Portugal" }}</h2>
-            </div>
-        </header>
+<div class="ficha-wrapper">
+    <!-- Cabeçalho com Localização Unificada -->
+    <header class="ficha-header">
+        <h1>Ficha de Ocorrência — {{ page.especie | default: "Animal" }}</h1>
+        <p>📍 {% if loc != "" %}{{ loc }}{% endif %} {% if conc != "" %}— {{ conc }}{% endif %} {% if dist != "" %}— Distrito de {{ dist }}{% endif %}</p>
+        <p>📅 Data Inicial: {{ page.data_ocorrencia_inicial | default: page.date | date: "%d/%m/%Y" }}</p>
+    </header>
 
-        <!-- 2. Banner de Estado (Unido sem espaço) -->
-        {% assign est_caso = page.estado_caso | strip | downcase %}
-        {% assign triagem = page.triagem | strip | downcase %}
-        {% assign est_fisico = page.estado_fisico | strip | downcase %}
-        {% assign nivel_alerta = page.nivel_alerta | strip | downcase %}
-        {% assign est_detalhado = page.estado_detalhado | default: page.estadoDetalhado %}
-
-        {% if est_caso contains 'resolvido' %}
-            <div class="status-banner banner-resolved">
-                ✓ Resolvido — {{ page.data_resolucao | default: "Data N/D" }} {% if est_detalhado %}— {{ est_detalhado }}{% endif %}
-            </div>
-        {% elsif nivel_alerta contains 'emergência' or nivel_alerta contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' %}
-            <div class="status-banner banner-red">
-                🚨 Emergência — {{ page.estado_fisico }} — Necessita Resgate Imediato {% if est_detalhado %}({{ est_detalhado }}){% endif %}
-            </div>
-        {% elsif nivel_alerta contains 'urgente' or nivel_alerta contains 'laranja' %}
-            <div class="status-banner banner-orange">
-                ⚠️ {{ page.nivel_alerta }} — {{ page.estado_fisico }} — Necessita Socorro Urgente {% if est_detalhado %}({{ est_detalhado }}){% endif %}
-            </div>
-        {% elsif nivel_alerta contains 'risco' or nivel_alerta contains 'amarelo' or est_fisico contains 'vulnerável' %}
-            <div class="status-banner banner-yellow">
-                ⚠️ {{ page.nivel_alerta }} — {{ page.estado_fisico }} — Necessita Cuidados Médicos {% if est_detalhado %}({{ est_detalhado }}){% endif %}
-            </div>
-        {% else %}
-            <div class="status-banner banner-default">
-                ℹ️ {{ page.nivel_alerta | default: "Alerta" }} — {{ page.estado_fisico | default: "Estado N/D" }} {% if est_detalhado %}({{ est_detalhado }}){% endif %}
-            </div>
-        {% endif %}
+    <!-- Banner de Estado Dinâmico -->
+    <div class="status-banner {{ banner_class }}">
+        {{ banner_text }}
     </div>
 
-    <main class="report-body">
+    <main class="ficha-body">
         <div class="top-section">
-            <!-- 3. Bloco Superior Esquerdo (Imagem & Identificação Básica) -->
-            <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 350px;">
-                <div class="animal-img-container">
-                    {% assign img_src = page.imagem | default: "" | strip %}
-                    {% if img_src != "" %}
-                        {% if img_src contains "http" %}
-                            <img src="{{ img_src }}" alt="Fotografia da ocorrência" class="animal-img" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg'">
-                        {% else %}
-                            <img src="{{ img_src | relative_url }}" alt="Fotografia da ocorrência" class="animal-img" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg'">
-                        {% endif %}
-                    {% else %}
-                        <img src="https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg" alt="Sem Imagem" class="animal-img" loading="lazy">
-                    {% endif %}
-                </div>
-
-                {% if page.nome or page.sexo or page.identificacao %}
-                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); background: var(--box-bg); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--border-color);">
-                    {% if page.nome %}<strong>Nome:</strong> {{ page.nome }}<br>{% endif %}
-                    {% if page.sexo %}<strong>Sexo:</strong> {{ page.sexo }}<br>{% endif %}
-                    {% if page.identificacao %}<strong>Identificação:</strong> {{ page.identificacao }}{% endif %}
-                </div>
+            <!-- Coluna Esquerda: Imagem e Dados Básicos -->
+            <div class="img-col">
+                {% assign img_src = page.imagem | default: "" | strip %}
+                {% if img_src != "" %}
+                    <img src="{% if img_src contains 'http' %}{{ img_src }}{% else %}{{ img_src | relative_url }}{% endif %}" alt="Fotografia do Animal" class="animal-img" loading="lazy">
+                {% else %}
+                    <img src="https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg" alt="Sem Imagem" class="animal-img" loading="lazy">
                 {% endif %}
+                
+                <div class="info-pills">
+                    {% if page.nome %}<span class="pill">Nome: {{ page.nome }}</span>{% endif %}
+                    {% if page.sexo %}<span class="pill">Sexo: {{ page.sexo }}</span>{% endif %}
+                    {% if idade != "" %}<span class="pill">Idade: {{ idade }}</span>{% endif %}
+                </div>
             </div>
 
-            <!-- 4. Painel Lateral Direito (Caixa de Destaque) -->
-            <div class="unified-highlight-box">
-                <div class="box-row">
-                    <label>Situação</label>
-                    <span>{{ page.situacao | default: "N/D" }}</span>
-                </div>
-                <div class="box-row">
-                    <label>Nível de Alerta</label>
-                    <span>{{ page.nivel_alerta | default: page.triagem | default: "N/D" }}</span>
-                </div>
-                <div class="box-row">
-                    <label>Estado Físico</label>
-                    <span>{{ page.estado_fisico | default: "N/D" }}</span>
-                </div>
-                <div class="box-row">
-                    <label>Estado Detalhado</label>
-                    <span>{{ est_detalhado | default: "N/D" }}</span>
+            <!-- Coluna Direita: Caixa Unificada de Alerta em Letras Grandes -->
+            <div class="alert-box-col">
+                <div class="big-alert-box">
+                    <h3>Estado Físico</h3>
+                    <div class="big-value">{{ page.estado_fisico | default: "N/D" }}</div>
+                    
+                    <h3>Nível de Alerta</h3>
+                    <div class="big-value" style="color: var(--theme-color, #0f172a);">{{ page.nivel_alerta | default: page.triagem | default: "N/D" }}</div>
                 </div>
             </div>
         </div>
 
-        <!-- 5. Lista Secundária (Observações, Características, Descrição) -->
-        <h2 class="section-title">🩺 Observações e Acompanhamento</h2>
-        <div class="content-box">
-            {{ page.observacoes | default: "Sem observações adicionais registadas." }}
-        </div>
-
-        {% if page.caracteristicas %}
-        <h2 class="section-title">🐾 Características Físicas</h2>
-        <div class="content-box">
-            {{ page.caracteristicas }}
+        <!-- Observações acima do Mapa -->
+        {% if page.observacoes and page.observacoes != "" %}
+        <div>
+            <h2 class="section-title">🩺 Observações e Características</h2>
+            <div class="content-block">
+                {% if page.caracteristicas %}<strong>Características:</strong> {{ page.caracteristicas }}<br><br>{% endif %}
+                <strong>Notas:</strong> “{{ page.observacoes }}”
+            </div>
         </div>
         {% endif %}
 
-        {% if page.descricao %}
-        <h2 class="section-title">📝 Descrição / Estado do Animal</h2>
-        <div class="content-box">
-            {{ page.descricao }}
+        <!-- Secção do Mapa -->
+        <div>
+            <h2 class="section-title">🗺️ Localização no Mapa</h2>
+            <div id="single-case-map" style="height: 250px; border: 1px solid #cbd5e1; border-radius: 6px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b;">
+                Localização: {{ page.localizacao | default: "Coordenadas não disponíveis" }}
+            </div>
         </div>
-        {% endif %}
-
-        <h2 class="section-title">🗺️ Localização no Mapa</h2>
-        <div id="single-case-map" style="height: 200px; border: 1px solid var(--border-color); border-radius: 6px;"></div>
     </main>
 
-    <!-- 7. Rodapé, Contactos e Partilha -->
-    <footer class="report-footer">
-        <div style="display: flex; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 8px;">
-            <div>
-                {% if page.telemovel %}
-                📞 <strong>Contacto:</strong> <a href="tel:{{ page.telemovel }}" style="color: var(--text-main);">{{ page.telemovel }}</a><br>
-                {% endif %}
-                {% if page.referencia %}
-                🔗 <a href="{{ page.referencia }}" target="_blank" rel="noopener">📘 Ver Post Original</a><br>
-                {% endif %}
-                <span style="font-size: 10px; color: var(--text-muted);">Reporte Inicial: {{ page.data_ocorrencia_inicial | default: page.date | date: "%d/%m/%Y" }}</span>
-            </div>
-            
-            {% if page.qr_link or page.imagem %}
-            <div style="text-align: right;">
-                <span style="font-size: 10px; display: block; color: var(--text-muted);">Aceder via QR Code</span>
-                <img src="{{ page.qr_link | default: 'https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=' | append: page.url | absolute_url }}" alt="QR Code" style="width: 70px; height: 70px; border-radius: 4px; border: 1px solid var(--border-color);">
-            </div>
+    <!-- Rodapé com Contactos e QR Code -->
+    <footer class="ficha-footer">
+        <div>
+            ID: <strong>{{ page.id }}</strong><br>
+            {% if page.referencia %}
+                🔗 <a href="{{ page.referencia }}" target="_blank" rel="noopener" style="color: #0284c7; font-weight: bold;">Ver Publicação Original</a><br>
             {% endif %}
+            <div style="margin-top: 10px;">
+                <button onclick="window.print()" style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; cursor: pointer;">🖨️ Imprimir Ficha</button>
+            </div>
         </div>
-
-        <hr style="border: none; border-top: 1px solid var(--border-color); width: 100%; margin: 8px 0;">
-
-        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 8px;">
-            <div style="color: var(--text-muted); font-size: 10px;">
-                ID: {{ page.id }} — Registo Alerta Animal — <a href="mailto:comapanhia.pt@gmail.com?subject={{ 'Pedido de remoção de dados pessoais - Ocorrência ' | append: page.id | url_encode }}&body={{ 'Solicito a remoção dos dados da ocorrência ID: ' | append: page.id | append: ' por motivo de: ' | url_encode }}" style="color: var(--text-main); text-decoration: underline;">Pedido remoção de dados</a>
-            </div>
-            <div class="btn-group">
-                <button type="button" onclick="window.print();" class="btn">🖨️ Imprimir</button>
-                <button type="button" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copiado!');" class="btn">📋 Copiar</button>
-                <button type="button" id="btn-email-share" class="btn">📧 Email</button>
-            </div>
+        
+        <div style="text-align: right;">
+            <span style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 4px;">Aceder via Telemóvel</span>
+            <img src="{{ page.qr_link | default: 'https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=' | append: page.url | absolute_url }}" alt="QR Code" style="width: 70px; height: 70px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; padding: 2px;">
         </div>
     </footer>
 </div>

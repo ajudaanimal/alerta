@@ -136,7 +136,7 @@ layout: null
       <body>
         <div class="feed-container">
           <div class="nav-back">
-            <a href="/">← Voltar ao site principal</a>
+            <a href="{{ '/' | relative_url }}">← Voltar ao site principal</a>
           </div>
 
           <header class="feed-header">

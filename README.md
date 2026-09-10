@@ -1,4 +1,4 @@
-![animal](https://github.com/ajudaanimal/alerta/blob/main/assets/img/site/animal.jpeg?raw=true)
+![animal](https://github.com/alerta-animal/alerta/blob/main/assets/img/site/animal.jpeg?raw=true)
 
 
 

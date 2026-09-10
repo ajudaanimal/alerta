@@ -12,3 +12,8 @@ Esta ferramenta serve para a sinalização pública de casos de animais feridos 
 
 **Todos podem participar**, seja na qualidade de cidadãos, voluntários, associações, veterinários, serviços públicos ou autoridades.
 
+<a href="{{ '/' | relative_url }}" class="fs-pill" title="Mapa">🗺️</a>
+<a href="{{ '/subscrever/' | relative_url }}" class="fs-pill" title="Subscrever Alertas">🔔</a>
+<a href="{{ '/emergencia/' | relative_url }}" class="fs-pill" title="Contactos de Emergência">📞</a>
+<a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill" title="Reportar Ocorrência">➕</a>
+<a href="{{ '/about/' | relative_url }}" class="fs-pill" title="About">❓</a>

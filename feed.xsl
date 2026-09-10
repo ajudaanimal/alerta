@@ -9,95 +9,136 @@ layout: null
       <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title><xsl:value-of select="atom:title"/> — Feed RSS</title>
+        <title><xsl:value-of select="atom:title"/> — Canal RSS</title>
         <style>
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #1f2937;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            background: #f9fafb;
+          :root {
+            --bg-color: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --accent-color: #2563eb;
+            --badge-bg: #f1f5f9;
           }
-          header {
-            background: #ffffff;
-            padding: 30px;
+          @media (prefers-color-scheme: dark) {
+            :root {
+              --bg-color: #0f172a;
+              --text-main: #f1f5f9;
+              --text-muted: #94a3b8;
+              --card-bg: #1e293b;
+              --border-color: #334155;
+              --accent-color: #3b82f6;
+              --badge-bg: #334155;
+            }
+          }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .feed-container {
+            width: 100%;
+            max-width: 680px;
+          }
+          header.feed-header {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             text-align: center;
           }
-          h1 { margin: 0 0 10px 0; color: #111827; font-size: 1.75rem; }
-          p.subtitle { color: #4b5563; margin: 0 0 20px 0; font-size: 1rem; }
-          .rss-info {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1e40af;
-            padding: 15px 20px;
-            border-radius: 8px;
+          header.feed-header h1 {
+            margin: 0 0 6px 0;
+            font-size: 1.25rem;
+            font-weight: 800;
+          }
+          header.feed-header p {
+            margin: 0 0 12px 0;
             font-size: 0.9rem;
-            text-align: left;
+            color: var(--text-muted);
           }
-          .rss-info code {
-            background: #dbeafe;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-family: monospace;
+          .feed-url-box {
+            background: var(--badge-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             word-break: break-all;
-            display: inline-block;
-            margin-top: 5px;
+            font-family: monospace;
+            color: var(--text-main);
           }
-          .entry {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-          }
-          .entry h2 {
-            margin-top: 0;
-            font-size: 1.2rem;
-          }
-          .entry h2 a {
-            color: #2563eb;
-            text-decoration: none;
-          }
-          .entry h2 a:hover {
-            text-decoration: underline;
-          }
-          .meta {
-            font-size: 0.85rem;
-            color: #6b7280;
-            margin-bottom: 15px;
+          .section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 20px 0 12px 4px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            color: var(--text-muted);
           }
-          .content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 6px;
-            margin-top: 10px;
+          .entry-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            transition: border-color 0.2s;
+          }
+          .entry-card:hover {
+            border-color: var(--accent-color);
+          }
+          .entry-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+          }
+          .entry-title {
+            margin: 0 0 8px 0;
+            font-size: 1.05rem;
+          }
+          .entry-title a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 700;
+          }
+          .entry-title a:hover {
+            text-decoration: underline;
+          }
+          .entry-summary {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.5;
           }
         </style>
       </head>
       <body>
-        <header>
-          <h1>🐾 <xsl:value-of select="atom:title"/></h1>
-          <p class="subtitle"><xsl:value-of select="atom:subtitle"/></p>
-          <div class="rss-info">
-            <strong>ℹ️ Como usar este canal:</strong> Podes copiar o endereço abaixo e adicioná-lo ao teu leitor de RSS preferido ou a plataformas de integração (Make/Zapier):<br/>
-            <code><xsl:value-of select="atom:link[@rel='self']/@href"/></code>
-          </div>
-        </header>
+        <div class="feed-container">
+          <header class="feed-header">
+            <h1>🐾 <xsl:value-of select="atom:title"/></h1>
+            <p><xsl:value-of select="atom:subtitle"/></p>
+            <div class="feed-url-box">
+              <xsl:value-of select="atom:link[@rel='self']/@href"/>
+            </div>
+          </header>
 
-        <main>
-          <h2 style="font-size: 1.25rem; margin-bottom: 20px;">Últimas Ocorrências Registadas</h2>
+          <div class="section-title">Últimas Ocorrências</div>
+
           <xsl:for-each select="atom:entry">
-            <div class="entry">
-              <div class="meta">Publicado a: <xsl:value-of select="atom:published"/></div>
-              <h2>
+            <div class="entry-card">
+              <div class="entry-meta">
+                Publicado a <xsl:value-of select="atom:published"/>
+              </div>
+              <h2 class="entry-title">
                 <xsl:element name="a">
                   <xsl:attribute name="href">
                     <xsl:value-of select="atom:link[@rel='alternate']/@href"/>
@@ -105,12 +146,12 @@ layout: null
                   <xsl:value-of select="atom:title"/>
                 </xsl:element>
               </h2>
-              <div class="content">
-                <xsl:value-of select="atom:content" disable-output-escaping="yes"/>
-              </div>
+              <p class="entry-summary">
+                <xsl:value-of select="atom:summary"/>
+              </p>
             </div>
           </xsl:for-each>
-        </main>
+        </div>
       </body>
     </html>
   </xsl:template>

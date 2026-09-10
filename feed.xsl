@@ -163,10 +163,9 @@ layout: null
                 </xsl:element>
               </h2>
               <div class="entry-content">
-                <!-- Renders full HTML content safely -->
                 <xsl:choose>
                   <xsl:when test="atom:content">
-                    <xsl:value-of select="atom:content" disable-output-escaping="yes"/>
+                    <xsl:value-of select="atom:content"/>
                   </xsl:when>
                   <xsl:otherwise>
                     <xsl:value-of select="atom:summary"/>
@@ -176,6 +175,12 @@ layout: null
             </div>
           </xsl:for-each>
         </div>
+
+        <script>
+          document.querySelectorAll('.entry-content').forEach(function(el) {
+            el.innerHTML = el.textContent;
+          });
+        </script>
       </body>
     </html>
   </xsl:template>

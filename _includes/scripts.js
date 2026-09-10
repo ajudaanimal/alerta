@@ -244,7 +244,7 @@ let mapInstance;
         <header class="report-header" style="background-color: ${item.color};">
           <div>
             <h1>${item.especie}</h1>
-            <div style="font-size:10.5px; opacity:0.9;">📍 ${item.concelho}</div>
+            <div style="font-size:10.5px; opacity:0.9;">📍 ${item.concelho || item.distrito || ''}</div>
           </div>
           <div style="text-align:right; font-size:10.5px;">
             <div>${item.data}</div>

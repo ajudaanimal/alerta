@@ -9,7 +9,7 @@ Plataforma comunitária desenvolvida para dar visibilidade a ocorrências de ani
 
 ---
 
-## 🔗 Ligações Oficiais da Plataforma
+## 🔗 Ligações da Plataforma
 
 * **Plataforma Principal (Mapa):** [https://central-animal.github.io/alerta/](https://central-animal.github.io/alerta/)
 * **Subscrever Alertas:** [https://central-animal.github.io/alerta/subscrever/](https://central-animal.github.io/alerta/subscrever/)

@@ -1,19 +1,26 @@
 ![animal](https://raw.githubusercontent.com/central-animal/alerta/refs/heads/main/assets/img/site/animal.jpeg)
 
 
-## Alerta Animal
+# Alerta Animal
+
 **Sinalização de animais feridos ou doentes para emissão de pedidos de ajuda.**
 
-Apesar dos esforços recentes na área da saúde pública veterinária e do crescente número de associações de resgate animal, muitos municípios do país ainda não conseguem atender com sucesso a todos os casos de animais feridos ou doentes que surgem na sua região.
+Plataforma comunitária desenvolvida para dar visibilidade a ocorrências de animais vulneráveis, promovendo a articulação entre cidadãos, voluntários, associações e autoridades.
 
-Nós também não oferecemos ou garantimos socorro direto em nenhuma das situações. Contudo, sabemos que aumentar a visibilidade sobre estas ocorrências contribui ativamente para a sua resolução. A tecnologia que disponibilizamos permite reportar e consultar pedidos de ajuda para animais num mapa interativo.
+---
 
-Esta ferramenta serve para a sinalização pública de casos de animais feridos ou doentes que estão por resolver e onde provavelmente é necessária ajuda, promovendo a comunicação antecipada de estados de saúde de animais vulneráveis, entre outras ações.
+## 🔗 Ligações Oficiais da Plataforma
 
-**Todos podem participar**, seja na qualidade de cidadãos, voluntários, associações, veterinários, serviços públicos ou autoridades.
+* **Plataforma Principal (Mapa):** [https://central-animal.github.io/alerta/](https://central-animal.github.io/alerta/)
+* **Subscrever Alertas:** [https://central-animal.github.io/alerta/subscrever/](https://central-animal.github.io/alerta/subscrever/)
+* **Emergências e Contactos Úteis:** [https://central-animal.github.io/alerta/emergencia/](https://central-animal.github.io/alerta/emergencia/)
+* **Sobre o Projeto:** [https://central-animal.github.io/alerta/about/](https://central-animal.github.io/alerta/about/)
 
-<a href="{{ '/' | relative_url }}" class="fs-pill" title="Mapa">🗺️</a>
-<a href="{{ '/subscrever/' | relative_url }}" class="fs-pill" title="Subscrever Alertas">🔔</a>
-<a href="{{ '/emergencia/' | relative_url }}" class="fs-pill" title="Contactos de Emergência">📞</a>
-<a href="https://forms.gle/H8KxdxXfuZz69mW56" target="_blank" rel="noopener noreferrer" class="fs-pill" title="Reportar Ocorrência">➕</a>
-<a href="{{ '/about/' | relative_url }}" class="fs-pill" title="About">❓</a>
+---
+
+## 📌 Sobre o Projeto e Avisos Importantes
+
+A Central Animal recebe pedidos de socorro para emitir e encaminhar voluntariamente alertas relativos a animais em situação de necessidade em Portugal, **não dispondo de equipas próprias** para resgate ou acolhimento.
+
+* **Não é um canal de denúncias:** As ferramentas destinam-se exclusivamente à sinalização pública e ao encaminhamento de animais feridos ou doentes no espaço público.
+* **Em caso de urgência:** A plataforma não substitui os serviços oficiais. Em caso de perigo iminente ou crime em curso, contacte o **112**, a **PSP**, a **GNR** ou os **Bombeiros**.

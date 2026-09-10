@@ -9,256 +9,35 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <style>
-  :root {
-    --bg-main: #f8fafc;
-    --card-bg: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border-color: #cbd5e1;
-    --header-bg: #f1f5f9;
-    --primary-color: #0284c7;
-    --box-bg: #f8fafc;
-    --left-width: 340px;
-    --right-width: 400px;
-  }
-
-  html.dark-mode, body.dark-mode, [data-theme="dark"] {
-    --bg-main: #090d16;
-    --card-bg: #111827;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-color: #1f2937;
-    --header-bg: #1f2937;
-    --primary-color: #38bdf8;
-    --box-bg: #1f2937;
-  }
-
-  .site-main-content {
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-
-  .app-layout-wrapper {
-    display: grid;
-    grid-template-columns: var(--left-width) 1fr var(--right-width);
-    height: calc(100vh - 60px);
-    width: 100%;
-    background: var(--bg-main);
-    box-sizing: border-box;
-    overflow: hidden;
-    transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    flex: 1;
-  }
-
-  .app-layout-wrapper.hide-left { --left-width: 36px; }
-  .app-layout-wrapper.hide-right { --right-width: 36px; }
-
-  .app-left-panel, .app-right-panel {
-    background: var(--card-bg);
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-
-  .app-left-panel { border-right: 1px solid var(--border-color); }
-  .app-right-panel { border-left: 1px solid var(--border-color); }
-
-  .panel-collapsible-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .panel-header-bar {
-    padding: 8px 10px;
-    background: var(--header-bg);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    height: 46px;
-    flex-shrink: 0;
-  }
-
-  .panel-action-btn {
-    background: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: bold;
-    flex-shrink: 0;
-  }
-  .panel-action-btn:hover { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
-
-  .collapsed-edge-bar {
-    display: none;
-    position: absolute;
-    top: 0; bottom: 0; left: 0; right: 0;
-    background: var(--header-bg);
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    writing-mode: vertical-lr;
-    text-orientation: mixed;
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    gap: 8px;
-    border: none;
-  }
-  .hide-left .app-left-panel .collapsed-edge-bar,
-  .hide-right .app-right-panel .collapsed-edge-bar { display: flex; }
-  .hide-left .app-left-panel .panel-collapsible-content,
-  .hide-right .app-right-panel .panel-collapsible-content { opacity: 0; pointer-events: none; visibility: hidden; }
-
-  .map-search-input {
-    width: 100%;
-    padding: 6px 8px;
-    background: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 12px;
-    outline: none;
-  }
-
-  .map-list-wrapper { width: 100%; overflow-y: auto; flex: 1; }
-
-  .map-card-item {
-    display: flex;
-    gap: 8px;
-    padding: 10px;
-    border-bottom: 1px solid var(--border-color);
-    background: var(--card-bg);
-    align-items: center;
-    cursor: pointer;
-    transition: background 0.15s ease;
-  }
-  .map-card-item:hover, .map-card-item.selected { background: var(--header-bg); }
-
-  .map-card-img {
-    width: 44px;
-    height: 44px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    flex-shrink: 0;
-  }
-
-  .map-card-body { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
-  .map-card-top-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
-  .map-card-title { font-size: 12.5px; font-weight: 800; color: var(--text-main); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  .map-badge { font-size: 8px; font-weight: 800; text-transform: uppercase; padding: 2px 4px; border-radius: 3px; }
-  .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-  .badge-laranja { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
-  .badge-amarelo { background: rgba(217, 119, 6, 0.2); color: #d97706; }
-  .badge-azul { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
-  .badge-default { background: rgba(100, 116, 139, 0.15); color: #64748b; }
-
-  .map-card-details-row { display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; color: var(--text-muted); gap: 6px; }
-
-  .app-center-panel { display: flex; flex-direction: column; height: 100%; background: var(--bg-main); position: relative; min-width: 0; }
+  {% include styles.css %}
   
   .map-top-filters {
-    background: var(--card-bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 8px 10px;
     display: flex;
     gap: 6px;
     align-items: center;
     flex-wrap: wrap;
-    min-height: 46px;
-    box-sizing: border-box;
-    flex-shrink: 0;
+    padding: 8px 10px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
   }
-
   .filter-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
     padding: 4px 10px;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
     background: var(--card-bg);
-    cursor: pointer;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--text-main);
+    cursor: pointer;
+    white-space: nowrap;
     transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   }
   .filter-pill:hover { border-color: var(--primary-color); }
   .filter-pill.active { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
-
-  .map-container-wrapper { position: relative; flex: 1; width: 100%; display: flex; flex-direction: column; overflow: hidden; }
-  #full-map { width: 100%; height: 100%; }
-
-  .map-preview-card {
-    display: none;
-    position: absolute;
-    bottom: 12px; left: 12px; right: 12px;
-    z-index: 1000;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    align-items: center;
-    gap: 10px;
-  }
-  .map-preview-card img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); flex-shrink: 0; }
-  .map-preview-info { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
-  .map-preview-title { font-size: 13px; font-weight: 800; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
-  .map-preview-loc { font-size: 11px; font-weight: 700; color: var(--primary-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  .app-right-panel-inner { padding: 10px; height: calc(100% - 46px); overflow-y: auto; font-size: 11.5px; }
-  .ficha-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; gap: 8px; padding: 15px; }
-  .ficha-wrapper { display: flex; flex-direction: column; gap: 8px; }
-  .report-header { padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; background: var(--header-bg); border: 1px solid var(--border-color); }
-  .ficha-img-container { width: 100%; height: 180px; background: var(--box-bg); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-  .ficha-img-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
-  .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: var(--box-bg); border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; }
-  .detail-item { display: flex; flex-direction: column; gap: 1px; font-size: 11px; }
-  .detail-item strong { color: var(--text-muted); font-size: 9px; text-transform: uppercase; }
-  .content-box { font-size: 11.5px; background: var(--box-bg); padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; line-height: 1.4; color: var(--text-main); }
-  
-  .report-footer { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; }
-  .report-footer .btn-group { display: flex; gap: 6px; }
-  .report-footer .btn { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; flex: 1; }
-  .report-footer .btn:hover { background: var(--header-bg); border-color: var(--primary-color); color: var(--primary-color); }
-
-  .app-bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 52px; background: var(--card-bg); border-top: 1px solid var(--border-color); z-index: 1500; justify-content: space-around; align-items: center; }
-  .nav-tab-btn { flex: 1; height: 100%; background: transparent; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9.5px; font-weight: 700; color: var(--text-muted); cursor: pointer; gap: 2px; text-transform: uppercase; }
-  .nav-tab-btn span.tab-icon { font-size: 16px; }
-  .nav-tab-btn.active { color: var(--primary-color); }
-
-  @media (max-width: 992px) {
-    .app-layout-wrapper { display: block; position: relative; height: calc(100vh - 52px); }
-    .app-bottom-nav { display: flex; }
-    .app-left-panel, .app-center-panel, .app-right-panel { position: absolute; left: 0; top: 0; right: 0; bottom: 0; width: 100% !important; height: 100% !important; z-index: 1000; display: none !important; }
-    .app-layout-wrapper.mobile-view-list .app-left-panel { display: flex !important; z-index: 1200; }
-    .app-layout-wrapper.mobile-view-map .app-center-panel { display: flex !important; z-index: 1200; }
-    .app-layout-wrapper.mobile-view-ficha .app-right-panel { display: flex !important; z-index: 1200; }
-    .app-left-panel .panel-header-bar .panel-action-btn, .app-right-panel .panel-header-bar .panel-action-btn:not(.mobile-back-btn), .collapsed-edge-bar { display: none !important; }
-    .app-right-panel-inner { padding-bottom: 70px !important; }
-    .map-preview-card { bottom: 60px; left: 10px; right: 10px; }
-  }
 </style>
 
 {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
@@ -291,12 +70,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 <div class="app-layout-wrapper mobile-view-list" id="appLayoutWrapper">
   
-  <!-- Painel Esquerdo: Lista -->
+  <!-- LEFT WINDOW: Animal List -->
   <div class="app-left-panel" id="appLeftPanel">
     <div class="panel-collapsible-content">
-      <div class="panel-header-bar">
+      <div class="panel-header-bar" style="display: flex; align-items: center; gap: 6px; padding: 8px;">
         <button class="panel-action-btn" onclick="toggleLeftPanel()" title="Recolher lista">◀</button>
-        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar espécie, concelho..." onkeyup="filterMapManifest()">
+        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar espécie, concelho..." onkeyup="filterMapManifest()" style="flex: 1;">
       </div>
 
       <div class="map-list-wrapper" id="mapManifestList">
@@ -342,11 +121,50 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
             <div class="map-card-body">
               <div class="map-card-top-row">
                 <div class="map-card-title">{{ post.especie | default: "Animal" }}</div>
-                <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
+                <div class="map-card-tags">
+                  <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
+                </div>
               </div>
               <div class="map-card-details-row">
-                <span style="overflow:hidden; text-overflow:ellipsis;">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</span>
-                <span style="overflow:hidden; text-overflow:ellipsis;">📍 {{ post.concelho | default: post.localidade | default: "N/D" }}</span>
+                <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</span>
+                <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 {{ post.concelho | default: post.localidade | default: "N/D" }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- HTML Oculto com a Ficha Real Completa do Post -->
+          <div id="ficha-source-{{ post.slug }}" style="display: none;">
+            <div class="ficha-wrapper">
+              <div class="report-header" style="background: var(--header-bg); border: 1px solid var(--border-color); color: var(--text-main);">
+                <h1 style="font-size: 13px; font-weight: 800; margin: 0;">{{ post.especie | default: "Ocorrência" }}</h1>
+                <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "Alerta" }}</span>
+              </div>
+              
+              {% if post.imagem %}
+              <div class="ficha-img-container">
+                <img src="{{ post.imagem | relative_url }}" alt="{{ post.especie }}" onerror="this.src='https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg';">
+              </div>
+              {% endif %}
+
+              <div class="details-grid">
+                <div class="detail-item"><strong>Concelho</strong><span>{{ post.concelho | default: "N/D" }}</span></div>
+                <div class="detail-item"><strong>Freguesia</strong><span>{{ post.freguesia | default: "N/D" }}</span></div>
+                <div class="detail-item"><strong>Estado Físico</strong><span>{{ post.estado_fisico | default: "N/D" }}</span></div>
+                <div class="detail-item"><strong>Data</strong><span>{{ post.date | date: "%d/%m/%Y" }}</span></div>
+              </div>
+
+              <div class="section-title">Detalhes da Ocorrência</div>
+              <div class="content-box">
+                {{ post.content | markdownify }}
+              </div>
+
+              <div class="report-footer">
+                <div class="btn-group">
+                  {% if post.lat and post.lng %}
+                  <a href="https://maps.google.com/?q={{ post.lat }},{{ post.lng }}" target="_blank" class="btn">🗺️ GPS</a>
+                  {% endif %}
+                  <button class="btn" onclick="switchMobileTab('map')">Voltar ao Mapa</button>
+                </div>
               </div>
             </div>
           </div>
@@ -358,7 +176,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     </button>
   </div>
   
-  <!-- Painel Central: Mapa e Filtros -->
+  <!-- CENTER WINDOW: Map, Filters and Bottom Preview Card -->
   <div class="app-center-panel">
     <div class="map-top-filters">
       <span style="font-size: 10px; font-weight: 800; color: var(--text-muted);">TRIAGEM:</span>
@@ -369,14 +187,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
       <span style="font-size: 10px; font-weight: 800; color: var(--text-muted); margin-left: 6px;">ESPÉCIE:</span>
       <button type="button" class="filter-pill active" onclick="filterMapBySpecies('all', this)">Todas</button>
-      <button type="button" class="filter-pill" onclick="filterMapBySpecies('felino', this)">🐱</button>
-      <button type="button" class="filter-pill" onclick="filterMapBySpecies('canideo', this)">🐶</button>
-      <button type="button" class="filter-pill" onclick="filterMapBySpecies('ave', this)">🐦</button>
+      <button type="button" class="filter-pill" onclick="filterMapBySpecies('felino', this)" style="padding: 4px 8px;">🐱</button>
+      <button type="button" class="filter-pill" onclick="filterMapBySpecies('canideo', this)" style="padding: 4px 8px;">🐶</button>
+      <button type="button" class="filter-pill" onclick="filterMapBySpecies('ave', this)" style="padding: 4px 8px;">🐦</button>
     </div>
     
     <div class="map-container-wrapper">
       <div id="full-map"></div>
 
+      <!-- Floating Map Preview Card -->
       <div class="map-preview-card" id="mapPreviewCard" onclick="openActiveFicha()">
         <img id="mapPreviewImg" src="" alt="Animal">
         <div class="map-preview-info">
@@ -390,7 +209,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     </div>
   </div>
 
-  <!-- Painel Direito: Ficha Completa -->
+  <!-- RIGHT WINDOW: Rich Details Sheet -->
   <div class="app-right-panel" id="appRightPanel">
     <div class="panel-collapsible-content">
       <div class="panel-header-bar" style="justify-content: space-between;">
@@ -416,7 +235,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 </div>
 
-<!-- Barra de Navegação Inferior (Mobile) -->
+<!-- Mobile Bottom Navigation Bar -->
 <div class="app-bottom-nav" id="appBottomNav">
   <button class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
     <span class="tab-icon">📋</span>
@@ -508,32 +327,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       }
     }
 
+    // Copia a ficha real pré-renderizada pelo Jekyll para o painel lateral
+    const sourceFicha = document.getElementById(`ficha-source-${slug}`);
     const richContentContainer = document.getElementById('appRightPanelInner');
-    if (richContentContainer && occ) {
-      richContentContainer.innerHTML = `
-        <div class="ficha-wrapper">
-          <div class="report-header">
-            <h1 style="font-size: 13px; font-weight: 800; margin: 0;">${occ.title}</h1>
-            <span class="${occ.badgeClass}">${occ.badgeText}</span>
-          </div>
-          <div class="ficha-img-container">
-            <img src="${occ.img}" alt="${occ.title}" onerror="this.src='https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg';">
-          </div>
-          <div class="details-grid">
-            <div class="detail-item"><strong>Localidade</strong><span>${occ.locality}</span></div>
-            <div class="detail-item"><strong>Espécie</strong><span>${occ.title}</span></div>
-          </div>
-          <div class="content-box">
-            Ocorrência registada no sistema de monitorização animal com triagem de prioridade <strong>${occ.badgeText}</strong>.
-          </div>
-          <div class="report-footer">
-            <div class="btn-group">
-              <a href="https://maps.google.com/?q=${occ.lat},${occ.lng}" target="_blank" class="btn">🗺️ Abrir no GPS</a>
-              <button class="btn" onclick="switchMobileTab('map')">Voltar ao Mapa</button>
-            </div>
-          </div>
-        </div>
-      `;
+    if (sourceFicha && richContentContainer) {
+      richContentContainer.innerHTML = sourceFicha.innerHTML;
     }
   }
 

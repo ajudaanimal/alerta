@@ -18,7 +18,7 @@ Plataforma comunitária desenvolvida para dar visibilidade a ocorrências de ani
 
 ---
 
-## 📌 Sobre o Projeto e Avisos Importantes
+## 📌 Aviso
 
 A Central Animal recebe pedidos de socorro para emitir e encaminhar voluntariamente alertas relativos a animais em situação de necessidade em Portugal, **não dispondo de equipas próprias** para resgate ou acolhimento.
 

@@ -5,6 +5,19 @@ description: "Sobre"
 permalink: /about/
 ---
 
+## Alerta Animal
+
+Sinalização de animais feridos ou doentes para emissão de pedidos de ajuda.
+
+Apesar dos esforços recentes em saúde público-veterinária e do crescente número de associações de resgate animal, os demais municípios do país não conseguem ainda atender com sucesso a todos os casos de animais feridos ou doentes a acontecer na sua região.
+
+Nós também não oferecemos ou garantimos socorro em nenhuma das situações, mas sabemos que aumentar o conhecimento sobre estas ocorrências poderá contribuir para a sua resolução e a tecnologia que estamos agora aqui a testar permite-nos começar a reportar e consultar pedidos de ajuda para animais em mapa.
+
+Serve, por isso, para a sinalização pública de casos de animais feridos ou doentes que estão por resolver e onde provavelmente é necessária ajuda, ainda convida à comunicação mais antecipada de estados de saúde de animais vulneráveis, e mais algumas acções.
+
+Todos podem participar, enquanto cidadãos, voluntários, associações, veterinários, serviços públicos ou autoridades.
+
+
 ## Sobre a Central Animal
 
 A Central Animal recebe pedidos de socorro com o objetivo de emitir e encaminhar voluntariamente alertas relativos a animais em situação de necessidade, em território português.

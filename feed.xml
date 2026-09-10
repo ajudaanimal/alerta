@@ -32,10 +32,10 @@ permalink: /feed.xml
 
   <entry>
     <title>{{ post.especie | default: "Animal" | upcase }} - {{ post.nivel_alerta | default: "DESCONHECIDO" | upcase }} - {{ local_final | upcase }}</title>
-    <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}" rel="alternate" type="text/html"/>
+    <link href="{{ post.url | absolute_url }}" rel="alternate" type="text/html"/>
     <published>{% if post.data_ocorrencia_inicial != "" and post.data_ocorrencia_inicial != nil %}{{ post.data_ocorrencia_inicial | date: "%Y-%m-%dT00:00:00Z" }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</published>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
-    <id>{{ site.url }}{{ site.baseurl }}{{ post.url }}</id>
+    <id>{{ post.url | absolute_url }}</id>
     <summary type="html"><![CDATA[{{ post.estado_fisico }} — Situação: {{ post.situacao }} | {{ post.observacoes | strip_html | truncate: 120 }}]]></summary>
     <content type="html"><![CDATA[
       <p><strong>Estado Físico:</strong> {{ post.estado_fisico }}<br />
@@ -50,7 +50,7 @@ permalink: /feed.xml
       <p><img src="{{ post.imagem }}" alt="Imagem da Ocorrência" /></p>
       {% endif %}
 
-      <p><a href="{{ site.url }}{{ site.baseurl }}{{ post.url }}">Ver ocorrência completa no site</a><br />
+      <p><a href="{{ post.url | absolute_url }}">Ver ocorrência completa no site</a><br />
       <em>Publicado a {{ post.date | date: "%d/%m/%Y" }}</em></p>
     ]]></content>
   </entry>

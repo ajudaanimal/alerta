@@ -45,20 +45,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   <!-- LEFT WINDOW: Animal List -->
   <div class="app-left-panel" id="appLeftPanel">
     <div class="panel-collapsible-content">
-      <div class="panel-header-bar">
-        <button class="panel-action-btn" onclick="toggleLeftPanel()" title="Recolher lista">◀</button>
-        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar espécie, concelho..." onkeyup="filterMapManifest()">
-      </div>
-
-      <!-- Controlos Extra: Espécies e Ordenação -->
-      <div class="list-controls-bar">
-        <div class="list-filter-row">
-          <span style="font-size: 9.5px; font-weight: 800; color: var(--text-muted);">ESPÉCIE:</span>
-          <button type="button" class="species-pill active" onclick="filterMapBySpecies('all', this)">Todas</button>
-          <button type="button" class="species-pill" onclick="filterMapBySpecies('felino', this)">🐱</button>
-          <button type="button" class="species-pill" onclick="filterMapBySpecies('canideo', this)">🐶</button>
-          <button type="button" class="species-pill" onclick="filterMapBySpecies('ave', this)">🐦</button>
+      <div class="panel-header-bar" style="flex-direction: column; align-items: stretch; gap: 8px; padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 6px; width: 100%;">
+          <button class="panel-action-btn" onclick="toggleLeftPanel()" title="Recolher lista">◀</button>
+          <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar espécie, concelho..." onkeyup="filterMapManifest()" style="flex: 1;">
         </div>
+        
+        <!-- Filtros de Espécie e Ordenação integrados no topo -->
+        <div class="list-filter-row">
+          <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-right: 2px;">ESPÉCIE:</span>
+          <button type="button" class="species-pill active" onclick="filterMapBySpecies('all', this)">Todos</button>
+          <button type="button" class="species-pill" onclick="filterMapBySpecies('felino', this)">🐱 Gatos</button>
+          <button type="button" class="species-pill" onclick="filterMapBySpecies('canideo', this)">🐶 Cães</button>
+          <button type="button" class="species-pill" onclick="filterMapBySpecies('ave', this)">🐦 Aves</button>
+        </div>
+
         <div>
           <select id="listSortSelect" class="list-sort-select" onchange="sortManifestList()">
             <option value="priority">⚡ Ordenar por: Prioridade (Urgente primeiro)</option>
@@ -131,7 +132,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       <span>▶ LISTA DE OCORRÊNCIAS</span>
     </button>
   </div>
-
+  
   <!-- CENTER WINDOW: Map, Filters and Bottom Preview Card -->
   <div class="app-center-panel">
     <div class="map-external-filter">

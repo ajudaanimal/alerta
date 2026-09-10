@@ -45,6 +45,18 @@ layout: null
             width: 100%;
             max-width: 680px;
           }
+          .nav-back {
+            margin-bottom: 16px;
+          }
+          .nav-back a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+          }
+          .nav-back a:hover {
+            text-decoration: underline;
+          }
           header.feed-header {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -86,13 +98,9 @@ layout: null
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            transition: border-color 0.2s;
-          }
-          .entry-card:hover {
-            border-color: var(--accent-color);
           }
           .entry-meta {
             font-size: 0.75rem;
@@ -102,8 +110,8 @@ layout: null
             text-transform: uppercase;
           }
           .entry-title {
-            margin: 0 0 8px 0;
-            font-size: 1.05rem;
+            margin: 0 0 12px 0;
+            font-size: 1.15rem;
           }
           .entry-title a {
             color: var(--accent-color);
@@ -113,16 +121,24 @@ layout: null
           .entry-title a:hover {
             text-decoration: underline;
           }
-          .entry-summary {
-            font-size: 0.9rem;
+          .entry-content {
+            font-size: 0.95rem;
             color: var(--text-main);
-            margin: 0;
-            line-height: 1.5;
+            line-height: 1.6;
+          }
+          .entry-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
           }
         </style>
       </head>
       <body>
         <div class="feed-container">
+          <div class="nav-back">
+            <a href="/">← Voltar ao site principal</a>
+          </div>
+
           <header class="feed-header">
             <h1>🐾 <xsl:value-of select="atom:title"/></h1>
             <p><xsl:value-of select="atom:subtitle"/></p>
@@ -146,9 +162,17 @@ layout: null
                   <xsl:value-of select="atom:title"/>
                 </xsl:element>
               </h2>
-              <p class="entry-summary">
-                <xsl:value-of select="atom:summary"/>
-              </p>
+              <div class="entry-content">
+                <!-- Renders full HTML content safely -->
+                <xsl:choose>
+                  <xsl:when test="atom:content">
+                    <xsl:value-of select="atom:content" disable-output-escaping="yes"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:value-of select="atom:summary"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </div>
             </div>
           </xsl:for-each>
         </div>

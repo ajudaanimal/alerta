@@ -351,13 +351,18 @@
     if (!concelhoName) return;
 
     const renderConcelho = (topodata) => {
+      console.log("Topodata objects:", topodata.objects);
       const objectKey = Object.keys(topodata.objects)[0];
       const geojson = topojson.feature(topodata, topodata.objects[objectKey]);
+      console.log("Exemplo de propriedades de uma feature:", geojson.features[0]?.properties);
 
-      const feature = geojson.features.find(f => 
-        f.properties && f.properties.name && 
-        f.properties.name.toLowerCase() === concelhoName.toLowerCase()
-      );
+      const searchName = concelhoName.toLowerCase().trim();
+      const feature = geojson.features.find(f => {
+        if (!f.properties) return false;
+        const p = f.properties;
+        const val = p.name || p.Concelho || p.CONCELHO || p.NAME_2 || p.NOME || '';
+        return val.toString().toLowerCase().trim() === searchName;
+      });
 
       if (feature && mapInstance) {
         concelhoLayer = L.geoJSON(feature, {
@@ -369,6 +374,8 @@
             fillOpacity: 0.05
           }
         }).addTo(mapInstance);
+      } else {
+        console.warn('Concelho não encontrado no TopoJSON:', concelhoName);
       }
     };
 

@@ -112,7 +112,7 @@
             background: rgba(100, 100, 100, 0.08);
         }
 
-        /* Estilo específico para o botão com texto "Reportar ocorrência" */
+        /* Estilo específico para o botão "Reportar ocorrência" */
         .fs-pill.fs-report-btn {
             width: auto;
             padding: 0 14px;
@@ -202,7 +202,7 @@
             text-decoration: underline;
         }
 
-        /* Ajustes específicos para Mobile em modo Fullscreen (Index) */
+        /* Ajustes de Responsividade Mobile */
         @media (max-width: 992px) {
             body.layout-fullscreen .site-global-footer {
                 display: none !important;
@@ -214,6 +214,16 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 8px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .fs-pill.fs-report-btn {
+                width: 44px;
+                padding: 0;
+            }
+            .fs-pill.fs-report-btn span.btn-text {
+                display: none;
             }
         }
     </style>
@@ -230,7 +240,7 @@
                 <a href="{{ '/' | relative_url }}" class="fs-pill" title="Mapa">🗺️</a>
                 <a href="{{ '/subscrever/' | relative_url }}" class="fs-pill" title="Subscrever Alertas">🔔</a>
                 <a href="{{ '/emergencia/' | relative_url }}" class="fs-pill" title="Contactos de Emergência">📞</a>
-                <a href="{{ '/formulario/' | relative_url }}" class="fs-pill fs-report-btn" title="Reportar Ocorrência">➕ Reportar ocorrência</a>
+                <a href="{{ '/formulario/' | relative_url }}" class="fs-pill fs-report-btn" title="Reportar Ocorrência">➕ <span class="btn-text">Reportar ocorrência</span></a>
                 <a href="{{ '/about/' | relative_url }}" class="fs-pill" title="Sobre">❓</a> 
             </nav>
             <button type="button" class="theme-toggle-btn" onclick="toggleGlobalDarkMode()" title="Alternar Tema">🌓</button>
@@ -264,6 +274,5 @@
             localStorage.setItem('darkMode', isDark ? 'true' : 'false');
         }
     </script>
-    {% include mobile-system.html %}
 </body>
 </html>

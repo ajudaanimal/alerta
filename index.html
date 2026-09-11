@@ -143,14 +143,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   .map-card-sub {
     font-size: 11px;
+    font-weight: 600;
     color: var(--text-main);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .map-card-sub strong {
-    color: var(--primary-color);
   }
 
   .map-card-loc {
@@ -424,12 +421,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
         {% assign default_img = 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' %}
         {% assign card_img_url = post.imagem | default: default_img | relative_url %}
+        {% assign display_alerta = post.nivel_alerta | default: post.triagem | default: "N/D" %}
 
         <div class="map-card-item map-row" id="card-item-{{ post.slug }}"
              data-slug="{{ post.slug }}"
              data-color="{{ color_key }}"
              data-species="{{ species_key }}"
-             data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}"
+             data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ display_alerta }} {{ post.estado_fisico }}"
              onclick="selectOcorrenciaBySlug('{{ post.slug }}')">
 
           <img src="{{ card_img_url }}" alt="" class="map-card-img" loading="lazy">
@@ -437,9 +435,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           <div class="map-card-body">
             <div class="map-card-top-row">
               <h3 class="map-card-title">{{ post.especie | default: "Animal" }}</h3>
-              <span class="map-badge {{ badge_class }}">Alerta: {{ post.triagem | default: "N/D" }}</span>
+              <span class="map-badge {{ badge_class }}">Alerta: {{ display_alerta }}</span>
             </div>
-            <div class="map-card-sub"><strong>Estado:</strong> {{ post.estado_fisico | default: "N/D" }}</div>
+            <div class="map-card-sub">{{ post.estado_fisico | default: "N/D" }}</div>
             <div class="map-card-loc">📍 {{ post.concelho | default: post.localidade | default: "Localidade N/D" }} • {{ post.date | date: "%d/%m/%Y" }}</div>
           </div>
         </div>
@@ -491,11 +489,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
       {% assign default_img = 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' %}
       {% assign js_img_url = post.imagem | default: default_img | relative_url %}
+      {% assign display_alerta = post.nivel_alerta | default: post.triagem | default: "N/D" %}
 
       {
         slug: {{ post.slug | jsonify }},
         especie: {{ post.especie | default: "Animal" | jsonify }},
-        triagem: {{ post.triagem | default: "N/D" | jsonify }},
+        nivelAlerta: {{ display_alerta | jsonify }},
         estadoFisico: {{ post.estado_fisico | default: "N/D" | jsonify }},
         concelho: {{ post.concelho | default: "" | jsonify }},
         localidade: {{ post.localidade | default: "" | jsonify }},
@@ -537,14 +536,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         keepBuffer: 6
       }).addTo(mapInstance);
 
-      /* CONFIGURAÇÃO DO SPIDERFY E AGRUPAMENTO POR PROXIMIDADE/CONCELHO */
       if (typeof L.markerClusterGroup === 'function') {
         allMarkersLayerGroup = L.markerClusterGroup({
           spiderfyOnMaxZoom: true,
           showCoverageOnHover: false,
           zoomToBoundsOnClick: true,
-          spiderfyDistanceMultiplier: 1.5,
-          maxClusterRadius: 50,
+          spiderfyDistanceMultiplier: 1.8,
+          maxClusterRadius: 40,
           spiderLegPolylineOptions: { weight: 1.5, color: '#0284c7', opacity: 0.7 }
         });
       } else {
@@ -553,10 +551,31 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
       mapInstance.addLayer(allMarkersLayerGroup);
 
+      /* DESFASAMENTO (JITTER) DE PONTOS COM COORDENADAS IDENTICAS */
+      const coordCounts = {};
+
       ocorrenciasData.forEach(function(item) {
-        const lat = parseFloat(item.lat);
-        const lon = parseFloat(item.lon);
+        let lat = parseFloat(item.lat);
+        let lon = parseFloat(item.lon);
+
         if (!isNaN(lat) && !isNaN(lon)) {
+          const key = lat.toFixed(5) + '_' + lon.toFixed(5);
+          if (!coordCounts[key]) {
+            coordCounts[key] = 0;
+          }
+          const count = coordCounts[key];
+          coordCounts[key]++;
+
+          if (count > 0) {
+            const angle = count * 1.25;
+            const radius = 0.00018 * Math.sqrt(count);
+            lat = lat + radius * Math.cos(angle);
+            lon = lon + radius * Math.sin(angle);
+          }
+
+          item.adjustedLat = lat;
+          item.adjustedLon = lon;
+
           criarMarcador(lat, lon, item);
         }
       });
@@ -659,8 +678,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       <div style="text-align: center; font-family: system-ui, sans-serif; min-width: 150px; max-width: 200px;">
         <img src="${item.imagem}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border-color, #cbd5e1);" alt="">
         <div style="font-weight: 700; font-size: 13px; color: var(--text-main, #0f172a);">${item.especie}</div>
-        <div style="font-size: 11px; font-weight: 600; color: #dc2626; margin-top: 2px;">Triagem: ${item.triagem}</div>
-        <div style="font-size: 11px; color: var(--text-main, #0f172a); margin-bottom: 4px;">Estado: ${item.estadoFisico}</div>
+        <div style="font-size: 11px; font-weight: 600; color: #dc2626; margin-top: 2px;">Alerta: ${item.nivelAlerta}</div>
+        <div style="font-size: 11px; color: var(--text-main, #0f172a); margin-bottom: 4px;">${item.estadoFisico}</div>
         <div style="font-size: 10px; color: var(--text-muted, #64748b); margin-bottom: 6px;">📍 ${item.concelho}${item.localidade ? ' • ' + item.localidade : ''}</div>
         <a href="${item.url}" style="display: block; padding: 5px 8px; background: #0284c7; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: 700; font-size: 10px;">Ver Ficha Completa →</a>
       </div>
@@ -689,8 +708,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function selectOcorrencia(item, openPopup = true) {
-    const lat = parseFloat(item.lat);
-    const lon = parseFloat(item.lon);
+    const lat = item.adjustedLat || parseFloat(item.lat);
+    const lon = item.adjustedLon || parseFloat(item.lon);
     const targetLatLng = (!isNaN(lat) && !isNaN(lon)) ? [lat, lon] : null;
 
     loadConcelhoBoundary(item.concelho, targetLatLng);
@@ -698,7 +717,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     const matchObj = allMarkersData.find(m => m.slug === item.slug);
     if (matchObj && matchObj.marker) {
       if (typeof allMarkersLayerGroup.zoomToShowLayer === 'function') {
-        /* DESDOBRA O CLUSTER SE O PONTO ESTIVER DENTRO DE UM GRUPO */
         allMarkersLayerGroup.zoomToShowLayer(matchObj.marker, function() {
           if (openPopup) matchObj.marker.openPopup();
         });

@@ -186,7 +186,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-verde, .badge-green { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
 
   /* ----------------------------------------------------------------------
-     2.4. MAPA, FILTROS E CARTÃO DE PRÉ-VISUALIZAÇÃO FLUTUANTE
+     2.4. MAPA E FILTROS
      ---------------------------------------------------------------------- */
   .map-top-filters {
     background: var(--header-bg);
@@ -236,70 +236,16 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     font-size: 15px;
   }
 
-  /* Cartão Flutuante de Pré-visualização sobre o Mapa */
-  .map-preview-card {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
-    right: 12px;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 10px 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    z-index: 1000;
-    display: none;
-    flex-direction: column;
-    gap: 8px;
+  /* Estilização do Popup Nativo do Leaflet */
+  .leaflet-popup-content-wrapper {
+    border-radius: 10px !important;
+    padding: 4px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
   }
 
-  .preview-card-header {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-
-  .preview-card-img {
-    width: 48px;
-    height: 48px;
-    border-radius: 6px;
-    object-fit: cover;
-    border: 1px solid var(--border-color);
-  }
-
-  .preview-card-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .preview-card-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-main);
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .preview-card-loc {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
-  .preview-btn-action {
-    display: inline-block;
-    width: 100%;
-    padding: 8px;
-    background: var(--primary-color);
-    color: #ffffff;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 700;
-    border-radius: 6px;
-    text-decoration: none;
-    box-sizing: border-box;
+  .leaflet-popup-content {
+    margin: 8px 10px !important;
+    line-height: 1.4 !important;
   }
 
   /* ----------------------------------------------------------------------
@@ -380,7 +326,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       min-height: 100vh !important;
     }
 
-    /* Mapa no Topo com 50vh */
     .app-center-panel {
       order: 1;
       width: 100% !important;
@@ -405,7 +350,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       min-height: 100%;
     }
 
-    /* Lista na Metade Inferior */
     .app-left-panel {
       order: 2;
       width: 100% !important;
@@ -458,7 +402,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <!-- ====================================================================== -->
 <div class="app-layout-wrapper" id="appLayoutWrapper">
 
-  <!-- 4.1. PAINEL DO MAPA (TOPO EM MOBILE - 50vh) -->
+  <!-- 4.1. PAINEL DO MAPA -->
   <div class="app-center-panel">
     <div class="map-top-filters">
       <span style="font-size: 10px; font-weight: 800; color: var(--text-muted);">TRIAGEM:</span>
@@ -476,22 +420,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     <div class="map-container-wrapper">
       <div id="full-map"></div>
-
-      <!-- CARTÃO DE PRÉ-VISUALIZAÇÃO FLUTUANTE SOBRE O MAPA -->
-      <div class="map-preview-card" id="mapPreviewCard">
-        <div class="preview-card-header">
-          <img src="" id="prevCardImg" class="preview-card-img" alt="">
-          <div class="preview-card-info">
-            <h4 class="preview-card-title" id="prevCardTitle">---</h4>
-            <div class="preview-card-loc" id="prevCardLoc">---</div>
-          </div>
-        </div>
-        <a href="#" id="prevCardBtn" class="preview-btn-action">Ver Ficha Completa →</a>
-      </div>
     </div>
   </div>
 
-  <!-- 4.2. PAINEL DA LISTA DE OCORRÊNCIAS (ABAIXO DO MAPA) -->
+  <!-- 4.2. PAINEL DA LISTA DE OCORRÊNCIAS -->
   <div class="app-left-panel" id="appLeftPanel">
     <div class="panel-header-bar">
       <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar ocorrências..." onkeyup="filterMapManifest()">
@@ -554,7 +486,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       {% endfor %}
     </div>
 
-    <!-- NAVEGAÇÃO DE PAGINAÇÃO (10 EM 10) -->
+    <!-- NAVEGAÇÃO DE PAGINAÇÃO -->
     <nav class="pagination-bar" id="paginationBar">
       <button type="button" class="pagination-btn" id="btnPrevPage" onclick="changePage(-1)">Anterior</button>
       <span id="pageInfo">Página 1</span>
@@ -649,7 +581,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
       mapInstance.fitBounds(portugalBounds);
 
-      /* CARTO Voyager Tile Layer com Chave de API Restaurada */
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3494_1_8eeb09fcfa7dbb0a9063b727', {
         maxZoom: 19,
         subdomains: 'abcd',
@@ -688,15 +619,23 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function loadConcelhosGeoJSON() {
-    fetch('https://raw.githubusercontent.com/deldersveld/topojson/master/countries/portugal/portugal-districts.json')
+    fetch("{{ '/assets/data/concelhos.topo.json' | relative_url }}")
       .then(res => res.json())
-      .then(topoData => {
-        if (topoData && typeof topojson !== 'undefined') {
-          const key = Object.keys(topoData.objects)[0];
-          concelhosGeoJSON = topojson.feature(topoData, topoData.objects[key]);
+      .then(geoData => {
+        if (!geoData) return;
+        
+        /* Suporta tanto GeoJSON direto como formato TopoJSON */
+        if (geoData.type === 'FeatureCollection') {
+          concelhosGeoJSON = geoData;
+        } else if (geoData.type === 'Topology' && geoData.objects && typeof topojson !== 'undefined') {
+          const key = Object.keys(geoData.objects)[0];
+          concelhosGeoJSON = topojson.feature(geoData, geoData.objects[key]);
+        } else if (geoData.objects && typeof topojson !== 'undefined') {
+          const key = Object.keys(geoData.objects)[0];
+          concelhosGeoJSON = topojson.feature(geoData, geoData.objects[key]);
         }
       })
-      .catch(err => console.error("Erro ao carregar dados dos concelhos:", err));
+      .catch(err => console.error("Erro ao carregar ficheiro de concelhos:", err));
   }
 
   function criarMarcador(lat, lon, item) {
@@ -712,8 +651,20 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     const marker = L.marker([lat, lon], { icon: customIcon });
 
+    /* CONTEÚDO DO POPUP NATIVO SOBRE O PONTO DO MAPA */
+    const popupHtml = `
+      <div style="text-align: center; font-family: system-ui, sans-serif; min-width: 150px; max-width: 200px;">
+        <img src="${item.imagem}" style="width: 100%; height: 90px; object-fit: cover; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border-color, #cbd5e1);" alt="">
+        <div style="font-weight: 700; font-size: 13px; color: var(--text-main, #0f172a);">${item.especie}</div>
+        <div style="font-size: 11px; color: var(--text-muted, #64748b); margin-bottom: 8px;">${item.concelho}${item.localidade ? ' • ' + item.localidade : ''}</div>
+        <a href="${item.url}" style="display: block; padding: 6px 10px; background: #0284c7; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 11px;">Ver Ficha Completa →</a>
+      </div>
+    `;
+
+    marker.bindPopup(popupHtml, { offset: [0, -10] });
+
     marker.on('click', function() {
-      selectOcorrencia(item);
+      selectOcorrencia(item, false);
     });
 
     const mapObj = {
@@ -729,10 +680,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   function selectOcorrenciaBySlug(slug) {
     const item = ocorrenciasData.find(o => o.slug === slug);
-    if (item) selectOcorrencia(item);
+    if (item) selectOcorrencia(item, true);
   }
 
-  function selectOcorrencia(item) {
+  function selectOcorrencia(item, openPopup = true) {
     const lat = parseFloat(item.lat);
     const lon = parseFloat(item.lon);
 
@@ -742,18 +693,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     highlightConcelho(item.concelho);
 
-    const prevCard = document.getElementById('mapPreviewCard');
-    const prevImg = document.getElementById('prevCardImg');
-    const prevTitle = document.getElementById('prevCardTitle');
-    const prevLoc = document.getElementById('prevCardLoc');
-    const prevBtn = document.getElementById('prevCardBtn');
-
-    if (prevCard && prevTitle && prevBtn) {
-      prevImg.src = item.imagem;
-      prevTitle.innerText = item.especie;
-      prevLoc.innerText = `${item.concelho}${item.localidade ? ' • ' + item.localidade : ''}`;
-      prevBtn.href = item.url;
-      prevCard.style.display = 'flex';
+    const matchObj = allMarkersData.find(m => m.slug === item.slug);
+    if (matchObj && matchObj.marker && openPopup) {
+      matchObj.marker.openPopup();
     }
 
     document.querySelectorAll('.map-card-item').forEach(c => c.classList.remove('selected'));
@@ -774,16 +716,16 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     const normName = normalizeText(concelhoName);
     if (!normName) return;
 
-    const matchFeature = concelhosGeoJSON.features.find(f => {
+    const matchFeature = concelhosGeoJSON.features?.find(f => {
       const props = f.properties || {};
       const pName2 = normalizeText(props.NAME_2 || '');
       const pName1 = normalizeText(props.NAME_1 || '');
-      const pName = normalizeText(props.name || props.NAME || props.concelho || props.municipality || '');
+      const pName = normalizeText(props.name || props.NAME || props.concelho || props.CONCELHO || props.municipality || props.MUNICIPALITY || '');
 
       return (
-        (pName2 && (pName2.includes(normName) || normName.includes(pName2))) ||
-        (pName && (pName.includes(normName) || normName.includes(pName))) ||
-        (pName1 && (pName1.includes(normName) || normName.includes(pName1)))
+        (pName2 && (pName2 === normName || pName2.includes(normName) || normName.includes(pName2))) ||
+        (pName && (pName === normName || pName.includes(normName) || normName.includes(pName))) ||
+        (pName1 && (pName1 === normName || pName1.includes(normName) || normName.includes(pName1)))
       );
     });
 

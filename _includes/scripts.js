@@ -4,7 +4,7 @@ let mapInstance;
   let itemsBySlug = {};
   let activeColorFilter = 'all';
   let activeSpeciesFilter = 'all';
-  let currentActiveCircle = null;
+  let concelhoLayer = null;
   let currentSelectedSlug = null;
   var portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
 
@@ -207,18 +207,6 @@ let mapInstance;
   }
 
   function criarMarcador(lat, lon, item) {
-    var radiusMeters = 1200;
-
-    var circleArea = L.circle([lat, lon], {
-      radius: radiusMeters,
-      color: '#dc2626',
-      weight: 2,
-      opacity: 0.9,
-      fill: false,
-      fillOpacity: 0,
-      dashArray: '4, 4'
-    });
-
     var emojiIcon = getSpeciesEmoji(item.especie);
     var iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
 
@@ -240,10 +228,10 @@ let mapInstance;
 
     var mapObj = {
       marker: marker,
-      circle: circleArea,
       colorKey: item.colorKey,
       speciesKey: getSpeciesCategory(item.especie),
-      slug: item.slug
+      slug: item.slug,
+      concelho: item.concelho
     };
 
     allMarkersData.push(mapObj);
@@ -283,30 +271,26 @@ let mapInstance;
     if (mapObj && mapInstance) {
       var latLng = mapObj.marker.getLatLng();
       
-      if (currentActiveCircle && mapInstance.hasLayer(currentActiveCircle)) {
-        mapInstance.removeLayer(currentActiveCircle);
-      }
-      
-      mapObj.circle.addTo(mapInstance);
-      currentActiveCircle = mapObj.circle;
+      // Carregar limite administrativo do Concelho (admin_level=7)
+      loadConcelhoBoundary(item.concelho);
 
-      mapInstance.setView(latLng, 14, { animate: true });
+      mapInstance.setView(latLng, 12, { animate: true });
     }
 
-     const previewCard = document.getElementById('mapPreviewCard');
-  if (previewCard) {
-    previewCard.innerHTML = `
-      <img id="mapPreviewImg" src="${item.imagem}" alt="Animal">
-      <div class="map-preview-info">
-        <div class="map-preview-title">
-          <span id="mapPreviewSpecies">${item.especie}</span>
-          <span id="mapPreviewBadge" class="map-badge ${item.badgeClass}">${item.triagem}</span>
+    const previewCard = document.getElementById('mapPreviewCard');
+    if (previewCard) {
+      previewCard.innerHTML = `
+        <img id="mapPreviewImg" src="${item.imagem}" alt="Animal">
+        <div class="map-preview-info">
+          <div class="map-preview-title">
+            <span id="mapPreviewSpecies">${item.especie}</span>
+            <span id="mapPreviewBadge" class="map-badge ${item.badgeClass}">${item.triagem}</span>
+          </div>
+          <div class="map-preview-loc" id="mapPreviewLocality">📍 ${item.concelho || item.distrito || ''}</div>
         </div>
-        <div class="map-preview-loc" id="mapPreviewLocality">📍 ${item.concelho || item.distrito || ''}</div>
-      </div>
-    `;
-    previewCard.style.display = 'flex';
-  }
+      `;
+      previewCard.style.display = 'flex';
+    }
 
     const headerExpandBtn = document.getElementById('panelHeaderExpandBtn');
     if (headerExpandBtn) {
@@ -360,10 +344,72 @@ let mapInstance;
     }
   }
 
+  function loadConcelhoBoundary(concelhoName) {
+    if (concelhoLayer && mapInstance) {
+      mapInstance.removeLayer(concelhoLayer);
+      concelhoLayer = null;
+    }
+    if (!concelhoName) return;
+
+    const query = `[out:json][timeout:15];
+      area["ISO3166-1"="PT"]->.searchArea;
+      relation(area.searchArea)["boundary"="administrative"]["admin_level"="7"]["name"="${concelhoName}"];
+      (._; >;);
+      out geom;`;
+
+    fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      body: 'data=' + encodeURIComponent(query)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (!data.elements || data.elements.length === 0) return;
+
+      const coords = [];
+      data.elements.forEach(el => {
+        if (el.type === 'relation' && el.members) {
+          el.members.forEach(member => {
+            if (member.role === 'outer' && member.geometry) {
+              coords.push(member.geometry.map(pt => [pt.lat, pt.lon]));
+            }
+          });
+        } else if (el.type === 'way' && el.geometry) {
+          coords.push(el.geometry.map(pt => [pt.lat, pt.lon]));
+        }
+      });
+
+      if (coords.length === 0) {
+        data.elements.forEach(el => {
+          if (el.members) {
+            el.members.forEach(member => {
+              if (member.geometry) {
+                coords.push(member.geometry.map(pt => [pt.lat, pt.lon]));
+              }
+            });
+          } else if (el.geometry) {
+            coords.push(el.geometry.map(pt => [pt.lat, pt.lon]));
+          }
+        });
+      }
+
+      if (coords.length > 0 && mapInstance) {
+        concelhoLayer = L.polygon(coords, {
+          color: '#2563eb',
+          weight: 2,
+          dashArray: '4, 4',
+          fillColor: '#2563eb',
+          fillOpacity: 0.05
+        }).addTo(mapInstance);
+      }
+    })
+    .catch(err => console.warn('Erro ao carregar limite do concelho:', err));
+  }
+
   function unexpandOccurrence() {
     history.pushState(null, null, window.location.pathname);
-    if (currentActiveCircle && mapInstance && mapInstance.hasLayer(currentActiveCircle)) {
-      mapInstance.removeLayer(currentActiveCircle);
+    if (concelhoLayer && mapInstance && mapInstance.hasLayer(concelhoLayer)) {
+      mapInstance.removeLayer(concelhoLayer);
+      concelhoLayer = null;
     }
     const previewCard = document.getElementById('mapPreviewCard');
     if (previewCard) previewCard.style.display = 'none';
@@ -425,7 +471,7 @@ let mapInstance;
       if (mapInstance) {
         setTimeout(() => {
           mapInstance.invalidateSize();
-          if (!currentActiveCircle) {
+          if (!concelhoLayer) {
             mapInstance.fitBounds(portugalBounds);
           }
         }, 200);

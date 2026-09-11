@@ -89,7 +89,17 @@ let mapInstance;
   document.addEventListener('click', function(e) {
     const link = e.target.closest('a');
     if (link && link.href && link.href.startsWith(window.location.origin)) {
-      if (link.classList.contains('btn-open-ficha') || link.dataset.spa === "true" || link.pathname.includes('/ocorrencias/')) {
+      if (document.getElementById('full-map') && link.pathname.includes('/ocorrencias/')) {
+        e.preventDefault();
+        const segments = link.pathname.split('/').filter(Boolean);
+        const slug = segments[segments.length - 1];
+        if (slug) {
+          handleListItemClick(slug);
+        }
+        return;
+      }
+
+      if (link.classList.contains('btn-open-ficha') || link.dataset.spa === "true") {
         e.preventDefault();
         navigateToSpaUrl(link.href);
       }
@@ -222,8 +232,8 @@ let mapInstance;
 
     marker.on('click', function() {
       selectOccurrence(item.slug, true);
-      if (window.innerWidth <= 992 && typeof switchMobileMode === 'function') {
-        switchMobileMode('ficha');
+      if (window.innerWidth <= 992 && typeof switchMobileTab === 'function') {
+        switchMobileTab('ficha');
       }
     });
 
@@ -246,8 +256,8 @@ let mapInstance;
 
   function handleListItemClick(slug) {
     selectOccurrence(slug, true);
-    if (window.innerWidth <= 992 && typeof switchMobileMode === 'function') {
-      switchMobileMode('split');
+    if (window.innerWidth <= 992 && typeof switchMobileTab === 'function') {
+      switchMobileTab('ficha');
     }
   }
 

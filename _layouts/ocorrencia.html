@@ -51,9 +51,34 @@ layout: default
         border-radius: 0;
     }
 
+    /* Subtil barra de navegação exterior à ficha (continuidade com o site) */
+    .site-nav-bar {
+        max-width: 720px;
+        margin: 16px auto 0 auto;
+        padding: 0 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+    }
+
+    .site-nav-bar a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: color 0.2s;
+    }
+
+    .site-nav-bar a:hover {
+        color: var(--text-main);
+    }
+
     .page-wrapper {
         max-width: 720px;
-        margin: 16px auto;
+        margin: 8px auto 16px auto;
         padding: 0;
         background: var(--card-bg);
         border: 1px solid var(--border-color);
@@ -340,7 +365,8 @@ layout: default
 
     @media print {
         body { background: #ffffff !important; color: #000000 !important; padding: 0; }
-        .page-wrapper { box-shadow: none; border: none; }
+        .site-nav-bar { display: none !important; }
+        .page-wrapper { box-shadow: none; border: none; margin: 0 auto; }
         .report-footer { display: none !important; }
     }
 </style>
@@ -386,6 +412,12 @@ layout: default
 {% elsif raw_localizacao and raw_localizacao != "" and raw_localizacao != "Não indicado" and raw_localizacao != "Não indicada" and raw_localizacao != "N/D" %}
     {% assign display_loc = raw_localizacao %}
 {% endif %}
+
+<!-- Opções de navegação subtis fora da ficha (visíveis no site, ocultas na impressão) -->
+<nav class="site-nav-bar">
+    <a href="{{ '/' | relative_url }}">← Voltar à Lista</a>
+    <a href="{{ '/mapa.html' | relative_url }}">🗺️ Ver Mapa Geral</a>
+</nav>
 
 <div class="page-wrapper" style="--theme-color: {{ theme_color }};">
     <header class="report-header">

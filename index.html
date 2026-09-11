@@ -4,20 +4,20 @@ title: "Alerta Animal — Painel de Ocorrências"
 description: "Plataforma de monitorização e alerta de ocorrências de animais"
 ---
 
-<!-- ========================================================== -->
-<!-- 1. EXTERNAL LIBRARIES & DEPENDENCIES                       -->
-<!-- ========================================================== -->
+<!-- ====================================================================== -->
+<!-- 1. DEPENDÊNCIAS EXTERNAS (LEAFLET & TOPOJSON)                           -->
+<!-- ====================================================================== -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="https://unpkg.com/topojson-client@3"></script>
 
-<!-- ========================================================== -->
-<!-- CONSOLIDATED CSS STYLES WITH MOBILE OVERFLOW & MINI-MAP    -->
-<!-- ========================================================== -->
+<!-- ====================================================================== -->
+<!-- 2. ESTILOS CSS CONSOLIDADOS E MODULARES                                -->
+<!-- ====================================================================== -->
 <style>
-  /* ==========================================================
-     1. COLOR VARIABLES & THEME TOKENS
-     ========================================================== */
+  /* ----------------------------------------------------------------------
+     2.1. VARIÁVEIS DE TEMA & TOKENS DE CORES (LIGHT / DARK MODE)
+     ---------------------------------------------------------------------- */
   :root {
     --bg-main: #f8fafc;
     --card-bg: #ffffff;
@@ -40,7 +40,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --box-bg: #1f2937;
   }
 
-  /* Universal Box Sizing & Mobile Horizontal Overflow Safeguard */
+  /* Reset Universal & Prevenção de Overflow Horizontal */
   *, *::before, *::after {
     box-sizing: border-box;
   }
@@ -61,10 +61,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     flex-direction: column !important;
   }
 
-  /* ==========================================================
-     2. DESKTOP 3-COLUMN LAYOUT RATIO
-     ========================================================== */
-  /* Left List: 30% | Center Map: 40% | Right Ficha: 30% */
+  /* ----------------------------------------------------------------------
+     2.2. LAYOUT DESKTOP EM 3 COLUNAS (30% LISTA | 40% MAPA | 30% FICHA)
+     ---------------------------------------------------------------------- */
   .app-layout-wrapper {
     display: grid;
     grid-template-columns: 30% 40% 30%;
@@ -80,9 +79,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .app-layout-wrapper.hide-left { grid-template-columns: 44px 57% 43%; }
   .app-layout-wrapper.hide-right { grid-template-columns: 43% 57% 44px; }
 
-  /* ==========================================================
-     3. PANEL CONTAINER STYLES (LEFT & RIGHT)
-     ========================================================== */
+  /* ----------------------------------------------------------------------
+     2.3. PAINÉIS LATERAIS (ESQUERDO & DIREITO)
+     ---------------------------------------------------------------------- */
   .app-left-panel, .app-right-panel {
     background: var(--card-bg);
     height: 100%;
@@ -155,9 +154,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     flex: 1;
   }
 
-  /* ==========================================================
-     4. MINI-MAP BANNER CARD (MOBILE FIRST ITEM)
-     ========================================================== */
+  /* ----------------------------------------------------------------------
+     2.4. BANNER DO MINI-MAPA E CARTÕES DE OCORRÊNCIA (LISTA & GALERIA)
+     ---------------------------------------------------------------------- */
   .mini-map-banner {
     display: flex;
     align-items: center;
@@ -195,9 +194,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-radius: 12px;
   }
 
-  /* ==========================================================
-     5. LIST ITEM CARDS & BADGES
-     ========================================================== */
   .map-card-item {
     display: flex;
     gap: 12px;
@@ -256,6 +252,17 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     gap: 6px;
   }
 
+  .btn-compact-ficha {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(2, 132, 199, 0.08);
+  }
+
+  /* Badges de Triagem e Estado */
   .map-badge {
     font-size: 10px;
     font-weight: 800;
@@ -271,7 +278,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-azul { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  /* Gallery Mode Grid */
+  /* Modificador da Vista de Galeria (Grelha 3 colunas) */
   .map-list-wrapper.gallery-mode {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr);
@@ -294,9 +301,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     height: auto !important;
   }
 
-  /* ==========================================================
-     6. CENTER MAP PANEL & FILTERS
-     ========================================================== */
+  /* ----------------------------------------------------------------------
+     2.5. PAINEL CENTRAL (MAPA E FILTROS DE TOPO)
+     ---------------------------------------------------------------------- */
   .app-center-panel {
     display: flex;
     flex-direction: column;
@@ -374,9 +381,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-radius: 8px;
   }
 
-  /* ==========================================================
-     7. RIGHT PANEL (FICHA DE OCORRÊNCIA)
-     ========================================================== */
+  /* ----------------------------------------------------------------------
+     2.6. PAINEL DIREITO (FICHA DE DETALHE DA OCORRÊNCIA)
+     ---------------------------------------------------------------------- */
   .app-right-panel-inner {
     padding: 14px;
     height: calc(100% - 52px);
@@ -404,6 +411,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .report-header h1 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
   }
 
   .status-banner {
@@ -461,6 +474,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     line-height: 1.5;
   }
 
+  /* PIN Personalizado do Marcador */
   .species-pin {
     width: 32px;
     height: 32px;
@@ -474,9 +488,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     font-size: 15px;
   }
 
-  /* ==========================================================
-     8. BOTTOM NAVIGATION BAR FOR MOBILE
-     ========================================================== */
+  /* ----------------------------------------------------------------------
+     2.7. NAVEGAÇÃO E REGRAS PARA DISPOSITIVOS MÓVEIS (<= 992px)
+     ---------------------------------------------------------------------- */
   .app-bottom-nav {
     display: none;
     position: fixed;
@@ -526,9 +540,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .image-lightbox-modal.active { display: flex; }
   .image-lightbox-modal img { max-width: 90%; max-height: 90%; object-fit: contain; }
 
-  /* ==========================================================
-     9. MOBILE RESPONSIVE OVERRIDES (<= 992px)
-     ========================================================== */
   @media (max-width: 992px) {
     .app-layout-wrapper {
       display: block;
@@ -549,7 +560,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       display: none !important;
     }
 
-    /* Active Mobile View Tab Switching */
+    /* Alternância de Vistas em Dispositivos Móveis */
     .app-layout-wrapper.mobile-view-list .app-left-panel { display: flex !important; z-index: 1200; }
     .app-layout-wrapper.mobile-view-map .app-center-panel { display: flex !important; z-index: 1200; }
     .app-layout-wrapper.mobile-view-ficha .app-right-panel { display: flex !important; z-index: 1200; }
@@ -561,12 +572,17 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     .map-preview-card { bottom: 20px; left: 12px; right: 12px; }
   }
 </style>
-<!-- ========================================================== -->
-<!-- 3. LIQUID DATA PROCESSING & HTML STRUCTURE                 -->
-<!-- ========================================================== -->
+
+<!-- ====================================================================== -->
+<!-- 3. PROCESSAMENTO DE DADOS LIQUID (JEKYLL)                               -->
+<!-- ====================================================================== -->
 {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
 {% assign scored_posts = "" | split: "" %}
 
+{% comment %}
+  Algoritmo de Cálculo de Prioridade SAR:
+  Mapeia Triagem e Estado Físico para uma pontuação numérica ordenada.
+{% endcomment %}
 {% for post in sorted_posts %}
   {% assign t = post.triagem | strip | downcase %}
   {% assign est_fisico = post.estado_fisico | strip | downcase %}
@@ -592,9 +608,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 {% assign sorted_scored = scored_posts | sort %}
 
+<!-- ====================================================================== -->
+<!-- 4. ESTRUTURA HTML DO PAINEL PRINCIPAL                                   -->
+<!-- ====================================================================== -->
 <div class="app-layout-wrapper mobile-view-list" id="appLayoutWrapper">
 
-  <!-- LEFT PANEL: LIST / GALLERY -->
+  <!-- 4.1. PAINEL ESQUERDO: LISTA E GALERIA -->
   <div class="app-left-panel" id="appLeftPanel">
     <div class="panel-collapsible-content">
       <div class="panel-header-bar">
@@ -660,7 +679,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     </div>
   </div>
 
-  <!-- CENTER PANEL: MAP -->
+  <!-- 4.2. PAINEL CENTRAL: MAPA INTERATIVO & FILTROS -->
   <div class="app-center-panel">
     <div class="map-top-filters">
       <span style="font-size: 10px; font-weight: 800; color: var(--text-muted);">TRIAGEM:</span>
@@ -679,6 +698,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     <div class="map-container-wrapper">
       <div id="full-map"></div>
 
+      <!-- Preview Flutuante sobre o Mapa -->
       <div class="map-preview-card" id="mapPreviewCard">
         <img id="mapPreviewImg" src="" alt="Animal">
         <div class="map-preview-info">
@@ -692,7 +712,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     </div>
   </div>
 
-  <!-- RIGHT PANEL: FICHA DETAILS -->
+  <!-- 4.3. PAINEL DIREITO: FICHA DE DETALHES -->
   <div class="app-right-panel" id="appRightPanel">
     <div class="panel-collapsible-content">
       <div class="panel-header-bar" style="justify-content: space-between;">
@@ -711,12 +731,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 </div>
 
-<!-- LIGHTBOX MODAL OVERLAY -->
+<!-- 4.4. COMPONENTES FLUTUANTES (LIGHTBOX & BARRA MOBILE) -->
 <div class="image-lightbox-modal" id="imageLightboxModal">
   <img id="lightboxImage" src="" alt="Imagem Ampliada">
 </div>
 
-<!-- MOBILE BOTTOM NAVIGATION -->
 <nav class="app-bottom-nav" id="appBottomNav">
   <button type="button" class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
     <span class="tab-icon">📋</span>
@@ -732,13 +751,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   </button>
 </nav>
 
-<!-- ========================================================== -->
-<!-- 4. CONSOLIDATED JAVASCRIPT LOGIC                            -->
-<!-- ========================================================== -->
+<!-- ====================================================================== -->
+<!-- 5. LÓGICA JAVASCRIPT INTEGRADA                                          -->
+<!-- ====================================================================== -->
 <script>
-  /* ==========================================================
-     1. GLOBAL APPLICATION STATE & CONFIGURATION
-     ========================================================== */
+  /* ======================================================================
+     5.1. ESTADO GLOBAL DA APLICAÇÃO & CONFIGURAÇÕES
+     ====================================================================== */
   let mapInstance = null;
   let allMarkersLayerGroup = null;
   let allMarkersData = [];
@@ -751,9 +770,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let concelhosTopoData = null;
   let concelhosIndex = {};
 
-  /* ==========================================================
-     2. LIQUID DATA DESERIALIZATION (JEKYLL BUILD TIME)
-     ========================================================== */
+  /* ======================================================================
+     5.2. DESERIALIZAÇÃO DE DADOS LIQUID (EXECUÇÃO EM TEMPO DE BUILD)
+     ====================================================================== */
   const ocorrenciasData = [
     {% for item in sorted_scored %}
       {% assign parts = item | split: "___" %}
@@ -817,9 +836,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     {% endfor %}
   ];
 
-  /* ==========================================================
-     3. INITIALIZATION & ROUTING LISTENERS
-     ========================================================== */
+  /* ======================================================================
+     5.3. INICIALIZAÇÃO DA APLICAÇÃO E LISTENERS DE NAVEGAÇÃO
+     ====================================================================== */
   document.addEventListener("DOMContentLoaded", function() {
     initMap();
     handleInitialRoute();
@@ -830,8 +849,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   });
 
   /**
-   * Switches mobile active view tab ('list', 'map', or 'ficha').
-   * @param {string} tab - The view mode key
+   * Alterna a vista no ecrã mobile ('list', 'map', ou 'ficha').
+   * @param {string} tab - Nome da aba ativa
    */
   function switchMobileTab(tab) {
     const wrapper = document.getElementById('appLayoutWrapper');
@@ -857,8 +876,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /**
-   * Triggers occurrence selection on item list click.
-   * @param {string} slug - Unique post identifier
+   * Trata o clique num item da lista de ocorrências.
+   * @param {string} slug - Identificador único do registo
    */
   function handleListItemClick(slug) {
     selectOccurrence(slug, true);
@@ -868,9 +887,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /**
-   * Selects an occurrence, updates URL hash, centers map, and populates the detail panel.
-   * @param {string} slug - Unique post identifier
-   * @param {boolean} updateHash - Whether to update browser history URL hash
+   * Seleciona uma ocorrência, atualiza o mapa, o histórico e o painel de detalhes.
+   * @param {string} slug - Identificador único do registo
+   * @param {boolean} updateHash - Atualiza a URL com o hash
    */
   function selectOccurrence(slug, updateHash = true) {
     const item = ocorrenciasData.find(i => i.slug === slug);
@@ -952,9 +971,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  /* ==========================================================
-     4. LEAFLET MAP & MARKERS ENGINE
-     ========================================================== */
+  /* ======================================================================
+     5.4. MOTOR DE MAPA LEAFLET E CRIAÇÃO DE MARCADORES
+     ====================================================================== */
   function initMap() {
     if (mapInstance) return;
     const mapElement = document.getElementById('full-map');
@@ -1037,9 +1056,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     return 'outro';
   }
 
-  /* ==========================================================
-     5. FILTERING & SEARCH CONTROLS
-     ========================================================== */
+  /* ======================================================================
+     5.5. FILTRAGEM COMBINADA E PESQUISA DE TEXTO
+     ====================================================================== */
   function filterMapByColor(colorKey, btnElement) {
     if (btnElement.classList.contains('active')) {
       btnElement.classList.remove('active');
@@ -1098,9 +1117,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   function filterMapManifest() { applyCombinedFilters(); }
   function normalizeText(t) { return t ? t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : ""; }
 
-  /* ==========================================================
-     6. UI MODAL & GALLERY TOGGLES
-     ========================================================== */
+  /* ======================================================================
+     5.6. UTILITÁRIOS DA INTERFACE (GALERIA, LIGHTBOX, E ROTEAMENTO)
+     ====================================================================== */
   function toggleGalleryView() {
     const listWrapper = document.getElementById('mapManifestList');
     const btn = document.getElementById('galleryToggleBtn');
@@ -1128,9 +1147,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  /* ==========================================================
-     7. CONCELHO BOUNDARY GEOJSON/TOPOJSON LOADER
-     ========================================================== */
+  /* ======================================================================
+     5.7. CARREGAMENTO DE FRONTEIRAS GEOGRÁFICAS (TOPOJSON) POR CONCELHO
+     ====================================================================== */
   function loadConcelhoBoundary(concelhoName) {
     if (concelhoLayer && mapInstance) {
       mapInstance.removeLayer(concelhoLayer);

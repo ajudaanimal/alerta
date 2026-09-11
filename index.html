@@ -241,14 +241,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     width: 100%;
   }
 
-  .map-card-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2px;
-    width: 100%;
-  }
-
   .map-card-inline-info {
     font-size: 9px;
     font-weight: 700;
@@ -363,6 +355,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     text-align: center;
   }
 
+  /* BANNER PARA EXPANDIR MAPA QUANDO COLAPSADO */
+  .map-expand-banner {
+    display: none;
+  }
+
   /* DESKTOP LAYOUT */
   @media (min-width: 993px) {
     .app-layout-wrapper {
@@ -377,7 +374,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     .app-left-panel {
       grid-area: sidebar;
       height: 100% !important;
-      overflow: hidden !important;
+      overflow-y: auto !important;
       display: flex !important;
       flex-direction: column !important;
       border-right: 1px solid var(--border-color);
@@ -412,7 +409,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  /* MOBILE LAYOUT */
+  /* MOBILE LAYOUT COM MAPA STICKY / COLAPSÁVEL */
   @media (max-width: 992px) {
     .app-layout-wrapper {
       display: block !important;
@@ -420,11 +417,43 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
 
     .app-center-panel {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 1000 !important;
       width: 100% !important;
       height: 38vh !important;
       min-height: 210px !important;
       border-bottom: 2px solid var(--border-color);
-      position: relative !important;
+      transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1), min-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      background: var(--card-bg);
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .app-center-panel.collapsed {
+      height: 42px !important;
+      min-height: 42px !important;
+      cursor: pointer;
+    }
+
+    .map-expand-banner {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--header-bg);
+      color: var(--text-main);
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-size: 11px;
+      font-weight: 700;
+      z-index: 1001;
+      cursor: pointer;
+      border-bottom: 2px solid var(--primary-color);
+    }
+
+    .app-center-panel.collapsed .map-expand-banner {
+      display: flex;
     }
 
     .map-container-wrapper {
@@ -481,8 +510,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <!-- ====================================================================== -->
 <div class="app-layout-wrapper" id="appLayoutWrapper">
 
-  <!-- PAINEL DO MAPA -->
+  <!-- PAINEL DO MAPA (STICKY / COLAPSÁVEL NO MOBILE) -->
   <div class="app-center-panel" id="mapContainerPanel">
+    <div class="map-expand-banner" onclick="toggleMapCollapse(false)">
+      <span>🗺️ Mapa de Ocorrências (Clique para expandir)</span>
+      <span>▼</span>
+    </div>
     <div class="map-container-wrapper">
       <div id="full-map"></div>
     </div>
@@ -648,6 +681,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   document.addEventListener("DOMContentLoaded", function() {
     initMap();
     applyCombinedFilters();
+    initScrollCollapseHandler();
   });
 
   function initMap() {
@@ -725,12 +759,60 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
+  /* LÓGICA DE COLAPSO E EXPANSÃO AUTOMÁTICA AO FAZER SCROLL */
+  function initScrollCollapseHandler() {
+    window.addEventListener('scroll', function() {
+      if (window.innerWidth > 992) return;
+      
+      const mapPanel = document.getElementById('mapContainerPanel');
+      if (!mapPanel) return;
+
+      if (window.scrollY > 80) {
+        if (!mapPanel.classList.contains('collapsed')) {
+          mapPanel.classList.add('collapsed');
+          closeFilterDrawer();
+          if (mapInstance) mapInstance.invalidateSize();
+        }
+      } else if (window.scrollY <= 10) {
+        if (mapPanel.classList.contains('collapsed')) {
+          mapPanel.classList.remove('collapsed');
+          if (mapInstance) mapInstance.invalidateSize();
+        }
+      }
+    }, { passive: true });
+  }
+
+  function toggleMapCollapse(forceCollapse) {
+    const mapPanel = document.getElementById('mapContainerPanel');
+    if (!mapPanel) return;
+
+    if (typeof forceCollapse === 'boolean') {
+      if (forceCollapse) mapPanel.classList.add('collapsed');
+      else mapPanel.classList.remove('collapsed');
+    } else {
+      mapPanel.classList.toggle('collapsed');
+    }
+
+    setTimeout(function() {
+      if (mapInstance) mapInstance.invalidateSize();
+    }, 360);
+  }
+
   function toggleFilterDrawer() {
     const drawer = document.getElementById('filterDrawer');
     const btn = document.getElementById('toggleFilterBtn');
     if (drawer) {
       drawer.classList.toggle('open');
       if (btn) btn.classList.toggle('active', drawer.classList.contains('open'));
+    }
+  }
+
+  function closeFilterDrawer() {
+    const drawer = document.getElementById('filterDrawer');
+    const btn = document.getElementById('toggleFilterBtn');
+    if (drawer && drawer.classList.contains('open')) {
+      drawer.classList.remove('open');
+      if (btn) btn.classList.remove('active');
     }
   }
 
@@ -845,7 +927,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     const marker = L.marker([lat, lon], { icon: customIcon });
 
-    /* ESTRUTURA DO POPUP EM EXATAMENTE 3 LINHAS SOB A IMAGEM */
     const popupHtml = `
       <div class="popup-card-container">
         <img src="${item.imagem}" class="popup-card-img" alt="">
@@ -884,8 +965,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function selectOcorrencia(item, openPopup = true) {
+    // DESCOLAPSA O MAPA SUAVEMENTE SEM FAZER SCROLL DA PÁGINA
     if (window.innerWidth <= 992) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const mapPanel = document.getElementById('mapContainerPanel');
+      if (mapPanel && mapPanel.classList.contains('collapsed')) {
+        mapPanel.classList.remove('collapsed');
+        setTimeout(function() {
+          if (mapInstance) mapInstance.invalidateSize();
+        }, 360);
+      }
     }
 
     const lat = item.adjustedLat || parseFloat(item.lat);

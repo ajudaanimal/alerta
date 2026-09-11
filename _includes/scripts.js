@@ -178,7 +178,8 @@
       attributionControl: false,
       tap: false,
       touchZoom: true,
-      scrollWheelZoom: true
+      scrollWheelZoom: true,
+      preferCanvas: true
     });
 
     mapInstance.fitBounds(portugalBounds);
@@ -205,6 +206,8 @@
       }
     });
   }
+
+  let concelhosIndex = {};
 
   function criarMarcador(lat, lon, item) {
     var emojiIcon = getSpeciesEmoji(item.especie);
@@ -350,49 +353,33 @@
     }
     if (!concelhoName) return;
 
-    const renderConcelho = (topodata) => {
-      if (typeof topojson === 'undefined') {
-        console.error('Biblioteca TopoJSON não carregada!');
+    const renderConcelho = (feature) => {
+      if (!feature || !mapInstance) {
+        console.warn('Concelho não encontrado no TopoJSON:', concelhoName);
         return;
       }
 
-      const objectKey = Object.keys(topodata.objects)[0];
-      const geojson = topojson.feature(topodata, topodata.objects[objectKey]);
-      const searchName = normalizeText(concelhoName);
-
-      const feature = geojson.features.find(f => {
-        if (!f.properties) return false;
-        const p = f.properties;
-        const val = p.Concelho || p.CONCELHO || p.name || p.NAME_2 || p.NOME || Object.values(p)[0];
-        if (!val) return false;
-        const propVal = normalizeText(val.toString());
-        // Exige correspondência exata para evitar falsos positivos como Paredes vs Paredes de Coura
-        return propVal === searchName;
-      });
-
-      if (feature && mapInstance) {
-        concelhoLayer = L.geoJSON(feature, {
-          style: {
-            color: '#2563eb',
-            weight: 2,
-            dashArray: '4, 4',
-            fillColor: '#2563eb',
-            fillOpacity: 0.05
-          }
-        }).addTo(mapInstance);
-
-        try {
-          mapInstance.fitBounds(concelhoLayer.getBounds(), { padding: [20, 20], maxZoom: 13 });
-        } catch (e) {
-          console.warn('Não foi possível ajustar os limites do mapa:', e);
+      concelhoLayer = L.geoJSON(feature, {
+        style: {
+          color: '#2563eb',
+          weight: 2,
+          dashArray: '4, 4',
+          fillColor: '#2563eb',
+          fillOpacity: 0.05
         }
-      } else {
-        console.warn('Concelho não encontrado no TopoJSON:', concelhoName, 'Procurado como:', searchName);
+      }).addTo(mapInstance);
+
+      try {
+        mapInstance.fitBounds(concelhoLayer.getBounds(), { padding: [20, 20], maxZoom: 13 });
+      } catch (e) {
+        console.warn('Não foi possível ajustar os limites do mapa:', e);
       }
     };
 
-    if (concelhosTopoData) {
-      renderConcelho(concelhosTopoData);
+    const searchName = normalizeText(concelhoName);
+
+    if (concelhosTopoData && Object.keys(concelhosIndex).length > 0) {
+      renderConcelho(concelhosIndex[searchName]);
       return;
     }
 
@@ -403,7 +390,20 @@
       })
       .then(data => {
         concelhosTopoData = data;
-        renderConcelho(data);
+        const objectKey = Object.keys(data.objects)[0];
+        const geojson = topojson.feature(data, data.objects[objectKey]);
+        
+        concelhosIndex = {};
+        geojson.features.forEach(f => {
+          if (!f.properties) return;
+          const p = f.properties;
+          const val = p.Concelho || p.CONCELHO || p.name || p.NAME_2 || p.NOME || Object.values(p)[0];
+          if (val) {
+            concelhosIndex[normalizeText(val.toString())] = f;
+          }
+        });
+
+        renderConcelho(concelhosIndex[searchName]);
       })
       .catch(err => console.warn('Erro ao carregar dados dos concelhos:', err));
   }

@@ -83,7 +83,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .app-layout-wrapper.hide-right { grid-template-columns: 43% 57% 44px; }
 
   /* ----------------------------------------------------------------------
-     2.3. PAINÉIS LATERAIS (ESQUERDO & DIREITO)
+     2.3. PAINÉIS LATERAIS E CABEÇALHOS
      ---------------------------------------------------------------------- */
   .app-left-panel, .app-right-panel {
     background: var(--card-bg);
@@ -158,45 +158,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /* ----------------------------------------------------------------------
-     2.4. BANNER DO MINI-MAPA E CARTÕES DE OCORRÊNCIA (LISTA & GALERIA)
+     2.4. CARTÕES DE OCORRÊNCIA E BADGES (LISTA & GALERIA)
      ---------------------------------------------------------------------- */
-  .mini-map-banner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin: 10px 10px 14px 10px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-    transition: background 0.15s ease, border-color 0.15s ease;
-  }
-
-  .mini-map-banner:active, .mini-map-banner:hover {
-    border-color: var(--primary-color);
-    background: var(--header-bg);
-  }
-
-  .mini-map-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
-    font-size: 13px;
-    color: var(--text-main);
-  }
-
-  .mini-map-action {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--primary-color);
-    background: rgba(2, 132, 199, 0.1);
-    padding: 4px 8px;
-    border-radius: 12px;
-  }
-
   .map-card-item {
     display: flex;
     gap: 12px;
@@ -281,7 +244,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-azul { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  /* Modificador da Vista de Galeria (Grelha 3 colunas) */
+  /* Vista de Galeria (Grelha 3 colunas) */
   .map-list-wrapper.gallery-mode {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr);
@@ -305,7 +268,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /* ----------------------------------------------------------------------
-     2.5. PAINEL CENTRAL (MAPA E FILTROS DE TOPO)
+     2.5. PAINEL CENTRAL (MAPA, FILTROS E PINOS)
      ---------------------------------------------------------------------- */
   .app-center-panel {
     display: flex;
@@ -361,31 +324,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   #full-map { width: 100%; height: 100%; }
 
-  .map-preview-card {
-    display: none;
-    position: absolute;
-    bottom: 16px;
-    left: 16px;
-    right: 16px;
-    z-index: 1000;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  .species-pin {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
-    gap: 12px;
-  }
-
-  .map-preview-card img {
-    width: 52px;
-    height: 52px;
-    object-fit: cover;
-    border-radius: 8px;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border: 2px solid #ffffff;
+    font-size: 15px;
   }
 
   /* ----------------------------------------------------------------------
-     2.6. PAINEL DIREITO (FICHA DE DETALHE DA OCORRÊNCIA)
+     2.6. PAINEL DIREITO (FICHA COMPACTA DE DETALHES)
      ---------------------------------------------------------------------- */
   .app-right-panel-inner {
     padding: 14px;
@@ -405,132 +358,103 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     gap: 10px;
   }
 
-  .ficha-wrapper { display: flex; flex-direction: column; gap: 12px; }
-
-  .report-header {
-    color: #ffffff;
+  .ficha-card-simplified {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     padding: 12px;
+  }
+
+  .ficha-card-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .ficha-thumb {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
     border-radius: 8px;
+    border: 1px solid var(--border-color);
+    cursor: zoom-in;
+    flex-shrink: 0;
+  }
+
+  .ficha-main-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ficha-title-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 6px;
   }
 
-  .report-header h1 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 800;
-  }
-
-  .status-banner {
-    padding: 8px 12px;
-    font-weight: 800;
-    text-align: center;
-    font-size: 12px;
-    text-transform: uppercase;
-    border-radius: 6px;
-  }
-
-  .banner-resolved { background: #dcfce7; color: #14532d; }
-  .banner-red { background: #fee2e2; color: #7f1d1d; }
-  .banner-orange { background: #ffedd5; color: #7c2d12; }
-  .banner-yellow { background: #fef9c3; color: #713f12; }
-
-  .ficha-img-container {
-    width: 100%;
-    height: 200px;
-    background: var(--box-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .ficha-img-container img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    cursor: zoom-in;
-  }
-
-  .details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    background: var(--box-bg);
-    border: 1px solid var(--border-color);
-    padding: 10px;
-    border-radius: 8px;
-  }
-
-  .detail-item { display: flex; flex-direction: column; font-size: 12px; }
-  .detail-item strong { color: var(--text-muted); font-size: 10px; text-transform: uppercase; }
-
-  .content-box {
-    font-size: 13px;
-    background: var(--box-bg);
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    line-height: 1.5;
-  }
-
-  /* PIN Personalizado do Marcador */
-  .species-pin {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    border: 2px solid #ffffff;
+  .ficha-title {
     font-size: 15px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ficha-subtext {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .ficha-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .ficha-tag {
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--box-bg);
+    border: 1px solid var(--border-color);
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: var(--text-main);
+  }
+
+  .ficha-obs-box {
+    background: var(--box-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-main);
+  }
+
+  .ficha-obs-box strong {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .ficha-obs-box p {
+    margin: 0;
   }
 
   /* ----------------------------------------------------------------------
-     2.7. NAVEGAÇÃO E REGRAS PARA DISPOSITIVOS MÓVEIS (<= 992px)
+     2.7. MODAL LIGHTBOX
      ---------------------------------------------------------------------- */
-  .app-bottom-nav {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: calc(56px + env(safe-area-inset-bottom));
-    padding-bottom: env(safe-area-inset-bottom);
-    background: var(--card-bg);
-    border-top: 1px solid var(--border-color);
-    z-index: 2000;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
-  }
-
-  .nav-tab-btn {
-    flex: 1;
-    height: 100%;
-    background: transparent;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-muted);
-    cursor: pointer;
-    gap: 2px;
-    text-transform: uppercase;
-  }
-
-  .nav-tab-btn .tab-icon { font-size: 18px; }
-  .nav-tab-btn.active { color: var(--primary-color); }
-
-  /* Lightbox Modal */
   .image-lightbox-modal {
     display: none;
     position: fixed;
@@ -543,36 +467,58 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .image-lightbox-modal.active { display: flex; }
   .image-lightbox-modal img { max-width: 90%; max-height: 90%; object-fit: contain; }
 
+  /* ====================================================================== */
+  /* 2.8. REGRAS EXCLUSIVAS PARA MOBILE (STACK VERTICAL DA PÁGINA)          */
+  /* ====================================================================== */
   @media (max-width: 992px) {
+    /* Transforma a grelha desktop num container vertical contínuo */
     .app-layout-wrapper {
-      display: block;
-      position: relative;
-      height: calc(100dvh - 48px - 56px - env(safe-area-inset-bottom));
-      overflow: hidden;
+      display: flex !important;
+      flex-direction: column !important;
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow-y: auto !important;
       width: 100vw !important;
     }
 
-    .app-bottom-nav { display: flex !important; }
-
+    /* Liberta os painéis do layout absoluto e redefine alturas */
     .app-left-panel, .app-center-panel, .app-right-panel {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      position: relative !important;
       width: 100% !important;
-      height: 100% !important;
-      z-index: 1000;
-      display: none !important;
+      height: auto !important;
+      display: flex !important;
+      z-index: 1 !important;
+      border: none !important;
+      border-bottom: 1px solid var(--border-color) !important;
     }
 
-    /* Alternância de Vistas em Dispositivos Móveis */
-    .app-layout-wrapper.mobile-view-list .app-left-panel { display: flex !important; z-index: 1200; }
-    .app-layout-wrapper.mobile-view-map .app-center-panel { display: flex !important; z-index: 1200; }
-    .app-layout-wrapper.mobile-view-ficha .app-right-panel { display: flex !important; z-index: 1200; }
+    /* Ordem 1: Mapa Fixo no topo do ecrã móvel */
+    .app-center-panel {
+      height: 320px !important;
+      order: 1;
+      flex-shrink: 0;
+    }
+
+    /* Ordem 2: Lista / Galeria de cartões no meio */
+    .app-left-panel {
+      order: 2;
+    }
 
     .map-list-wrapper {
-      padding-bottom: 70px !important;
+      max-height: 420px !important;
+      overflow-y: auto !important;
     }
 
-    .map-preview-card { bottom: 20px; left: 12px; right: 12px; }
+    /* Ordem 3: Ficha de Detalhes no fundo da página */
+    .app-right-panel {
+      order: 3;
+    }
+
+    .app-right-panel-inner {
+      height: auto !important;
+      overflow-y: visible !important;
+      padding: 10px;
+    }
   }
 </style>
 

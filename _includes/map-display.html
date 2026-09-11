@@ -1,0 +1,20 @@
+<!-- ========================================================== -->
+<!-- MAP DISPLAY COMPONENT (_includes/map-display.html) -->
+<!-- ========================================================== -->
+<div class="map-display-container" id="mapMainArea">
+  <!-- Filtros externos -->
+  <div class="map-external-filter">
+    <div class="map-filter-header">FILTRAR POR TRIAGEM / URGÊNCIA</div>
+    <div class="map-filter-pills">
+      <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)">🔴 Vermelho</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)">🟠 Laranja</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)">🟡 Amarelo</button>
+    </div>
+  </div>
+      
+  <!-- Onde o Leaflet vai injetar o mapa -->
+  <div class="map-display-panel">
+    <div id="full-map" style="width: 100%; height: 100%;"></div>
+  </div>
+</div>

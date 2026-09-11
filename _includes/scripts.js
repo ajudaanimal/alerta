@@ -360,20 +360,14 @@
       const geojson = topojson.feature(topodata, topodata.objects[objectKey]);
       const searchName = normalizeText(concelhoName);
 
-      // Lista todos os nomes no console para sabermos exatamente o que o ficheiro contém
-      if (!window._topojsonConcelhosListados) {
-        const nomesDisponiveis = geojson.features.map(f => f.properties.Concelho || f.properties.CONCELHO || f.properties.name || f.properties.NAME_2 || Object.values(f.properties)[0]);
-        console.log("Concelhos disponíveis no TopoJSON:", nomesDisponiveis);
-        window._topojsonConcelhosListados = true;
-      }
-
       const feature = geojson.features.find(f => {
         if (!f.properties) return false;
         const p = f.properties;
         const val = p.Concelho || p.CONCELHO || p.name || p.NAME_2 || p.NOME || Object.values(p)[0];
         if (!val) return false;
         const propVal = normalizeText(val.toString());
-        return propVal === searchName || propVal.includes(searchName) || searchName.includes(propVal);
+        // Exige correspondência exata para evitar falsos positivos como Paredes vs Paredes de Coura
+        return propVal === searchName;
       });
 
       if (feature && mapInstance) {

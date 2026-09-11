@@ -350,13 +350,22 @@
     }
     if (!concelhoName) return;
 
-    const renderConcelhoFeature = (geojson) => {
+    const renderConcelho = (topodata) => {
+      if (typeof topojson === 'undefined') {
+        console.error('Biblioteca TopoJSON não carregada!');
+        return;
+      }
+
+      const objectKey = Object.keys(topodata.objects)[0];
+      const geojson = topojson.feature(topodata, topodata.objects[objectKey]);
       const searchName = normalizeText(concelhoName);
+
       const feature = geojson.features.find(f => {
         if (!f.properties) return false;
         return Object.values(f.properties).some(val => {
           if (val == null) return false;
-          return normalizeText(val.toString()) === searchName;
+          const propVal = normalizeText(val.toString());
+          return propVal === searchName || propVal.includes(searchName) || searchName.includes(propVal);
         });
       });
 
@@ -370,41 +379,30 @@
             fillOpacity: 0.05
           }
         }).addTo(mapInstance);
-      } else {
-        console.warn('Concelho não encontrado:', concelhoName);
-      }
-    };
 
-    const processData = (data) => {
-      let geojson;
-      if (data.type === 'Topology') {
-        if (typeof topojson === 'undefined') {
-          console.error('Biblioteca TopoJSON não carregada!');
-          return;
+        try {
+          mapInstance.fitBounds(concelhoLayer.getBounds(), { padding: [20, 20], maxZoom: 13 });
+        } catch (e) {
+          console.warn('Não foi possível ajustar os limites do mapa:', e);
         }
-        const objectKey = Object.keys(data.objects)[0];
-        geojson = topojson.feature(data, data.objects[objectKey]);
-      } else if (data.type === 'FeatureCollection') {
-        geojson = data;
       } else {
-        geojson = { type: 'FeatureCollection', features: [data] };
+        console.warn('Concelho não encontrado no TopoJSON:', concelhoName);
       }
-      renderConcelhoFeature(geojson);
     };
 
     if (concelhosTopoData) {
-      processData(concelhosTopoData);
+      renderConcelho(concelhosTopoData);
       return;
     }
 
-    fetch('{{ "/_assets/data/concelhos.topo.json" | relative_url }}')
+    fetch('{{ "/assets/data/concelhos.topo.json" | relative_url }}')
       .then(response => {
-        if (!response.ok) throw new Error('Ficheiro não encontrado');
+        if (!response.ok) throw new Error('Ficheiro TopoJSON não encontrado');
         return response.json();
       })
       .then(data => {
         concelhosTopoData = data;
-        processData(data);
+        renderConcelho(data);
       })
       .catch(err => console.warn('Erro ao carregar dados dos concelhos:', err));
   }

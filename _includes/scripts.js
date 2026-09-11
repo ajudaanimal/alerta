@@ -293,22 +293,22 @@ let mapInstance;
       mapInstance.setView(latLng, 14, { animate: true });
     }
 
-    const previewCard = document.getElementById('mapPreviewCard');
-    if (previewCard) {
-      previewCard.innerHTML = `
-        <div style="position: absolute; top: 4px; right: 6px; z-index: 5;">
-          <a href="${item.url}" class="btn-open-ficha" title="Expandir para Ficha Completa" style="background: var(--primary-color, #2563eb); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-decoration: none;">🔍 Expandir ↗</a>
+     const previewCard = document.getElementById('mapPreviewCard');
+     if (previewCard) {
+     previewCard.innerHTML = `
+      <div style="position: absolute; top: 6px; right: 6px; z-index: 5;">
+        <a href="${item.url}" class="btn-open-ficha" title="Ver Ficha Completa" style="background: var(--primary-color, #2563eb); color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; box-sizing: border-box; height: 24px;">Ver Ficha ↗</a>
+      </div>
+      <img id="mapPreviewImg" src="${item.imagem}" alt="Animal">
+      <div class="map-preview-info" style="padding-top: 14px;">
+        <div class="map-preview-title">
+          <span id="mapPreviewSpecies">${item.especie}</span>
+          <span id="mapPreviewBadge" class="map-badge ${item.badgeClass}">${item.triagem}</span>
         </div>
-        <img id="mapPreviewImg" src="${item.imagem}" alt="Animal">
-        <div class="map-preview-info" style="padding-top: 14px;">
-          <div class="map-preview-title">
-            <span id="mapPreviewSpecies">${item.especie}</span>
-            <span id="mapPreviewBadge" class="map-badge ${item.badgeClass}">${item.triagem}</span>
-          </div>
-          <div class="map-preview-loc" id="mapPreviewLocality">📍 ${item.concelho || item.distrito || ''}</div>
-        </div>
-      `;
-      previewCard.style.display = 'flex';
+        <div class="map-preview-loc" id="mapPreviewLocality">📍 ${item.concelho || item.distrito || ''}</div>
+      </div>
+    `;
+    previewCard.style.display = 'flex';
     }
 
     const headerExpandBtn = document.getElementById('panelHeaderExpandBtn');

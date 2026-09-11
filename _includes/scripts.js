@@ -1,4 +1,4 @@
-let mapInstance;
+  let mapInstance;
   let allMarkersLayerGroup;
   let allMarkersData = [];
   let itemsBySlug = {};
@@ -7,6 +7,7 @@ let mapInstance;
   let concelhoLayer = null;
   let currentSelectedSlug = null;
   var portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
+  let concelhosTopoData = null;
 
   const ocorrenciasData = [
     {% for item in sorted_scored %}
@@ -85,7 +86,6 @@ let mapInstance;
     }
   });
 
-  // SPA Router Handler for seamless transitions between main page and ficha pages
   document.addEventListener('click', function(e) {
     const link = e.target.closest('a');
     if (link && link.href && link.href.startsWith(window.location.origin)) {
@@ -271,7 +271,6 @@ let mapInstance;
     if (mapObj && mapInstance) {
       var latLng = mapObj.marker.getLatLng();
       
-      // Carregar limite administrativo do Concelho (admin_level=7)
       loadConcelhoBoundary(item.concelho);
 
       mapInstance.setView(latLng, 12, { animate: true });
@@ -351,55 +350,43 @@ let mapInstance;
     }
     if (!concelhoName) return;
 
-    const query = `[out:json][timeout:15];
-      area["ISO3166-1"="PT"]->.searchArea;
-      relation(area.searchArea)["boundary"="administrative"]["admin_level"="7"]["name"="${concelhoName}"];
-      out body;
-      >;
-      out geom;`;
+    const renderConcelho = (topodata) => {
+      const objectKey = Object.keys(topodata.objects)[0];
+      const geojson = topojson.feature(topodata, topodata.objects[objectKey]);
 
-    fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      body: 'data=' + encodeURIComponent(query)
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (!data.elements || data.elements.length === 0) return;
+      const feature = geojson.features.find(f => 
+        f.properties && f.properties.name && 
+        f.properties.name.toLowerCase() === concelhoName.toLowerCase()
+      );
 
-      const seenRefs = new Set();
-      const coords = [];
-
-      data.elements.forEach(el => {
-        if (el.type === 'relation' && el.members) {
-          el.members.forEach(member => {
-            if (member.role === 'outer' && member.geometry && !seenRefs.has(member.ref)) {
-              seenRefs.add(member.ref);
-              coords.push(member.geometry.map(pt => [pt.lat, pt.lon]));
-            }
-          });
-        }
-      });
-
-      if (coords.length === 0) {
-        data.elements.forEach(el => {
-          if (el.type === 'way' && el.geometry && !seenRefs.has(el.id)) {
-            seenRefs.add(el.id);
-            coords.push(el.geometry.map(pt => [pt.lat, pt.lon]));
+      if (feature && mapInstance) {
+        concelhoLayer = L.geoJSON(feature, {
+          style: {
+            color: '#2563eb',
+            weight: 2,
+            dashArray: '4, 4',
+            fillColor: '#2563eb',
+            fillOpacity: 0.05
           }
-        });
-      }
-
-      if (coords.length > 0 && mapInstance) {
-        concelhoLayer = L.polygon(coords, {
-          color: '#2563eb',
-          weight: 2,
-          dashArray: '4, 4',
-          fillColor: '#2563eb',
-          fillOpacity: 0.05
         }).addTo(mapInstance);
       }
-    })
-    .catch(err => console.warn('Erro ao carregar limite do concelho:', err));
+    };
+
+    if (concelhosTopoData) {
+      renderConcelho(concelhosTopoData);
+      return;
+    }
+
+    fetch('{{ "/_assets/data/concelhos.topo.json" | relative_url }}')
+      .then(response => {
+        if (!response.ok) throw new Error('Ficheiro TopoJSON não encontrado');
+        return response.json();
+      })
+      .then(data => {
+        concelhosTopoData = data;
+        renderConcelho(data);
+      })
+      .catch(err => console.warn('Erro ao carregar dados dos concelhos:', err));
   }
 
   function unexpandOccurrence() {

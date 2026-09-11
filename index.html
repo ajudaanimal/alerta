@@ -693,7 +693,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 </nav>
 
 <!-- ====================================================================== -->
-<!-- 5. LÓGICA JAVASCRIPT INTEGRADA                                          -->
+<!-- 5. LÓGICA JAVASCRIPT INTEGRADA                                         -->
 <!-- ====================================================================== -->
 <script>
   /* ======================================================================
@@ -782,12 +782,42 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
      ====================================================================== */
   document.addEventListener("DOMContentLoaded", function() {
     initMap();
+    cleanAndFormatLeftList();
     handleInitialRoute();
 
     window.addEventListener('popstate', function() {
       handleInitialRoute();
     });
   });
+
+  /**
+   * Reformata os cartões da esquerda removendo botões repetidos e emojis.
+   */
+  function cleanAndFormatLeftList() {
+    ocorrenciasData.forEach(item => {
+      const cardEl = document.getElementById('card-item-' + item.slug) || 
+                     document.querySelector(`[data-slug="${item.slug}"]`);
+      if (!cardEl) return;
+
+      const localizacao = item.concelho || item.distrito || '';
+      const estadoFisico = item.estado_fisico || item.situacao || 'Não especificado';
+      const badgeClass = item.badgeClass || 'badge-laranja';
+      const nivelAlerta = item.nivel_alerta || item.triagem || 'ALERTA';
+
+      cardEl.onclick = function() { handleListItemClick(item.slug); };
+      cardEl.innerHTML = `
+        <img class="map-card-img" src="${item.imagem || ''}" alt="${item.especie || 'Animal'}">
+        <div class="map-card-body">
+          <div class="map-card-top-row">
+            <h3 class="map-card-title">${item.especie || 'Sem Identificação'}</h3>
+            <span class="map-badge ${badgeClass}">${nivelAlerta}</span>
+          </div>
+          <div class="map-card-sub">${estadoFisico}</div>
+          <div class="map-card-loc">${localizacao}${localizacao && item.data ? ' • ' : ''}${item.data || ''}</div>
+        </div>
+      `;
+    });
+  }
 
   /**
    * Alterna a vista no ecrã mobile ('list', 'map', ou 'ficha').
@@ -833,193 +863,210 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
    * @param {boolean} updateHash - Atualiza a URL com o hash
    */
   function selectOccurrence(slug, updateHash = true) {
-  if (!slug || typeof ocorrenciasData === 'undefined') return;
-  
-  const item = ocorrenciasData.find(i => i.slug === slug);
-  if (!item) return;
+    if (!slug || typeof ocorrenciasData === 'undefined') return;
 
-  currentSelectedSlug = slug;
+    const item = ocorrenciasData.find(i => 
+      i.slug === slug || i.id === slug || (i.slug && i.slug.endsWith(slug))
+    );
+    if (!item) return;
 
-  // Atualiza URL com o hash
-  if (updateHash && window.history && window.history.pushState) {
-    history.pushState(null, null, '#' + slug);
-  }
+    currentSelectedSlug = item.slug;
 
-  // Destaca o item selecionado na lista da esquerda
-  document.querySelectorAll('.map-card-item').forEach(el => el.classList.remove('selected'));
-  const cardEl = document.getElementById('card-item-' + slug);
-  if (cardEl) {
-    cardEl.classList.add('selected');
-    cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+    // Atualiza URL com o hash
+    if (updateHash && window.history && window.history.pushState) {
+      history.pushState(null, null, '#' + item.slug);
+    }
 
-  // Atualização segura do Mapa (com try/catch para não bloquear o script)
-  try {
-    if (typeof itemsBySlug !== 'undefined' && itemsBySlug[slug] && typeof mapInstance !== 'undefined' && mapInstance) {
-      const mapObj = itemsBySlug[slug];
-      if (mapObj && mapObj.marker) {
-        const latLng = mapObj.marker.getLatLng();
-        if (typeof loadConcelhoBoundary === 'function') {
+    // Destaca o item selecionado na lista da esquerda
+    document.querySelectorAll('.map-card-item').forEach(el => el.classList.remove('selected'));
+    const cardEl = document.getElementById('card-item-' + item.slug) || document.querySelector(`[data-slug="${item.slug}"]`);
+    if (cardEl) {
+      cardEl.classList.add('selected');
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Atualização segura do Mapa
+    try {
+      if (typeof mapInstance !== 'undefined' && mapInstance) {
+        mapInstance.invalidateSize();
+
+        if (itemsBySlug && itemsBySlug[item.slug] && itemsBySlug[item.slug].marker) {
+          const latLng = itemsBySlug[item.slug].marker.getLatLng();
+          if (typeof loadConcelhoBoundary === 'function' && item.concelho) {
+            loadConcelhoBoundary(item.concelho);
+          }
+          mapInstance.setView(latLng, 12, { animate: false });
+        } else if (typeof loadConcelhoBoundary === 'function' && item.concelho) {
           loadConcelhoBoundary(item.concelho);
         }
-        mapInstance.setView(latLng, 12, { animate: false });
+      }
+    } catch (err) {
+      console.warn("Aviso ao atualizar mapa:", err);
+    }
+
+    // Atualização do Card de Preview sobre o Mapa
+    const previewCard = document.getElementById('mapPreviewCard');
+    if (previewCard) {
+      previewCard.innerHTML = `
+        <img id="mapPreviewImg" src="${item.imagem || ''}" alt="Animal">
+        <div class="map-preview-info">
+          <div class="map-preview-title">
+            <span id="mapPreviewSpecies">${item.especie || 'Ocorrência'}</span>
+            <span id="mapPreviewBadge" class="map-badge ${item.badgeClass || 'badge-laranja'}">${item.triagem || 'ALERTA'}</span>
+          </div>
+          <div class="map-preview-loc" id="mapPreviewLocality">${item.concelho || item.distrito || ''}</div>
+        </div>
+      `;
+      previewCard.style.display = 'flex';
+    }
+
+    // Renderização do Painel da Direita (Ficha de Ocorrência)
+    const rightPanelInner = document.getElementById('appRightPanelInner');
+    if (rightPanelInner) {
+      const urlFichaCompleta = item.url || ('/ocorrencias/' + item.slug);
+      const nivelAlerta = item.nivel_alerta || item.triagem || 'ALERTA';
+      const estadoFisico = item.estado_fisico || 'Não especificado';
+      const bannerClass = item.bannerClass || item.badgeClass || 'banner-orange';
+
+      rightPanelInner.innerHTML = `
+        <div class="ficha-wrapper">
+          <header class="report-header" style="background-color: ${item.color || 'var(--primary-color, #0284c7)'};">
+            <div>
+              <h1>${item.especie || 'Sem Identificação'}</h1>
+              <div class="report-header-sub">${item.concelho || item.distrito || ''}</div>
+            </div>
+            <div class="report-header-date">
+              <span>${item.data || ''}</span>
+            </div>
+          </header>
+
+          <a href="${urlFichaCompleta}" target="_blank" class="btn-expand-ficha">
+            <span>VER FICHA COMPLETA</span>
+            <span>↗</span>
+          </a>
+
+          <div class="status-banner ${bannerClass}">
+            ${nivelAlerta} — ${estadoFisico}
+          </div>
+
+          <div class="ficha-img-container">
+            <img src="${item.imagem || ''}" alt="Fotografia de ${item.especie || 'animal'}" onclick="if(typeof openLightbox==='function') openLightbox('${item.imagem}')">
+          </div>
+        </div>
+      `;
+
+      if (window.innerWidth <= 992) {
+        document.getElementById('appRightPanel')?.scrollIntoView({ behavior: 'smooth' });
       }
     }
-  } catch (err) {
-    console.warn("Aviso no mapa:", err);
   }
 
-  // Atualização do Card de Preview do Mapa (se existir)
-  const previewCard = document.getElementById('mapPreviewCard');
-  if (previewCard) {
-    previewCard.innerHTML = `
-      <img id="mapPreviewImg" src="${item.imagem || ''}" alt="Animal">
-      <div class="map-preview-info">
-        <div class="map-preview-title">
-          <span id="mapPreviewSpecies">${item.especie || 'Ocorrência'}</span>
-          <span id="mapPreviewBadge" class="map-badge ${item.badgeClass || 'badge-laranja'}">${item.triagem || 'ALERTA'}</span>
-        </div>
-        <div class="map-preview-loc" id="mapPreviewLocality">📍 ${item.concelho || item.distrito || ''}</div>
-      </div>
-    `;
-    previewCard.style.display = 'flex';
-  }
-
-  // Renderização do Painel da Direita
-  const rightPanelInner = document.getElementById('appRightPanelInner');
-  if (rightPanelInner) {
-    const urlFichaCompleta = item.url || ('/ocorrencias/' + item.slug);
-    const nivelAlerta = item.nivel_alerta || item.triagem || 'ALERTA';
-    const estadoFisico = item.estado_fisico || 'Não especificado';
-    const bannerClass = item.bannerClass || item.badgeClass || 'banner-orange';
-
-    rightPanelInner.innerHTML = `
-      <div class="ficha-wrapper">
-        <header class="report-header" style="background-color: ${item.color || 'var(--primary-color)'};">
-          <div>
-            <h1>${item.especie || 'Sem Identificação'}</h1>
-            <div class="report-header-sub">📍 ${item.concelho || item.distrito || ''}</div>
-          </div>
-          <div class="report-header-date">
-            <span>${item.data || ''}</span>
-          </div>
-        </header>
-
-        <a href="${urlFichaCompleta}" target="_blank" class="btn-expand-ficha">
-          <span>VER FICHA COMPLETA</span>
-          <span>↗</span>
-        </a>
-
-        <div class="status-banner ${bannerClass}">
-          ${nivelAlerta} — ${estadoFisico}
-        </div>
-
-        <div class="ficha-img-container">
-          <img src="${item.imagem || ''}" alt="Fotografia de ${item.especie || 'animal'}" onclick="if(typeof openLightbox==='function') openLightbox('${item.imagem}')">
-        </div>
-      </div>
-    `;
-
-    if (window.innerWidth <= 992) {
-      document.getElementById('appRightPanel')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-}
-    
   /* ======================================================================
-   5.4. MOTOR DE MAPA LEAFLET E CRIAÇÃO DE MARCADORES
-   ====================================================================== */
-function initMap() {
-  if (mapInstance) return;
-  const mapElement = document.getElementById('full-map');
-  if (!mapElement) return;
+     5.4. MOTOR DE MAPA LEAFLET E CRIAÇÃO DE MARCADORES
+     ====================================================================== */
+  function initMap() {
+    if (mapInstance) return;
+    const mapElement = document.getElementById('full-map') || document.getElementById('map');
+    if (!mapElement) return;
 
-  mapInstance = L.map('full-map', {
-    attributionControl: false,
-    tap: false,
-    touchZoom: true,
-    scrollWheelZoom: true,
-    preferCanvas: true
-  });
+    try {
+      mapInstance = L.map(mapElement.id, {
+        attributionControl: false,
+        tap: false,
+        touchZoom: true,
+        scrollWheelZoom: true,
+        preferCanvas: true
+      });
 
-  mapInstance.fitBounds(portugalBounds);
+      mapInstance.fitBounds(portugalBounds);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3494_1_8eeb09fcfa7dbb0a9063b727', {
-    maxZoom: 19,
-    subdomains: 'abcd',
-    updateWhenIdle: true,
-    keepBuffer: 6
-  }).addTo(mapInstance);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3494_1_8eeb09fcfa7dbb0a9063b727', {
+        maxZoom: 19,
+        subdomains: 'abcd',
+        updateWhenIdle: true,
+        keepBuffer: 6
+      }).addTo(mapInstance);
 
-  // Agrupamento sem animações de movimento e com expansão fixa no local
-  allMarkersLayerGroup = L.markerClusterGroup({
-    spiderfyOnMaxZoom: true,
-    showCoverageOnHover: false,
-    zoomToBoundsOnClick: false, // Expande marcadores no local sem saltos de câmara
-    spiderfyDistanceMultiplier: 1.8, // Distância ampla para leitura clara dos pontos
-    animate: false, // Elimina o efeito visual de "dança" dos ícones
-    animateAddingMarkers: false,
-    disableClusteringAtZoom: 18
-  });
+      if (typeof L.markerClusterGroup === 'function') {
+        allMarkersLayerGroup = L.markerClusterGroup({
+          spiderfyOnMaxZoom: true,
+          showCoverageOnHover: false,
+          zoomToBoundsOnClick: false,
+          spiderfyDistanceMultiplier: 1.8,
+          animate: false,
+          animateAddingMarkers: false,
+          disableClusteringAtZoom: 18
+        });
+      } else {
+        allMarkersLayerGroup = L.layerGroup();
+      }
 
-  mapInstance.addLayer(allMarkersLayerGroup);
+      mapInstance.addLayer(allMarkersLayerGroup);
 
-  ocorrenciasData.forEach(function(item) {
-    const lat = parseFloat(item.lat);
-    const lon = parseFloat(item.lon);
-    if (!isNaN(lat) && !isNaN(lon)) {
-      criarMarcador(lat, lon, item);
+      ocorrenciasData.forEach(function(item) {
+        const lat = parseFloat(item.lat);
+        const lon = parseFloat(item.lon);
+        if (!isNaN(lat) && !isNaN(lon)) {
+          criarMarcador(lat, lon, item);
+        }
+      });
+
+      requestAnimationFrame(() => {
+        if (mapInstance) mapInstance.invalidateSize();
+      });
+    } catch (e) {
+      console.error("Erro ao inicializar o mapa Leaflet:", e);
     }
-  });
-}
-function criarMarcador(lat, lon, item) {
-  const emojiIcon = getSpeciesEmoji(item.especie);
-  const iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
+  }
 
-  const customIcon = L.divIcon({
-    className: '',
-    html: iconHtml,
-    iconSize: [28, 28],
-    iconAnchor: [14, 14]
-  });
+  function criarMarcador(lat, lon, item) {
+    const emojiIcon = getSpeciesEmoji(item.especie);
+    const iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
 
-  const marker = L.marker([lat, lon], { icon: customIcon });
+    const customIcon = L.divIcon({
+      className: '',
+      html: iconHtml,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14]
+    });
 
-  marker.on('click', function() {
-    selectOccurrence(item.slug, true);
-    if (window.innerWidth <= 992) {
-      switchMobileTab('ficha');
-    }
-  });
+    const marker = L.marker([lat, lon], { icon: customIcon });
 
-  const mapObj = {
-    marker: marker,
-    colorKey: item.colorKey,
-    speciesKey: getSpeciesCategory(item.especie),
-    slug: item.slug,
-    concelho: item.concelho
-  };
+    marker.on('click', function() {
+      selectOccurrence(item.slug, true);
+      if (window.innerWidth <= 992) {
+        switchMobileTab('ficha');
+      }
+    });
 
-  allMarkersData.push(mapObj);
-  itemsBySlug[item.slug] = mapObj;
-  allMarkersLayerGroup.addLayer(marker);
-}
+    const mapObj = {
+      marker: marker,
+      colorKey: item.colorKey,
+      speciesKey: getSpeciesCategory(item.especie),
+      slug: item.slug,
+      concelho: item.concelho
+    };
 
-function getSpeciesEmoji(especieStr) {
-  const esp = especieStr ? especieStr.toLowerCase() : '';
-  if (esp.includes('gato') || esp.includes('felino')) return '🐱';
-  if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
-  if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return '🐦';
-  return '🐾';
-}
+    allMarkersData.push(mapObj);
+    itemsBySlug[item.slug] = mapObj;
+    allMarkersLayerGroup.addLayer(marker);
+  }
 
-function getSpeciesCategory(especieStr) {
-  const esp = especieStr ? especieStr.toLowerCase() : '';
-  if (esp.includes('gato') || esp.includes('felino')) return 'felino';
-  if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return 'canideo';
-  if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return 'ave';
-  return 'outro';
-}
+  function getSpeciesEmoji(especieStr) {
+    const esp = especieStr ? especieStr.toLowerCase() : '';
+    if (esp.includes('gato') || esp.includes('felino')) return '🐱';
+    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
+    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return '🐦';
+    return '🐾';
+  }
+
+  function getSpeciesCategory(especieStr) {
+    const esp = especieStr ? especieStr.toLowerCase() : '';
+    if (esp.includes('gato') || esp.includes('felino')) return 'felino';
+    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return 'canideo';
+    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return 'ave';
+    return 'outro';
+  }
 
   /* ======================================================================
      5.5. FILTRAGEM COMBINADA E PESQUISA DE TEXTO
@@ -1107,8 +1154,16 @@ function getSpeciesCategory(especieStr) {
 
   function handleInitialRoute() {
     const hash = window.location.hash.replace('#', '');
-    if (hash && ocorrenciasData.some(i => i.slug === hash)) {
-      selectOccurrence(hash, false);
+    if (!hash || !ocorrenciasData || ocorrenciasData.length === 0) return;
+
+    const matched = ocorrenciasData.find(i => 
+      i.slug === hash || 
+      i.id === hash || 
+      (i.slug && i.slug.endsWith(hash))
+    );
+
+    if (matched) {
+      selectOccurrence(matched.slug, false);
     }
   }
 

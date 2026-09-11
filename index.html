@@ -165,7 +165,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   /* RESPONSIVE MOBILE ADAPTATIONS (<= 992px)                    */
   /* ========================================================== */
   @media screen and (max-width: 992px) {
-    /* Forçar reset de contentores comuns de temas Jekyll para evitar restrições de largura */
     body, html, .page-content, .wrapper, main {
       margin: 0 !important;
       padding: 0 !important;
@@ -192,7 +191,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       z-index: 99999 !important;
     }
 
-    /* Ocultar todos os painéis por defeito no mobile */
     .app-left-panel,
     .app-center-panel,
     .app-right-panel {
@@ -202,7 +200,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       box-sizing: border-box !important;
     }
 
-    /* Estado ativo: Modo Lista */
     .app-layout-wrapper.mobile-mode-list .app-left-panel {
       display: flex !important;
       flex-direction: column !important;
@@ -217,7 +214,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       z-index: 1100 !important;
     }
 
-    /* Estado ativo: Modo Mapa */
     .app-layout-wrapper.mobile-mode-map .app-center-panel {
       display: flex !important;
       flex-direction: column !important;
@@ -234,7 +230,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       height: auto !important;
     }
 
-    /* Estado ativo: Modo Ficha */
     .app-layout-wrapper.mobile-mode-ficha .app-right-panel {
       display: flex !important;
       flex-direction: column !important;
@@ -249,7 +244,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       z-index: 1200 !important;
     }
 
-    /* Garantir que o conteúdo interno dos painéis preenche o espaço e não fica cortado */
     .app-left-panel .panel-collapsible-content,
     .app-right-panel .panel-collapsible-content {
       display: flex !important;
@@ -264,7 +258,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       overflow-y: auto !important;
     }
 
-    /* Barra de navegação inferior mobile fixa */
     .app-bottom-nav {
       display: flex !important;
       position: fixed !important;
@@ -322,7 +315,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  /* Desktop: Garantir que a barra inferior fica sempre oculta em ecrãs grandes */
   @media screen and (min-width: 993px) {
     .app-bottom-nav {
       display: none !important;
@@ -411,7 +403,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
                data-date="{{ post.date | date: '%s' | default: 0 }}"
                data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
             
-            <img src="{{ post.imagem | relative_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
+            {% assign default_img = 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' %}
+            {% if post.imagem and post.imagem != "" %}
+              {% assign card_img = post.imagem | relative_url %}
+            {% else %}
+              {% assign card_img = default_img %}
+            {% endif %}
+            <img src="{{ card_img }}" alt="" class="map-card-img" loading="lazy">
             
             <div class="map-card-body">
               <div class="map-card-top-row">
@@ -526,7 +524,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   const occurrenceUrls = {
     {% for post in sorted_posts %}
-      "{{ post.slug }}": "{{ post.url | relative_url }}",
+      {{ post.slug | jsonify }}: {{ post.url | relative_url | jsonify }},
     {% endfor %}
   };
 
@@ -535,14 +533,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     window.handleListItemClick = function(slug) {
       originalHandler(slug);
       window.currentActiveSlug = slug;
-      // No telemóvel, quando clica num item, muda automaticamente para o separador Ficha
       if (window.innerWidth <= 992) {
         switchMobileTab('ficha');
       }
     };
   }
 
-  // Mobile Tab Switching Logic
   function switchMobileTab(tab) {
     const wrapper = document.getElementById('appLayoutWrapper');
     if (!wrapper) return;
@@ -565,25 +561,28 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  const observer = new MutationObserver(() => {
-    const inner = document.getElementById('appRightPanelInner');
-    const expandBtn = document.getElementById('panelHeaderExpandBtn');
-    if (!inner || !expandBtn) return;
-    
-    const isPlaceholder = inner.querySelector('.ficha-placeholder');
-    if (isPlaceholder) {
-      expandBtn.style.display = 'none';
-    } else {
-      expandBtn.style.display = 'inline-flex';
-      const link = inner.querySelector('a[href*="ocorrencias"], a[href*="ficha"]');
-      if (link) {
-        expandBtn.href = link.href;
-      } else if (window.currentActiveSlug && occurrenceUrls[window.currentActiveSlug]) {
-        expandBtn.href = occurrenceUrls[window.currentActiveSlug];
+  const rightPanelElement = document.getElementById('appRightPanelInner');
+  if (rightPanelElement) {
+    const observer = new MutationObserver(() => {
+      const inner = document.getElementById('appRightPanelInner');
+      const expandBtn = document.getElementById('panelHeaderExpandBtn');
+      if (!inner || !expandBtn) return;
+      
+      const isPlaceholder = inner.querySelector('.ficha-placeholder');
+      if (isPlaceholder) {
+        expandBtn.style.display = 'none';
+      } else {
+        expandBtn.style.display = 'inline-flex';
+        const link = inner.querySelector('a[href*="ocorrencias"], a[href*="ficha"]');
+        if (link) {
+          expandBtn.href = link.href;
+        } else if (window.currentActiveSlug && occurrenceUrls[window.currentActiveSlug]) {
+          expandBtn.href = occurrenceUrls[window.currentActiveSlug];
+        }
       }
-    }
-  });
-  observer.observe(document.getElementById('appRightPanelInner'), { childList: true, subtree: true });
+    });
+    observer.observe(rightPanelElement, { childList: true, subtree: true });
+  }
 
   function toggleGalleryView() {
     const listWrapper = document.getElementById('mapManifestList');
@@ -600,23 +599,24 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  // Lightbox handler for right panel images
   document.addEventListener('click', function(e) {
     if (e.target && e.target.tagName && e.target.tagName.toUpperCase() === 'IMG') {
       const rightPanelInner = document.getElementById('appRightPanelInner');
-      if (rightPanelInner && rightPanelInner.contains(e.target)) {
-        const modal = document.getElementById('imageLightboxModal');
+      const lightboxModal = document.getElementById('imageLightboxModal');
+      if (rightPanelInner && rightPanelInner.contains(e.target) && lightboxModal) {
         const modalImg = document.getElementById('lightboxImage');
-        if (modal && modalImg) {
+        if (modalImg) {
           modalImg.src = e.target.src;
-          modal.classList.add('active');
+          lightboxModal.classList.add('active');
         }
       }
     }
   });
 
-  // Close lightbox when clicking anywhere on the modal overlay
-  document.getElementById('imageLightboxModal').addEventListener('click', function() {
-    this.classList.remove('active');
-  });
+  const lightboxModalEl = document.getElementById('imageLightboxModal');
+  if (lightboxModalEl) {
+    lightboxModalEl.addEventListener('click', function() {
+      this.classList.remove('active');
+    });
+  }
 </script>

@@ -999,11 +999,14 @@ function initMap() {
     keepBuffer: 6
   }).addTo(mapInstance);
 
-  // Alterado: Agrupamento automático de marcadores sobrepostos/próximos
+  // Agrupamento sem animações de movimento e com expansão fixa no local
   allMarkersLayerGroup = L.markerClusterGroup({
     spiderfyOnMaxZoom: true,
     showCoverageOnHover: false,
-    zoomToBoundsOnClick: true,
+    zoomToBoundsOnClick: false, // Expande marcadores no local sem saltos de câmara
+    spiderfyDistanceMultiplier: 1.8, // Distância ampla para leitura clara dos pontos
+    animate: false, // Elimina o efeito visual de "dança" dos ícones
+    animateAddingMarkers: false,
     disableClusteringAtZoom: 18
   });
 
@@ -1017,7 +1020,6 @@ function initMap() {
     }
   });
 }
-
 function criarMarcador(lat, lon, item) {
   const emojiIcon = getSpeciesEmoji(item.especie);
   const iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';

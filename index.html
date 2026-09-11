@@ -160,114 +160,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-radius: 6px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
   }
-
-  /* ========================================================== */
-  /* MOBILE SYSTEM OVERRIDES (Map on Top 30%, List Below, No Right Sidebar by default) */
-  /* ========================================================== */
-  .app-bottom-nav {
-    display: none;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 52px;
-    background: var(--card-bg, #ffffff);
-    border-top: 1px solid var(--border-color);
-    z-index: 1500;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: -4px 0 10px rgba(0,0,0,0.05);
-  }
-
-  .nav-tab-btn {
-    flex: 1;
-    height: 100%;
-    background: transparent;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 9.5px;
-    font-weight: 700;
-    color: var(--text-muted);
-    cursor: pointer;
-    gap: 2px;
-    text-transform: uppercase;
-  }
-  .nav-tab-btn span.tab-icon { font-size: 16px; }
-  .nav-tab-btn.active { color: var(--primary-color, #2563eb); }
-
-  @media screen and (max-width: 992px) {
-    /* Esconder painel direito por defeito em mobile */
-    .app-right-panel {
-      display: none !important;
-    }
-
-    /* Forçar layout vertical no wrapper */
-    .app-layout-wrapper {
-      display: flex !important;
-      flex-direction: column !important;
-      height: calc(100vh - 52px) !important;
-      position: relative !important;
-      overflow: hidden !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      grid-template-columns: none !important;
-    }
-
-    /* Mapa no Topo: exatamente 30% da altura */
-    .app-center-panel {
-      display: flex !important;
-      position: relative !important;
-      order: 1 !important;
-      width: 100% !important;
-      height: 30vh !important;
-      min-height: 30vh !important;
-      max-height: 30vh !important;
-      flex-shrink: 0 !important;
-      z-index: 1000 !important;
-    }
-
-    /* Lista abaixo do mapa: ocupa o restante (70vh) */
-    .app-left-panel {
-      display: flex !important;
-      position: relative !important;
-      order: 2 !important;
-      width: 100% !important;
-      height: 70vh !important;
-      max-height: 70vh !important;
-      flex-grow: 1 !important;
-      overflow-y: auto !important;
-      z-index: 1000 !important;
-      background: var(--bg-color, #f1f5f9);
-    }
-
-    /* Ativar barra inferior */
-    .app-bottom-nav { 
-      display: flex !important; 
-    }
-
-    /* Modo Ficha ativo via navegação inferior */
-    .app-layout-wrapper.mobile-mode-ficha .app-center-panel,
-    .app-layout-wrapper.mobile-mode-ficha .app-left-panel {
-      display: none !important;
-    }
-    
-    .app-layout-wrapper.mobile-mode-ficha .app-right-panel {
-      display: flex !important;
-      position: absolute !important;
-      inset: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      z-index: 1200 !important;
-      padding-bottom: 60px !important;
-      overflow-y: auto !important;
-    }
-
-    /* Botão de voltar na ficha em mobile */
-    .app-right-panel .mobile-back-btn {
-      display: inline-flex !important;
-    }
-  }
 </style>
 
 {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
@@ -298,7 +190,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 {% assign sorted_scored = scored_posts | sort %}
 
-<div class="app-layout-wrapper" id="appLayoutWrapper">
+<div class="app-layout-wrapper mobile-view-list" id="appLayoutWrapper">
   
   <!-- LEFT WINDOW: Animal List / Gallery -->
   <div class="app-left-panel" id="appLeftPanel">
@@ -344,7 +236,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% endif %}
 
           <div class="map-card-item map-row" id="card-item-{{ post.slug }}"
-               onclick="handleListItemClick('{{ post.slug }}'); checkMobileAutoSwitch();"
+               onclick="handleListItemClick('{{ post.slug }}')"
                data-color="{{ color_key }}"
                data-species="{{ species_key }}"
                data-priority="{{ parts[0] }}"
@@ -398,7 +290,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       <div id="full-map"></div>
 
       <!-- Floating Map Preview Card with Expand control injected via JavaScript -->
-      <div class="map-preview-card" id="mapPreviewCard" onclick="checkMobileAutoSwitch()">
+      <div class="map-preview-card" id="mapPreviewCard">
         <img id="mapPreviewImg" src="" alt="Animal">
         <div class="map-preview-info">
           <div class="map-preview-title">
@@ -415,8 +307,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   <div class="app-right-panel" id="appRightPanel">
     <div class="panel-collapsible-content">
       <div class="panel-header-bar" style="justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <button class="panel-action-btn mobile-back-btn" onclick="switchMobileMode('split')" title="Voltar ao Mapa e Lista" style="display: none;">↩</button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="panel-action-btn mobile-back-btn" onclick="switchMobileTab('map')" title="Voltar ao Mapa" style="display: none;">↩</button>
           <span style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Ficha de Ocorrência</span>
         </div>
         <button class="panel-action-btn" onclick="toggleRightPanel()" title="Recolher painel">▶</button>
@@ -443,16 +335,20 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 </div>
 
 <!-- Mobile Bottom Navigation Bar -->
-<nav class="app-bottom-nav" id="appBottomNav">
-  <button type="button" class="nav-tab-btn active" id="navBtnMain" onclick="switchMobileMode('split')">
-    <span class="tab-icon">🗺️📋</span>
-    <span>Mapa & Lista</span>
+<div class="app-bottom-nav" id="appBottomNav">
+  <button class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
+    <span class="tab-icon">📋</span>
+    <span>Lista</span>
   </button>
-  <button type="button" class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileMode('ficha')">
+  <button class="nav-tab-btn" id="navBtnMap" onclick="switchMobileTab('map')">
+    <span class="tab-icon">🗺️</span>
+    <span>Mapa</span>
+  </button>
+  <button class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
     <span class="tab-icon">🐾</span>
-    <span>Detalhes</span>
+    <span>Ficha</span>
   </button>
-</nav>
+</div>
 
 <script>
   {% include scripts.js %}
@@ -469,37 +365,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     } else {
       btn.textContent = '🖼️';
       btn.title = 'Alternar Vista de Galeria';
-    }
-  }
-
-  // Mobile mode switcher logic (Map on top / List below vs Ficha view)
-  function switchMobileMode(mode) {
-    const wrapper = document.getElementById('appLayoutWrapper');
-    if (!wrapper) return;
-
-    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-
-    if (mode === 'split') {
-      wrapper.classList.remove('mobile-mode-ficha');
-      document.getElementById('navBtnMain')?.classList.add('active');
-      
-      if (typeof mapInstance !== 'undefined' && mapInstance) {
-        setTimeout(() => {
-          mapInstance.invalidateSize();
-        }, 150);
-      }
-    } else if (mode === 'ficha') {
-      wrapper.classList.add('mobile-mode-ficha');
-      document.getElementById('navBtnFicha')?.classList.add('active');
-    }
-  }
-
-  // Automatically switch to details tab on mobile when a card or marker preview is clicked
-  function checkMobileAutoSwitch() {
-    if (window.innerWidth <= 992) {
-      setTimeout(() => {
-        switchMobileMode('ficha');
-      }, 50);
     }
   }
 

@@ -1,0 +1,114 @@
+<!-- ========================================================== -->
+<!-- SISTEMA MOBILE INDEPENDENTE (HTML + CSS + JS NUM SÓ SÍTIO) -->
+<!-- ========================================================== -->
+
+<!-- 1. O HTML da Barra Inferior do Telemóvel -->
+<nav class="app-bottom-nav" id="appBottomNav">
+  <button type="button" class="nav-tab-btn" id="navBtnList" onclick="switchMobileTab('list')">
+    <span class="tab-icon">📋</span>
+    <span>Lista</span>
+  </button>
+  <button type="button" class="nav-tab-btn active" id="navBtnMap" onclick="switchMobileTab('map')">
+    <span class="tab-icon">🗺️</span>
+    <span>Mapa</span>
+  </button>
+  <button type="button" class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
+    <span class="tab-icon">🐾</span>
+    <span>Ficha</span>
+  </button>
+</nav>
+
+<!-- 2. O CSS Exclusivo do Mobile -->
+<style>
+  .app-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 52px;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    z-index: 1500;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: -4px 0 10px rgba(0,0,0,0.05);
+  }
+
+  .nav-tab-btn {
+    flex: 1;
+    height: 100%;
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    gap: 2px;
+    text-transform: uppercase;
+  }
+  .nav-tab-btn span.tab-icon { font-size: 16px; }
+  .nav-tab-btn.active { color: var(--primary-color); }
+
+  @media (max-width: 992px) {
+    .app-layout-wrapper {
+      display: block;
+      position: relative;
+      height: calc(100vh - 38px - 52px);
+    }
+    
+    .app-bottom-nav { display: flex !important; }
+      
+    .app-left-panel, .app-center-panel, .app-right-panel {
+      position: absolute;
+      left: 0; top: 0; right: 0; bottom: 0;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      z-index: 1000;
+      display: none !important;
+    }
+
+    .app-layout-wrapper.mobile-view-list .app-left-panel { display: flex !important; z-index: 1200; }
+    .app-layout-wrapper.mobile-view-map .app-center-panel { display: flex !important; z-index: 1200; }
+    .app-layout-wrapper.mobile-view-ficha .app-right-panel { display: flex !important; z-index: 1200; }
+
+    .app-left-panel .panel-header-bar .panel-action-btn, 
+    .app-right-panel .panel-header-bar .panel-action-btn:not(.mobile-back-btn), 
+    .collapsed-edge-bar { 
+      display: none !important; 
+    }
+
+    .app-right-panel-inner { padding-bottom: 70px !important; }
+    .map-preview-card { bottom: 60px; left: 10px; right: 10px; }
+  }
+</style>
+
+<!-- 3. O JavaScript de Controlo do Mobile -->
+<script>
+  function switchMobileTab(tabName) {
+    const wrapper = document.getElementById('appLayoutWrapper');
+    if (!wrapper) return;
+    
+    wrapper.classList.remove('mobile-view-list', 'mobile-view-map', 'mobile-view-ficha');
+    wrapper.classList.add('mobile-view-' + tabName);
+
+    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+    
+    if (tabName === 'list') document.getElementById('navBtnList')?.classList.add('active');
+    if (tabName === 'map') {
+      document.getElementById('navBtnMap')?.classList.add('active');
+      if (typeof mapInstance !== 'undefined' && mapInstance) {
+        setTimeout(() => {
+          mapInstance.invalidateSize();
+          if (typeof portugalBounds !== 'undefined' && !currentActiveCircle) {
+            mapInstance.fitBounds(portugalBounds);
+          }
+        }, 200);
+      }
+    }
+    if (tabName === 'ficha') document.getElementById('navBtnFicha')?.classList.add('active');
+  }
+</script>

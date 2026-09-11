@@ -1,4 +1,4 @@
-  let mapInstance;
+let mapInstance;
   let allMarkersLayerGroup;
   let allMarkersData = [];
   let itemsBySlug = {};
@@ -125,7 +125,7 @@
           if (document.getElementById('full-map')) {
             mapInstance = null;
             initMap();
-            handleHashOnLoad();
+            handleInitialRoute();
           }
         } else {
           window.location.href = url;
@@ -138,9 +138,7 @@
   }
 
   function handleInitialRoute() {
-    const path = window.location.pathname;
     const hash = window.location.hash.replace('#', '');
-    
     if (hash && ocorrenciasData.some(i => i.slug === hash)) {
       selectOccurrence(hash, false);
     }
@@ -224,8 +222,8 @@
 
     marker.on('click', function() {
       selectOccurrence(item.slug, true);
-      if (window.innerWidth <= 992) {
-        switchMobileTab('ficha');
+      if (window.innerWidth <= 992 && typeof switchMobileMode === 'function') {
+        switchMobileMode('ficha');
       }
     });
 
@@ -248,8 +246,8 @@
 
   function handleListItemClick(slug) {
     selectOccurrence(slug, true);
-    if (window.innerWidth <= 992) {
-      switchMobileTab('map');
+    if (window.innerWidth <= 992 && typeof switchMobileMode === 'function') {
+      switchMobileMode('split');
     }
   }
 
@@ -439,13 +437,6 @@
     if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
   }
 
-  function handleHashOnLoad() {
-    const hash = window.location.hash.replace('#', '');
-    if (hash && ocorrenciasData.some(i => i.slug === hash)) {
-      selectOccurrence(hash, false);
-    }
-  }
-
   function toggleLeftPanel() {
     const wrapper = document.getElementById('appLayoutWrapper');
     wrapper.classList.toggle('hide-left');
@@ -461,34 +452,16 @@
     if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
   }
 
-  function switchMobileTab(tabName) {
-    const wrapper = document.getElementById('appLayoutWrapper');
-    if (!wrapper) return;
-    wrapper.classList.remove('mobile-view-list', 'mobile-view-map', 'mobile-view-ficha');
-    wrapper.classList.add('mobile-view-' + tabName);
-
-    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-    if (tabName === 'list') document.getElementById('navBtnList')?.classList.add('active');
-    if (tabName === 'map') {
-      document.getElementById('navBtnMap')?.classList.add('active');
-      if (mapInstance) {
-        setTimeout(() => {
-          mapInstance.invalidateSize();
-          if (!concelhoLayer) {
-            mapInstance.fitBounds(portugalBounds);
-          }
-        }, 200);
-      }
-    }
-    if (tabName === 'ficha') document.getElementById('navBtnFicha')?.classList.add('active');
-  }
-
   function filterMapByColor(colorKey, btnElement) {
     if (btnElement.classList.contains('active')) {
       btnElement.classList.remove('active');
       activeColorFilter = 'all';
     } else {
-      document.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.filter-pill').forEach(function(p) { 
+        if (!p.getAttribute('onclick')?.includes('Species')) {
+          p.classList.remove('active'); 
+        }
+      });
       btnElement.classList.add('active');
       activeColorFilter = colorKey;
     }
@@ -500,7 +473,11 @@
       btnElement.classList.remove('active');
       activeSpeciesFilter = 'all';
     } else {
-      document.querySelectorAll('.species-pill').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.filter-pill').forEach(function(p) { 
+        if (p.getAttribute('onclick')?.includes('Species')) {
+          p.classList.remove('active'); 
+        }
+      });
       btnElement.classList.add('active');
       activeSpeciesFilter = speciesKey;
     }

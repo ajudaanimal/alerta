@@ -354,7 +354,8 @@ let mapInstance;
     const query = `[out:json][timeout:15];
       area["ISO3166-1"="PT"]->.searchArea;
       relation(area.searchArea)["boundary"="administrative"]["admin_level"="7"]["name"="${concelhoName}"];
-      (._; >;);
+      out body;
+      >;
       out geom;`;
 
     fetch('https://overpass-api.de/api/interpreter', {
@@ -365,28 +366,24 @@ let mapInstance;
     .then(data => {
       if (!data.elements || data.elements.length === 0) return;
 
+      const seenRefs = new Set();
       const coords = [];
+
       data.elements.forEach(el => {
         if (el.type === 'relation' && el.members) {
           el.members.forEach(member => {
-            if (member.role === 'outer' && member.geometry) {
+            if (member.role === 'outer' && member.geometry && !seenRefs.has(member.ref)) {
+              seenRefs.add(member.ref);
               coords.push(member.geometry.map(pt => [pt.lat, pt.lon]));
             }
           });
-        } else if (el.type === 'way' && el.geometry) {
-          coords.push(el.geometry.map(pt => [pt.lat, pt.lon]));
         }
       });
 
       if (coords.length === 0) {
         data.elements.forEach(el => {
-          if (el.members) {
-            el.members.forEach(member => {
-              if (member.geometry) {
-                coords.push(member.geometry.map(pt => [pt.lat, pt.lon]));
-              }
-            });
-          } else if (el.geometry) {
+          if (el.type === 'way' && el.geometry && !seenRefs.has(el.id)) {
+            seenRefs.add(el.id);
             coords.push(el.geometry.map(pt => [pt.lat, pt.lon]));
           }
         });

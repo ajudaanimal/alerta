@@ -761,6 +761,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         estado_caso: {{ post.estado_caso | default: "N/D" | jsonify }},
         triagem: {{ post.triagem | default: "N/D" | jsonify }},
         situacao: {{ post.situacao | default: "N/D" | jsonify }},
+        caracteristicas: {{ post.caracteristicas | default: post.observacoes | default: "Sem características registadas." | jsonify }},
         idade: {{ post.idade | default: "Não indicada" | jsonify }},
         dateRaw: {{ post.date | date: "%s" | default: 0 | jsonify }},
         data: {{ post.date | date: "%d/%m/%Y" | jsonify }},
@@ -920,38 +921,46 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       previewCard.style.display = 'flex';
     }
 
-    // Renderização do Painel da Direita (Ficha de Ocorrência)
+    // Renderização do Painel da Direita (Ficha de Ocorrência focada na Imagem, Estado e Características)
     const rightPanelInner = document.getElementById('appRightPanelInner');
     if (rightPanelInner) {
       const urlFichaCompleta = item.url || ('/ocorrencias/' + item.slug);
       const nivelAlerta = item.nivel_alerta || item.triagem || 'ALERTA';
       const estadoFisico = item.estado_fisico || 'Não especificado';
       const bannerClass = item.bannerClass || item.badgeClass || 'banner-orange';
+      const caracteristicas = item.caracteristicas || item.observacoes || 'Sem características registadas.';
 
       rightPanelInner.innerHTML = `
-        <div class="ficha-wrapper">
-          <header class="report-header" style="background-color: ${item.color || 'var(--primary-color, #0284c7)'};">
-            <div>
-              <h1>${item.especie || 'Sem Identificação'}</h1>
-              <div class="report-header-sub">${item.concelho || item.distrito || ''}</div>
-            </div>
-            <div class="report-header-date">
-              <span>${item.data || ''}</span>
+        <div class="ficha-wrapper" style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
+          <header class="report-header" style="background-color: ${item.color || 'var(--primary-color, #0284c7)'}; padding: 12px 16px; border-radius: 8px; color: #ffffff;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h1 style="margin:0; font-size: 1.3rem; line-height: 1.2;">${item.especie || 'Sem Identificação'}</h1>
+                <div class="report-header-sub" style="opacity: 0.9; font-size: 0.85rem; margin-top: 2px;">${item.concelho || item.distrito || ''}</div>
+              </div>
+              <div class="report-header-date" style="font-size: 0.85rem; opacity: 0.9;">
+                <span>${item.data || ''}</span>
+              </div>
             </div>
           </header>
 
-          <a href="${urlFichaCompleta}" target="_blank" class="btn-expand-ficha">
-            <span>VER FICHA COMPLETA</span>
-            <span>↗</span>
-          </a>
-
-          <div class="status-banner ${bannerClass}">
+          <div class="status-banner ${bannerClass}" style="padding: 10px 14px; border-radius: 6px; font-weight: 600; font-size: 0.95rem;">
             ${nivelAlerta} — ${estadoFisico}
           </div>
 
-          <div class="ficha-img-container">
-            <img src="${item.imagem || ''}" alt="Fotografia de ${item.especie || 'animal'}" onclick="if(typeof openLightbox==='function') openLightbox('${item.imagem}')">
+          <div class="ficha-img-container" style="width: 100%; text-align: center; background: #0f172a; border-radius: 8px; overflow: hidden; padding: 6px;">
+            <img src="${item.imagem || ''}" alt="Fotografia de ${item.especie || 'animal'}" style="width: 100%; max-height: 420px; object-fit: contain; display: block; border-radius: 4px; cursor: pointer;" onclick="if(typeof openLightbox==='function') openLightbox('${item.imagem}')">
           </div>
+
+          <div class="ficha-info-block" style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <strong style="display: block; margin-bottom: 6px; font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Características</strong>
+            <p style="margin: 0; font-size: 0.95rem; color: #334155; line-height: 1.4;">${caracteristicas}</p>
+          </div>
+
+          <a href="${urlFichaCompleta}" target="_blank" class="btn-expand-ficha" style="margin-top: auto;">
+            <span>VER FICHA COMPLETA</span>
+            <span>↗</span>
+          </a>
         </div>
       `;
 

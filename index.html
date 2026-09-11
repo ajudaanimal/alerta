@@ -45,6 +45,37 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     color: #ffffff;
     border-color: var(--primary-color);
   }
+
+  /* Gallery View Mode Styles */
+  .map-list-wrapper.gallery-mode {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 12px;
+    align-content: start;
+  }
+  @media (min-width: 600px) {
+    .map-list-wrapper.gallery-mode {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .map-list-wrapper.gallery-mode .map-card-item {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+  }
+  .map-list-wrapper.gallery-mode .map-card-img {
+    width: 100%;
+    height: 110px;
+    border-radius: 6px;
+  }
+  .map-list-wrapper.gallery-mode .map-card-body {
+    gap: 4px;
+    margin-top: 4px;
+  }
 </style>
 
 {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
@@ -83,6 +114,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       <div class="panel-header-bar" style="display: flex; align-items: center; gap: 6px; padding: 8px;">
         <button class="panel-action-btn" onclick="toggleLeftPanel()" title="Recolher lista">◀</button>
         <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar espécie, concelho..." onkeyup="filterMapManifest()" style="flex: 1;">
+        <!-- Toggle button for Gallery / List View -->
+        <button class="panel-action-btn" id="galleryToggleBtn" onclick="toggleGalleryView()" title="Alternar Vista de Galeria">🖼️</button>
       </div>
 
       <div class="map-list-wrapper" id="mapManifestList">
@@ -230,4 +263,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 <script>
   {% include scripts.js %}
+
+  function toggleGalleryView() {
+    const listWrapper = document.getElementById('mapManifestList');
+    const btn = document.getElementById('galleryToggleBtn');
+    listWrapper.classList.toggle('gallery-mode');
+    
+    if (listWrapper.classList.contains('gallery-mode')) {
+      btn.textContent = '📋';
+      btn.title = 'Alternar Vista de Lista';
+    } else {
+      btn.textContent = '🖼️';
+      btn.title = 'Alternar Vista de Galeria';
+    }
+  }
 </script>

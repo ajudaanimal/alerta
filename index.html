@@ -138,6 +138,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
               <div class="map-card-details-row">
                 <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</span>
                 <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 {{ post.concelho | default: post.localidade | default: "N/D" }}</span>
+                <!-- Direct Link to Full Ficha Page -->
+                <a href="{{ post.url | relative_url }}" class="btn-open-ficha" style="padding: 8px 12px; background: var(--primary-color, #2563eb); color: #fff; text-decoration: none; border-radius: 6px; font-size: 11px; font-weight: 700; align-self: center; margin-right: 8px;">
+                Ver Ficha ↗
+                </a>
               </div>
             </div>
           </div>

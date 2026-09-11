@@ -686,57 +686,72 @@ html.dark-mode, body.dark-mode, [data-theme="dark"] {
 }
 
 @media (max-width: 992px) {
+  /* Disable absolute tab overlays and switch to a natural scrolling column */
   .app-layout-wrapper {
-    display: block;
-    position: relative;
-    height: calc(100vh - 46px - 60px);
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    position: relative !important;
+    overflow-y: auto !important;
   }
 
-  .app-bottom-nav { 
-    display: flex; 
+  /* Hide the old bottom navigation bar */
+  .app-bottom-nav {
+    display: none !important;
+  }
+
+  /* Map container: ~40% vertical viewport height, 80-85% width, centered */
+  .app-center-panel {
+    display: flex !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    order: 1;
+    padding: 12px 0;
+    background: var(--bg-color, #f8f9fa);
+  }
+
+  .map-container-wrapper {
+    width: 85% !important;
+    height: 40vh !important;
+    margin: 0 auto !important;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  #full-map {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Top filters adjustments for mobile width */
+  .map-top-filters {
+    padding: 0 10px 8px 10px;
+    justify-content: center;
+  }
+
+  /* List panel flows right below the map box with normal page scrolling */
+  .app-left-panel {
+    display: flex !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    order: 2;
+  }
+
+  .map-list-wrapper {
+    max-height: none !important;
+    overflow-y: visible !important;
+    padding: 10px;
+  }
+
+  /* Hide the right preview panel since we are using direct links to full fischas */
+  .app-right-panel {
+    display: none !important;
   }
   
-  .app-left-panel, .app-center-panel, .app-right-panel {
-    position: absolute;
-    left: 0; 
-    top: 0; 
-    right: 0; 
-    bottom: 0;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100% !important;
-    z-index: 1000;
-    display: none !important;
-  }
-
-  .app-layout-wrapper.mobile-view-list .app-left-panel { 
-    display: flex !important; 
-    z-index: 1200; 
-  }
-
-  .app-layout-wrapper.mobile-view-map .app-center-panel { 
-    display: flex !important; 
-    z-index: 1200; 
-  }
-
-  .app-layout-wrapper.mobile-view-ficha .app-right-panel { 
-    display: flex !important; 
-    z-index: 1200; 
-  }
-
-  .app-left-panel .panel-header-bar .panel-action-btn,
-  .app-right-panel .panel-header-bar .panel-action-btn:not(.mobile-back-btn),
-  .collapsed-edge-bar {
-    display: none !important;
-  }
-
-  .app-right-panel-inner {
-    padding-bottom: 80px !important;
-  }
-
   .map-preview-card {
-    bottom: 70px;
-    left: 12px;
-    right: 12px;
+    display: none !important;
   }
 }

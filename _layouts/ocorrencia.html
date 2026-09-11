@@ -469,7 +469,7 @@ layout: default
     <div class="top-section">
         <div class="animal-img-container">
             {% assign case_id = page.slug | default: page.id | split: '/' | last %}
-            <img id="clickable-animal-img" src="{{ '/assets/img/ocorrencias/' | append: case_id | append: '.jpg' | relative_url }}" alt="Fotografia do animal" title="Clique para ampliar" onerror="this.src='{{ site.baseurl }}/assets/img/animal.jpeg';">
+            <img id="clickable-animal-img" src="{{ '/assets/img/ocorrencias/' | append: case_id | append: '.jpg' | relative_url }}" alt="Fotografia do animal" title="Clique para ampliar" onerror="this.src='{{ '/assets/img/animal.jpeg' | relative_url }}';">
         </div>
         
         <div class="unified-highlight-box" style="border-left: 3px solid {{ theme_color }};">

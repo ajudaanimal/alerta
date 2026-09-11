@@ -80,40 +80,53 @@
       display: none !important;
     }
 
-    /* Contentor principal em grelha vertical fluida usando dvh para evitar bugs de scroll */
+    /* Contentor principal a ocupar 100% da largura real do viewport e sem cortes */
     .app-layout-wrapper {
       display: flex !important;
       flex-direction: column !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
       height: 100dvh !important;
-      position: relative !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
       overflow: hidden !important;
       margin: 0 !important;
       padding: 0 !important;
+      box-sizing: border-box !important;
+      z-index: 1000 !important;
     }
 
-    /* Mapa no Topo: exatamente 30% da altura */
+    /* Mapa no Topo: exatamente 30% da altura e largura total */
     .app-center-panel {
       display: flex !important;
       position: relative !important;
       order: 1 !important;
       width: 100% !important;
+      max-width: 100% !important;
       height: 30vh !important;
       min-height: 30vh !important;
       max-height: 30vh !important;
       flex-shrink: 0 !important;
+      box-sizing: border-box !important;
       z-index: 1000 !important;
     }
 
-    /* Painel da Lista: ocupa os restantes 70% */
+    /* Painel da Lista: ocupa o espaço restante dinamicamente com largura total */
     .app-left-panel {
       display: flex !important;
+      flex-direction: column !important;
       position: relative !important;
       order: 2 !important;
       width: 100% !important;
-      height: 70vh !important;
-      max-height: 70vh !important;
-      flex-grow: 1 !important;
+      max-width: 100% !important;
+      flex: 1 !important;
+      height: auto !important;
       overflow-y: auto !important;
+      padding-bottom: calc(56px + env(safe-area-inset-bottom)) !important;
+      box-sizing: border-box !important;
       z-index: 1000 !important;
       background: var(--bg-color, #f1f5f9);
     }
@@ -134,10 +147,13 @@
       position: absolute !important;
       inset: 0 !important;
       width: 100% !important;
+      max-width: 100% !important;
       height: calc(100dvh - 56px - env(safe-area-inset-bottom)) !important;
       z-index: 1200 !important;
       overflow-y: auto !important;
       background: var(--card-bg, #ffffff);
+      padding-bottom: calc(56px + env(safe-area-inset-bottom)) !important;
+      box-sizing: border-box !important;
     }
   }
 </style>

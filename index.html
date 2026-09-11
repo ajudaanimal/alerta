@@ -128,15 +128,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   /* Inline Image Expansion inside Right Panel */
   #appRightPanelInner img {
     cursor: zoom-in;
-    max-height: 220px;
+    max-height: 200px;
     width: 100%;
     object-fit: cover;
     border-radius: 6px;
-    transition: max-height 0.3s ease, transform 0.2s ease;
+    transition: max-height 0.3s ease;
+    display: block;
+    margin: 8px 0;
   }
   #appRightPanelInner img.expanded-inline {
     max-height: none !important;
     cursor: zoom-out;
+    object-fit: contain;
   }
 </style>
 
@@ -341,11 +344,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  // Inline Image Expansion inside Right Panel
+  // Safe inline image toggle expansion inside the right panel
   document.addEventListener('click', function(e) {
-    const rightPanelInner = document.getElementById('appRightPanelInner');
-    if (rightPanelInner && rightPanelInner.contains(e.target) && e.target.tagName === 'IMG') {
-      e.target.classList.toggle('expanded-inline');
+    if (e.target && e.target.tagName && e.target.tagName.toUpperCase() === 'IMG') {
+      const rightPanelInner = document.getElementById('appRightPanelInner');
+      if (rightPanelInner && rightPanelInner.contains(e.target)) {
+        e.target.classList.toggle('expanded-inline');
+      }
     }
   });
 </script>

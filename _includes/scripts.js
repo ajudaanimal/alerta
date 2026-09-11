@@ -351,17 +351,21 @@
     if (!concelhoName) return;
 
     const renderConcelho = (topodata) => {
-      console.log("Topodata objects:", topodata.objects);
+      if (typeof topojson === 'undefined') {
+        console.error('Biblioteca TopoJSON não carregada no HTML!');
+        return;
+      }
+
       const objectKey = Object.keys(topodata.objects)[0];
       const geojson = topojson.feature(topodata, topodata.objects[objectKey]);
-      console.log("Exemplo de propriedades de uma feature:", geojson.features[0]?.properties);
+      const searchName = normalizeText(concelhoName);
 
-      const searchName = concelhoName.toLowerCase().trim();
       const feature = geojson.features.find(f => {
         if (!f.properties) return false;
-        const p = f.properties;
-        const val = p.name || p.Concelho || p.CONCELHO || p.NAME_2 || p.NOME || '';
-        return val.toString().toLowerCase().trim() === searchName;
+        return Object.values(f.properties).some(val => {
+          if (val == null) return false;
+          return normalizeText(val.toString()) === searchName;
+        });
       });
 
       if (feature && mapInstance) {

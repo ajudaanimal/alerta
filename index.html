@@ -165,6 +165,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   /* RESPONSIVE MOBILE ADAPTATIONS (<= 992px)                    */
   /* ========================================================== */
   @media screen and (max-width: 992px) {
+    /* Forçar reset de contentores comuns de temas Jekyll para evitar restrições de largura */
+    body, html, .page-content, .wrapper, main {
+      margin: 0 !important;
+      padding: 0 !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      overflow-x: hidden !important;
+    }
+
     .app-layout-wrapper {
       display: flex !important;
       flex-direction: column !important;
@@ -180,10 +189,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       margin: 0 !important;
       padding: 0 !important;
       box-sizing: border-box !important;
-      z-index: 1000 !important;
+      z-index: 99999 !important;
     }
 
-    /* Ocultar todos os painéis por defeito no mobile, controlados por classe */
+    /* Ocultar todos os painéis por defeito no mobile */
     .app-left-panel,
     .app-center-panel,
     .app-right-panel {
@@ -198,11 +207,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       display: flex !important;
       flex-direction: column !important;
       position: absolute !important;
-      inset: 0 !important;
-      height: calc(100dvh - 56px - env(safe-area-inset-bottom)) !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 56px !important;
+      height: auto !important;
       overflow-y: auto !important;
       background: var(--bg-color, #f1f5f9);
-      padding-bottom: calc(56px + env(safe-area-inset-bottom)) !important;
       z-index: 1100 !important;
     }
 
@@ -211,8 +222,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       display: flex !important;
       flex-direction: column !important;
       position: absolute !important;
-      inset: 0 !important;
-      height: calc(100dvh - 56px - env(safe-area-inset-bottom)) !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 56px !important;
+      height: auto !important;
       z-index: 1100 !important;
     }
     .app-layout-wrapper.mobile-mode-map .map-container-wrapper {
@@ -225,29 +239,45 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       display: flex !important;
       flex-direction: column !important;
       position: absolute !important;
-      inset: 0 !important;
-      height: calc(100dvh - 56px - env(safe-area-inset-bottom)) !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 56px !important;
+      height: auto !important;
       overflow-y: auto !important;
       background: var(--card-bg, #ffffff);
-      padding-bottom: calc(56px + env(safe-area-inset-bottom)) !important;
       z-index: 1200 !important;
     }
 
-    /* Barra de navegação inferior mobile */
+    /* Garantir que o conteúdo interno dos painéis preenche o espaço e não fica cortado */
+    .app-left-panel .panel-collapsible-content,
+    .app-right-panel .panel-collapsible-content {
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+      width: 100% !important;
+    }
+
+    .map-list-wrapper {
+      flex: 1 !important;
+      max-height: none !important;
+      overflow-y: auto !important;
+    }
+
+    /* Barra de navegação inferior mobile fixa */
     .app-bottom-nav {
       display: flex !important;
       position: fixed !important;
       bottom: 0 !important;
       left: 0 !important;
       right: 0 !important;
-      height: calc(56px + env(safe-area-inset-bottom)) !important;
-      padding-bottom: env(safe-area-inset-bottom) !important;
+      height: 56px !important;
       background: var(--card-bg, #ffffff);
       border-top: 1px solid var(--border-color, #cbd5e1);
-      z-index: 1500 !important;
+      z-index: 200000 !important;
       justify-content: space-around !important;
       align-items: center !important;
-      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
       box-sizing: border-box !important;
     }
 
@@ -505,6 +535,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     window.handleListItemClick = function(slug) {
       originalHandler(slug);
       window.currentActiveSlug = slug;
+      // No telemóvel, quando clica num item, muda automaticamente para o separador Ficha
+      if (window.innerWidth <= 992) {
+        switchMobileTab('ficha');
+      }
     };
   }
 

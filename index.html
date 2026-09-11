@@ -833,15 +833,19 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
    * @param {boolean} updateHash - Atualiza a URL com o hash
    */
   function selectOccurrence(slug, updateHash = true) {
+  if (!slug || typeof ocorrenciasData === 'undefined') return;
+  
   const item = ocorrenciasData.find(i => i.slug === slug);
   if (!item) return;
 
   currentSelectedSlug = slug;
 
-  if (updateHash) {
+  // Atualiza URL com o hash
+  if (updateHash && window.history && window.history.pushState) {
     history.pushState(null, null, '#' + slug);
   }
 
+  // Destaca o item selecionado na lista da esquerda
   document.querySelectorAll('.map-card-item').forEach(el => el.classList.remove('selected'));
   const cardEl = document.getElementById('card-item-' + slug);
   if (cardEl) {
@@ -849,21 +853,31 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  const mapObj = itemsBySlug[slug];
-  if (mapObj && mapInstance) {
-    const latLng = mapObj.marker.getLatLng();
-    loadConcelhoBoundary(item.concelho);
-    mapInstance.setView(latLng, 12, { animate: false });
+  // Atualização segura do Mapa (com try/catch para não bloquear o script)
+  try {
+    if (typeof itemsBySlug !== 'undefined' && itemsBySlug[slug] && typeof mapInstance !== 'undefined' && mapInstance) {
+      const mapObj = itemsBySlug[slug];
+      if (mapObj && mapObj.marker) {
+        const latLng = mapObj.marker.getLatLng();
+        if (typeof loadConcelhoBoundary === 'function') {
+          loadConcelhoBoundary(item.concelho);
+        }
+        mapInstance.setView(latLng, 12, { animate: false });
+      }
+    }
+  } catch (err) {
+    console.warn("Aviso no mapa:", err);
   }
 
+  // Atualização do Card de Preview do Mapa (se existir)
   const previewCard = document.getElementById('mapPreviewCard');
   if (previewCard) {
     previewCard.innerHTML = `
-      <img id="mapPreviewImg" src="${item.imagem}" alt="Animal">
+      <img id="mapPreviewImg" src="${item.imagem || ''}" alt="Animal">
       <div class="map-preview-info">
         <div class="map-preview-title">
-          <span id="mapPreviewSpecies">${item.especie}</span>
-          <span id="mapPreviewBadge" class="map-badge ${item.badgeClass}">${item.triagem}</span>
+          <span id="mapPreviewSpecies">${item.especie || 'Ocorrência'}</span>
+          <span id="mapPreviewBadge" class="map-badge ${item.badgeClass || 'badge-laranja'}">${item.triagem || 'ALERTA'}</span>
         </div>
         <div class="map-preview-loc" id="mapPreviewLocality">📍 ${item.concelho || item.distrito || ''}</div>
       </div>
@@ -871,25 +885,23 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     previewCard.style.display = 'flex';
   }
 
+  // Renderização do Painel da Direita
   const rightPanelInner = document.getElementById('appRightPanelInner');
   if (rightPanelInner) {
     const urlFichaCompleta = item.url || ('/ocorrencias/' + item.slug);
-    
     const nivelAlerta = item.nivel_alerta || item.triagem || 'ALERTA';
     const estadoFisico = item.estado_fisico || 'Não especificado';
-    
-    // Garante que a classe de cor do banner é atribuída corretamente
     const bannerClass = item.bannerClass || item.badgeClass || 'banner-orange';
 
     rightPanelInner.innerHTML = `
       <div class="ficha-wrapper">
         <header class="report-header" style="background-color: ${item.color || 'var(--primary-color)'};">
           <div>
-            <h1>${item.especie}</h1>
+            <h1>${item.especie || 'Sem Identificação'}</h1>
             <div class="report-header-sub">📍 ${item.concelho || item.distrito || ''}</div>
           </div>
           <div class="report-header-date">
-            <span>${item.data}</span>
+            <span>${item.data || ''}</span>
           </div>
         </header>
 
@@ -903,7 +915,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         </div>
 
         <div class="ficha-img-container">
-          <img src="${item.imagem}" alt="Fotografia de ${item.especie}" onclick="openLightbox('${item.imagem}')">
+          <img src="${item.imagem || ''}" alt="Fotografia de ${item.especie || 'animal'}" onclick="if(typeof openLightbox==='function') openLightbox('${item.imagem}')">
         </div>
       </div>
     `;
@@ -912,6 +924,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       document.getElementById('appRightPanel')?.scrollIntoView({ behavior: 'smooth' });
     }
   }
+}
     
   /* ======================================================================
    5.4. MOTOR DE MAPA LEAFLET E CRIAÇÃO DE MARCADORES

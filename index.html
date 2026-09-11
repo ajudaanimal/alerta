@@ -396,11 +396,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       width: 100% !important;
       height: calc(50vh - 52px) !important;
       position: relative !important;
+      min-height: 200px;
     }
 
     #full-map {
       width: 100% !important;
       height: 100% !important;
+      min-height: 100%;
     }
 
     /* Lista na Metade Inferior */
@@ -528,6 +530,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           {% assign color_key = "amarelo" %}
         {% endif %}
 
+        {% assign default_img = 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' %}
+        {% assign card_img_url = post.imagem | default: default_img | relative_url %}
+
         <div class="map-card-item map-row" id="card-item-{{ post.slug }}"
              data-slug="{{ post.slug }}"
              data-color="{{ color_key }}"
@@ -535,7 +540,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
              data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}"
              onclick="selectOcorrenciaBySlug('{{ post.slug }}')">
 
-          <img src="{{ post.imagem | relative_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
+          <img src="{{ card_img_url }}" alt="" class="map-card-img" loading="lazy">
 
           <div class="map-card-body">
             <div class="map-card-top-row">
@@ -604,12 +609,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         {% assign color_key = "amarelo" %}
       {% endif %}
 
+      {% assign default_img = 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' %}
+      {% assign js_img_url = post.imagem | default: default_img | relative_url %}
+
       {
         slug: {{ post.slug | jsonify }},
         especie: {{ post.especie | default: "Animal" | jsonify }},
         concelho: {{ post.concelho | default: "" | jsonify }},
         localidade: {{ post.localidade | default: "" | jsonify }},
-        imagem: {{ post.imagem | relative_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' | jsonify }},
+        imagem: {{ js_img_url | jsonify }},
         url: {{ post.url | relative_url | jsonify }},
         color: {{ theme_color | jsonify }},
         colorKey: {{ color_key | jsonify }},
@@ -641,7 +649,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
       mapInstance.fitBounds(portugalBounds);
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3494_1_8eeb09fcfa7dbb0a9063b727', {
+      /* URL Limpo do CARTO Voyager */
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
         subdomains: 'abcd',
         updateWhenIdle: true,
@@ -669,20 +678,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         }
       });
 
-      requestAnimationFrame(() => {
+      /* Recálculo de dimensões com temporizador para garantir renderização a 50vh */
+      setTimeout(function() {
         if (mapInstance) mapInstance.invalidateSize();
-      });
+      }, 200);
+
     } catch (e) {
       console.error("Erro ao inicializar o mapa Leaflet:", e);
     }
   }
 
   function loadConcelhosGeoJSON() {
-    /* Carrega limites geográficos dos concelhos para destaque visual */
     fetch('https://raw.githubusercontent.com/deldersveld/topojson/master/countries/portugal/portugal-districts.json')
       .then(res => res.json())
       .then(topoData => {
-        if (topoData && topojson) {
+        if (topoData && typeof topojson !== 'undefined') {
           const key = Object.keys(topoData.objects)[0];
           concelhosGeoJSON = topojson.feature(topoData, topoData.objects[key]);
         }
@@ -703,7 +713,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     const marker = L.marker([lat, lon], { icon: customIcon });
 
-    /* 1º Clique no mapa: centra, destaca o concelho e abre o botão de pré-visualização */
     marker.on('click', function() {
       selectOcorrencia(item);
     });
@@ -719,7 +728,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     allMarkersLayerGroup.addLayer(marker);
   }
 
-  /* Função de seleção do item em 2 passos */
   function selectOcorrenciaBySlug(slug) {
     const item = ocorrenciasData.find(o => o.slug === slug);
     if (item) selectOcorrencia(item);
@@ -729,15 +737,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     const lat = parseFloat(item.lat);
     const lon = parseFloat(item.lon);
 
-    /* 1. Centrar o Mapa na Ocorrência */
     if (!isNaN(lat) && !isNaN(lon) && mapInstance) {
       mapInstance.setView([lat, lon], 13, { animate: true });
     }
 
-    /* 2. Desenhar Outline do Concelho */
     highlightConcelho(item.concelho);
 
-    /* 3. Atualizar e Apresentar o Cartão Flutuante com o Botão de Ficha Completa */
     const prevCard = document.getElementById('mapPreviewCard');
     const prevImg = document.getElementById('prevCardImg');
     const prevTitle = document.getElementById('prevCardTitle');
@@ -748,11 +753,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       prevImg.src = item.imagem;
       prevTitle.innerText = item.especie;
       prevLoc.innerText = `${item.concelho}${item.localidade ? ' • ' + item.localidade : ''}`;
-      prevBtn.href = item.url; /* Botão para o 2º clique que abre a ficha */
+      prevBtn.href = item.url;
       prevCard.style.display = 'flex';
     }
 
-    /* Destacar cartão na lista */
     document.querySelectorAll('.map-card-item').forEach(c => c.classList.remove('selected'));
     const activeCard = document.getElementById(`card-item-${item.slug}`);
     if (activeCard) activeCard.classList.add('selected');

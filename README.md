@@ -1,5 +1,4 @@
-![animal](/main/assets/img/site/animal.jpeg)
-
+![animal](https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg)
 
 # Alerta Animal
 

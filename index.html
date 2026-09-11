@@ -236,7 +236,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     font-size: 15px;
   }
 
-  /* Estilização do Popup Nativo do Leaflet */
   .leaflet-popup-content-wrapper {
     border-radius: 10px !important;
     padding: 4px !important;
@@ -502,8 +501,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <script>
   let mapInstance = null;
   let allMarkersLayerGroup = null;
-  let concelhoOutlineLayer = null;
-  let concelhosGeoJSON = null;
+  let concelhoLayer = null;
+  let concelhosTopoData = null;
+  let concelhosIndex = {};
   let allMarkersData = [];
   let activeColorFilter = 'all';
   let activeSpeciesFilter = 'all';
@@ -561,7 +561,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   document.addEventListener("DOMContentLoaded", function() {
     initMap();
-    loadConcelhosGeoJSON();
     updatePagination();
   });
 
@@ -618,24 +617,66 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  function loadConcelhosGeoJSON() {
-    fetch("{{ '/assets/data/concelhos.topo.json' | relative_url }}")
-      .then(res => res.json())
-      .then(geoData => {
-        if (!geoData) return;
-        
-        /* Suporta tanto GeoJSON direto como formato TopoJSON */
-        if (geoData.type === 'FeatureCollection') {
-          concelhosGeoJSON = geoData;
-        } else if (geoData.type === 'Topology' && geoData.objects && typeof topojson !== 'undefined') {
-          const key = Object.keys(geoData.objects)[0];
-          concelhosGeoJSON = topojson.feature(geoData, geoData.objects[key]);
-        } else if (geoData.objects && typeof topojson !== 'undefined') {
-          const key = Object.keys(geoData.objects)[0];
-          concelhosGeoJSON = topojson.feature(geoData, geoData.objects[key]);
+  function loadConcelhoBoundary(concelhoName) {
+    if (concelhoLayer && mapInstance) {
+      mapInstance.removeLayer(concelhoLayer);
+      concelhoLayer = null;
+    }
+    if (!concelhoName) return;
+
+    const renderConcelho = (feature) => {
+      if (!feature || !mapInstance) {
+        console.warn('Concelho não encontrado no TopoJSON:', concelhoName);
+        return;
+      }
+
+      concelhoLayer = L.geoJSON(feature, {
+        style: {
+          color: '#2563eb',
+          weight: 2,
+          dashArray: '4, 4',
+          fillColor: '#2563eb',
+          fillOpacity: 0.05
         }
+      }).addTo(mapInstance);
+
+      try {
+        mapInstance.fitBounds(concelhoLayer.getBounds(), { padding: [20, 20], maxZoom: 13 });
+      } catch (e) {
+        console.warn('Não foi possível ajustar os limites do mapa:', e);
+      }
+    };
+
+    const searchName = normalizeText(concelhoName);
+
+    if (concelhosTopoData && Object.keys(concelhosIndex).length > 0) {
+      renderConcelho(concelhosIndex[searchName]);
+      return;
+    }
+
+    fetch('{{ "/assets/data/concelhos.topo.json" | relative_url }}')
+      .then(response => {
+        if (!response.ok) throw new Error('Ficheiro TopoJSON não encontrado');
+        return response.json();
       })
-      .catch(err => console.error("Erro ao carregar ficheiro de concelhos:", err));
+      .then(data => {
+        concelhosTopoData = data;
+        const objectKey = Object.keys(data.objects)[0];
+        const geojson = topojson.feature(data, data.objects[objectKey]);
+        
+        concelhosIndex = {};
+        geojson.features.forEach(f => {
+          if (!f.properties) return;
+          const p = f.properties;
+          const val = p.Concelho || p.CONCELHO || p.name || p.NAME_2 || p.NOME || Object.values(p)[0];
+          if (val) {
+            concelhosIndex[normalizeText(val.toString())] = f;
+          }
+        });
+
+        renderConcelho(concelhosIndex[searchName]);
+      })
+      .catch(err => console.warn('Erro ao carregar dados dos concelhos:', err));
   }
 
   function criarMarcador(lat, lon, item) {
@@ -651,7 +692,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     const marker = L.marker([lat, lon], { icon: customIcon });
 
-    /* CONTEÚDO DO POPUP NATIVO SOBRE O PONTO DO MAPA */
     const popupHtml = `
       <div style="text-align: center; font-family: system-ui, sans-serif; min-width: 150px; max-width: 200px;">
         <img src="${item.imagem}" style="width: 100%; height: 90px; object-fit: cover; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border-color, #cbd5e1);" alt="">
@@ -691,7 +731,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       mapInstance.setView([lat, lon], 13, { animate: true });
     }
 
-    highlightConcelho(item.concelho);
+    loadConcelhoBoundary(item.concelho);
 
     const matchObj = allMarkersData.find(m => m.slug === item.slug);
     if (matchObj && matchObj.marker && openPopup) {
@@ -701,44 +741,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     document.querySelectorAll('.map-card-item').forEach(c => c.classList.remove('selected'));
     const activeCard = document.getElementById(`card-item-${item.slug}`);
     if (activeCard) activeCard.classList.add('selected');
-  }
-
-  function highlightConcelho(concelhoName) {
-    if (!mapInstance) return;
-
-    if (concelhoOutlineLayer) {
-      mapInstance.removeLayer(concelhoOutlineLayer);
-      concelhoOutlineLayer = null;
-    }
-
-    if (!concelhosGeoJSON || !concelhoName) return;
-
-    const normName = normalizeText(concelhoName);
-    if (!normName) return;
-
-    const matchFeature = concelhosGeoJSON.features?.find(f => {
-      const props = f.properties || {};
-      const pName2 = normalizeText(props.NAME_2 || '');
-      const pName1 = normalizeText(props.NAME_1 || '');
-      const pName = normalizeText(props.name || props.NAME || props.concelho || props.CONCELHO || props.municipality || props.MUNICIPALITY || '');
-
-      return (
-        (pName2 && (pName2 === normName || pName2.includes(normName) || normName.includes(pName2))) ||
-        (pName && (pName === normName || pName.includes(normName) || normName.includes(pName))) ||
-        (pName1 && (pName1 === normName || pName1.includes(normName) || normName.includes(pName1)))
-      );
-    });
-
-    if (matchFeature) {
-      concelhoOutlineLayer = L.geoJSON(matchFeature, {
-        style: {
-          color: '#0284c7',
-          weight: 3,
-          fillColor: '#38bdf8',
-          fillOpacity: 0.18
-        }
-      }).addTo(mapInstance);
-    }
   }
 
   function getSpeciesEmoji(especieStr) {

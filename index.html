@@ -5,12 +5,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 ---
 
 <!-- ====================================================================== -->
-<!-- 1. DEPENDÊNCIAS EXTERNAS (LEAFLET & TOPOJSON)                           -->
+<!-- 1. DEPENDÊNCIAS EXTERNAS (LEAFLET, MARKERCLUSTER & TOPOJSON)           -->
 <!-- ====================================================================== -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="https://unpkg.com/topojson-client@3"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/topojson-client@3"></script>
 <!-- ====================================================================== -->
 <!-- 2. ESTILOS CSS CONSOLIDADOS E MODULARES                                -->
 <!-- ====================================================================== -->
@@ -972,89 +975,97 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /* ======================================================================
-     5.4. MOTOR DE MAPA LEAFLET E CRIAÇÃO DE MARCADORES
-     ====================================================================== */
-  function initMap() {
-    if (mapInstance) return;
-    const mapElement = document.getElementById('full-map');
-    if (!mapElement) return;
+   5.4. MOTOR DE MAPA LEAFLET E CRIAÇÃO DE MARCADORES
+   ====================================================================== */
+function initMap() {
+  if (mapInstance) return;
+  const mapElement = document.getElementById('full-map');
+  if (!mapElement) return;
 
-    mapInstance = L.map('full-map', {
-      attributionControl: false,
-      tap: false,
-      touchZoom: true,
-      scrollWheelZoom: true,
-      preferCanvas: true
-    });
+  mapInstance = L.map('full-map', {
+    attributionControl: false,
+    tap: false,
+    touchZoom: true,
+    scrollWheelZoom: true,
+    preferCanvas: true
+  });
 
-    mapInstance.fitBounds(portugalBounds);
+  mapInstance.fitBounds(portugalBounds);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3494_1_8eeb09fcfa7dbb0a9063b727', {
-      maxZoom: 19,
-      subdomains: 'abcd',
-      updateWhenIdle: true,
-      keepBuffer: 6
-    }).addTo(mapInstance);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3494_1_8eeb09fcfa7dbb0a9063b727', {
+    maxZoom: 19,
+    subdomains: 'abcd',
+    updateWhenIdle: true,
+    keepBuffer: 6
+  }).addTo(mapInstance);
 
-    allMarkersLayerGroup = L.layerGroup().addTo(mapInstance);
+  // Alterado: Agrupamento automático de marcadores sobrepostos/próximos
+  allMarkersLayerGroup = L.markerClusterGroup({
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    disableClusteringAtZoom: 18
+  });
 
-    ocorrenciasData.forEach(function(item) {
-      const lat = parseFloat(item.lat);
-      const lon = parseFloat(item.lon);
-      if (!isNaN(lat) && !isNaN(lon)) {
-        criarMarcador(lat, lon, item);
-      }
-    });
-  }
+  mapInstance.addLayer(allMarkersLayerGroup);
 
-  function criarMarcador(lat, lon, item) {
-    const emojiIcon = getSpeciesEmoji(item.especie);
-    const iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
+  ocorrenciasData.forEach(function(item) {
+    const lat = parseFloat(item.lat);
+    const lon = parseFloat(item.lon);
+    if (!isNaN(lat) && !isNaN(lon)) {
+      criarMarcador(lat, lon, item);
+    }
+  });
+}
 
-    const customIcon = L.divIcon({
-      className: '',
-      html: iconHtml,
-      iconSize: [28, 28],
-      iconAnchor: [14, 14]
-    });
+function criarMarcador(lat, lon, item) {
+  const emojiIcon = getSpeciesEmoji(item.especie);
+  const iconHtml = '<div class="species-pin" style="background-color: ' + item.color + ';">' + emojiIcon + '</div>';
 
-    const marker = L.marker([lat, lon], { icon: customIcon });
+  const customIcon = L.divIcon({
+    className: '',
+    html: iconHtml,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
 
-    marker.on('click', function() {
-      selectOccurrence(item.slug, true);
-      if (window.innerWidth <= 992) {
-        switchMobileTab('ficha');
-      }
-    });
+  const marker = L.marker([lat, lon], { icon: customIcon });
 
-    const mapObj = {
-      marker: marker,
-      colorKey: item.colorKey,
-      speciesKey: getSpeciesCategory(item.especie),
-      slug: item.slug,
-      concelho: item.concelho
-    };
+  marker.on('click', function() {
+    selectOccurrence(item.slug, true);
+    if (window.innerWidth <= 992) {
+      switchMobileTab('ficha');
+    }
+  });
 
-    allMarkersData.push(mapObj);
-    itemsBySlug[item.slug] = mapObj;
-    allMarkersLayerGroup.addLayer(marker);
-  }
+  const mapObj = {
+    marker: marker,
+    colorKey: item.colorKey,
+    speciesKey: getSpeciesCategory(item.especie),
+    slug: item.slug,
+    concelho: item.concelho
+  };
 
-  function getSpeciesEmoji(especieStr) {
-    const esp = especieStr ? especieStr.toLowerCase() : '';
-    if (esp.includes('gato') || esp.includes('felino')) return '🐱';
-    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
-    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return '🐦';
-    return '🐾';
-  }
+  allMarkersData.push(mapObj);
+  itemsBySlug[item.slug] = mapObj;
+  allMarkersLayerGroup.addLayer(marker);
+}
 
-  function getSpeciesCategory(especieStr) {
-    const esp = especieStr ? especieStr.toLowerCase() : '';
-    if (esp.includes('gato') || esp.includes('felino')) return 'felino';
-    if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return 'canideo';
-    if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return 'ave';
-    return 'outro';
-  }
+function getSpeciesEmoji(especieStr) {
+  const esp = especieStr ? especieStr.toLowerCase() : '';
+  if (esp.includes('gato') || esp.includes('felino')) return '🐱';
+  if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return '🐶';
+  if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return '🐦';
+  return '🐾';
+}
+
+function getSpeciesCategory(especieStr) {
+  const esp = especieStr ? especieStr.toLowerCase() : '';
+  if (esp.includes('gato') || esp.includes('felino')) return 'felino';
+  if (esp.includes('cão') || esp.includes('cao') || esp.includes('canídeo')) return 'canideo';
+  if (esp.includes('ave') || esp.includes('pássaro') || esp.includes('gaivota')) return 'ave';
+  return 'outro';
+}
 
   /* ======================================================================
      5.5. FILTRAGEM COMBINADA E PESQUISA DE TEXTO

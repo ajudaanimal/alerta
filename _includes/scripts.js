@@ -228,79 +228,57 @@ function selectOccurrence(slug, updateHash = true) {
   }
 
   const previewCard = document.getElementById('mapPreviewCard');
-  if (previewCard) {
-    document.getElementById('mapPreviewImg').src = item.imagem;
-    document.getElementById('mapPreviewSpecies').textContent = item.especie;
-    document.getElementById('mapPreviewLocality').textContent = '📍 ' + (item.concelho || item.distrito || '');
-    
-    const badgeEl = document.getElementById('mapPreviewBadge');
-    badgeEl.className = 'map-badge ' + item.badgeClass;
-    badgeEl.textContent = item.triagem;
-    
-    previewCard.style.display = 'flex';
-  }
-
-  // Preencher a barra lateral estruturada
-  const placeholder = document.getElementById('fichaPlaceholder');
-  const contentContainer = document.getElementById('fichaContentContainer');
-  if (placeholder) placeholder.style.display = 'none';
-  if (contentContainer) contentContainer.style.display = 'block';
-
-  const headerTop = document.getElementById('sidebarHeaderTop');
-  if (headerTop) headerTop.style.backgroundColor = item.color;
-
-  document.getElementById('sidebarTitle').textContent = item.especie;
-  document.getElementById('sidebarLocation').textContent = '📍 ' + (item.concelho || item.distrito || 'Portugal');
-  document.getElementById('sidebarDate').textContent = item.data;
-  document.getElementById('sidebarAlertLevel').textContent = item.triagem;
-
-  const statusBanner = document.getElementById('sidebarStatusBanner');
-  statusBanner.className = 'status-banner ' + item.bannerClass;
-  statusBanner.textContent = item.triagem + ' — ' + item.estado_fisico;
-
-  document.getElementById('sidebarAnimalImg').src = item.imagem;
-  document.getElementById('sidebarSituacao').textContent = item.situacao;
-  document.getElementById('sidebarEstadoFisico').textContent = item.estado_fisico;
-  document.getElementById('sidebarAlertaBox').textContent = item.triagem;
-
-  document.getElementById('sidebarObsContent').textContent = item.observacoes;
-
-  let detailsHtml = '';
-  const campos = [
-    { label: 'Localidade', val: item.freguesia },
-    { label: 'Concelho', val: item.concelho },
-    { label: 'Distrito', val: item.distrito },
-    { label: 'Idade', val: item.idade },
-    { label: 'Estado do Caso', val: item.estado_caso }
-  ];
-
-  campos.forEach(c => {
-    if (c.val && c.val !== 'N/D' && c.val !== 'Não indicada') {
-      detailsHtml += `<div class="box-row"><label>${c.label}</label><span>${c.val}</span></div>`;
-    }
-  });
-  document.getElementById('sidebarDetailsBox').innerHTML = detailsHtml;
-
-  document.getElementById('sidebarCaseId').textContent = item.id;
-  document.getElementById('sidebarIndividualLink').href = item.url;
+  document.getElementById('mapPreviewImg').src = item.imagem;
+  document.getElementById('mapPreviewSpecies').textContent = item.especie;
+  document.getElementById('mapPreviewLocality').textContent = '📍 ' + (item.concelho || item.distrito || '');
   
-  const copyBtn = document.getElementById('sidebarCopyBtn');
-  copyBtn.onclick = function() {
-    navigator.clipboard.writeText(window.location.origin + item.url);
-    copyBtn.textContent = '✅ Copiado!';
-    setTimeout(() => { copyBtn.textContent = '📋 Copiar'; }, 2000);
-  };
+  const badgeEl = document.getElementById('mapPreviewBadge');
+  badgeEl.className = 'map-badge ' + item.badgeClass;
+  badgeEl.textContent = item.triagem;
+  
+  previewCard.style.display = 'flex';
 
-  const whatsappBtn = document.getElementById('sidebarWhatsappBtn');
-  whatsappBtn.onclick = function() {
-    const shareText = encodeURIComponent(`Alerta Animal: ${item.especie} em ${item.concelho || 'Portugal'}. Veja os detalhes: ${window.location.origin + item.url}`);
-    window.open(`https://api.whatsapp.com/send?text=${shareText}`, '_blank');
-  };
+  const rightPanelInner = document.getElementById('appRightPanelInner');
+  rightPanelInner.innerHTML = `
+    <div class="ficha-wrapper">
+      <header class="report-header" style="background-color: ${item.color};">
+        <div>
+          <h1>${item.especie}</h1>
+          <div style="font-size:10.5px; opacity:0.9;">📍 ${item.concelho || item.distrito || ''}</div>
+        </div>
+        <div style="text-align:right; font-size:10.5px;">
+          <div>${item.data}</div>
+          <strong>ID: ${item.id}</strong>
+        </div>
+      </header>
 
-  document.getElementById('sidebarRemoveLink').onclick = function(e) {
-    e.preventDefault();
-    alert('Para solicitar a remoção ou atualização deste registo, por favor use os contactos oficiais da plataforma indicados no rodapé.');
-  };
+      <div class="status-banner ${item.bannerClass}">
+        ${item.triagem} — ${item.estado_fisico}
+      </div>
+
+      <div class="ficha-img-container">
+        <img src="${item.imagem}" alt="Fotografia do animal">
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-item"><strong>Localidade</strong><span>${item.freguesia || 'Não indicada'}</span></div>
+        <div class="detail-item"><strong>Concelho</strong><span>${item.concelho || 'Não indicado'}</span></div>
+        <div class="detail-item"><strong>Distrito</strong><span>${item.distrito || 'Não indicado'}</span></div>
+        <div class="detail-item"><strong>Idade</strong><span>${item.idade}</span></div>
+        <div class="detail-item"><strong>Situação</strong><span>${item.situacao}</span></div>
+        <div class="detail-item"><strong>Estado Caso</strong><span>${item.estado_caso}</span></div>
+      </div>
+
+      <h2 class="section-title">🩺 Observações</h2>
+      <div class="content-box">
+        ${item.observacoes}
+      </div>
+
+      <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
+        <a href="${item.url}" target="_blank" style="background: ${item.color}; color: #ffffff; padding: 7px 12px; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-block; font-size: 11px;">Abrir Ficha Completa ↗</a>
+      </div>
+    </div>
+  `;
 
   if (window.innerWidth > 992) {
     document.getElementById('appLayoutWrapper').classList.remove('hide-right');

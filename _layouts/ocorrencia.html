@@ -1,15 +1,6 @@
 ---
 layout: default
 ---
-<!-- Meta tags Open Graph para Social Preview -->
-<head>
-    {% assign case_id = page.slug | default: page.id | split: '/' | last %}
-    <meta property="og:title" content="Ocorrência: {{ page.especie }} (ID: {{ page.id }})">
-    <meta property="og:description" content="{{ page.observacoes | strip_html | truncate: 120 | default: 'Ocorrência registada na plataforma Alerta Animal.' }}">
-    <meta property="og:image" content="{% if page.imagem %}{{ page.imagem | absolute_url }}{% else %}{{ '/assets/img/ocorrencias/' | append: case_id | append: '.jpg' | absolute_url }}{% endif %}">
-    <meta property="og:url" content="{{ page.url | absolute_url }}">
-    <meta property="og:type" content="article">
-</head>
 
 <!-- Leaflet CSS e JS para o Minimapa -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -42,6 +33,7 @@ layout: default
         width: 100%;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         transition: background 0.3s, color 0.3s;
+        touch-action: manipulation;
     }
 
     header, .fs-header, .navbar {
@@ -51,7 +43,6 @@ layout: default
         border-radius: 0;
     }
 
-    /* Subtil barra de navegação exterior à ficha (alargada) */
     .site-nav-bar {
         max-width: 920px;
         margin: 8px auto 0 auto;
@@ -76,7 +67,6 @@ layout: default
         color: var(--text-main);
     }
 
-    /* Alargado para ocupar mais espaço horizontal no eccrã */
     .page-wrapper {
         max-width: 920px;
         margin: 4px auto 12px auto;
@@ -232,7 +222,7 @@ layout: default
     .image-modal {
         display: none;
         position: fixed;
-        z-index: 9999;
+        z-index: 99999;
         left: 0;
         top: 0;
         width: 100%;
@@ -242,6 +232,7 @@ layout: default
         align-items: center;
         padding: 20px;
         box-sizing: border-box;
+        pointer-events: auto;
     }
 
     .image-modal img {
@@ -262,6 +253,7 @@ layout: default
         cursor: pointer;
         background: none;
         border: none;
+        pointer-events: auto;
     }
 
     .unified-highlight-box {
@@ -323,6 +315,7 @@ layout: default
         border: 1px solid var(--border-color);
         border-radius: 6px;
         margin-top: 2px;
+        z-index: 1;
     }
 
     .report-footer {
@@ -358,13 +351,13 @@ layout: default
         align-items: center;
         gap: 3px;
         transition: background 0.2s;
+        pointer-events: auto !important;
     }
 
     .btn:hover {
         background: var(--border-color);
     }
 
-    /* Regras estritas para Impressão Perfeita em 1 Página A4 (Vectorial) */
     @media print {
         @page {
             size: A4 portrait;
@@ -427,7 +420,6 @@ layout: default
     {% assign theme_color = "#ca8a04" %}
 {% endif %}
 
-{% comment %} Tratamento e Limpeza de Localização no Liquid {% endcomment %}
 {% assign raw_localidade = page.localidade | default: page.freguesia %}
 {% assign raw_concelho = page.concelho %}
 {% assign raw_distrito = page.distrito %}
@@ -444,9 +436,8 @@ layout: default
     {% assign display_loc = raw_localizacao %}
 {% endif %}
 
-<!-- Opções de navegação (visíveis no site, ocultas na impressão) -->
 <nav class="site-nav-bar hide-on-print" style="margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color, #e2e8f0);">
-    <a href="{{ '/' | relative_url }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #cbd5e1); border-radius: 6px; text-decoration: none; color: var(--text-main, #334155); font-size: 12px; font-weight: 700; transition: all 0.2s;">
+    <a href="{{ '/' | relative_url }}">
         <span>←</span> Voltar ao Painel Geral
     </a>
 </nav>
@@ -478,7 +469,7 @@ layout: default
     <div class="top-section">
         <div class="animal-img-container">
             {% assign case_id = page.slug | default: page.id | split: '/' | last %}
-            <img id="clickable-animal-img" src="{{ '/assets/img/ocorrencias/' | append: case_id | append: '.jpg' | relative_url }}" alt="Fotografia do animal" title="Clique para ampliar" onerror="this.src='{{ site.baseurl }}/_assets/img/animal.jpeg';">
+            <img id="clickable-animal-img" src="{{ '/assets/img/ocorrencias/' | append: case_id | append: '.jpg' | relative_url }}" alt="Fotografia do animal" title="Clique para ampliar" onerror="this.src='{{ site.baseurl }}/assets/img/animal.jpeg';">
         </div>
         
         <div class="unified-highlight-box" style="border-left: 3px solid {{ theme_color }};">
@@ -621,7 +612,7 @@ layout: default
 
         L.control.attribution({
             prefix: false
-        }).addAttribution('🇵🇸 &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors').addTo(map);
+        }).addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors').addTo(map);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19

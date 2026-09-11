@@ -11,6 +11,324 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <style>
   {% include styles.css %}
   
+  /* Layout exact ratio: 30% Left List, 40% Center Map, 30% Right Ficha */
+  .app-layout-wrapper {
+    display: grid;
+    grid-template-columns: 30% 40% 30%;
+    height: 100%;
+    width: 100%;
+    background: var(--bg-main);
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex: 1;
+  }
+
+  .app-layout-wrapper.hide-left { 
+    grid-template-columns: 44px 57% 43%; 
+  }
+
+  .app-layout-wrapper.hide-right { 
+    grid-template-columns: 43% 57% 44px; 
+  }
+
+  /* Map top filters */
+  .map-top-filters {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 8px 10px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+  }
+  .filter-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  }
+  .filter-pill:hover {
+    border-color: var(--primary-color);
+  }
+  .filter-pill.active {
+    background: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+  }
+
+  /* Gallery View Mode optimized for 30% Left Panel readability */
+  .map-list-wrapper.gallery-mode {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+  .map-list-wrapper.gallery-mode .map-card-item {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+    gap: 12px;
+  }
+  .map-list-wrapper.gallery-mode .map-card-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+  .map-list-wrapper.gallery-mode .map-card-body {
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+    margin-top: 0;
+  }
+  .map-list-wrapper.gallery-mode .map-card-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .map-list-wrapper.gallery-mode .map-card-details-row {
+    font-size: 11px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+  .map-list-wrapper.gallery-mode .btn-open-ficha {
+    width: 100%;
+    text-align: center;
+    margin-right: 0 !important;
+    padding: 4px 8px !important;
+    box-sizing: border-box;
+    font-size: 11px;
+  }
+</style>
+
+{% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
+{% assign scored_posts = "" | split: "" %}
+
+{% for post in sorted_posts %}
+  {% assign t = post.triagem | strip | downcase %}
+  {% assign est_fisico = post.estado_fisico | strip | downcase %}
+  {% assign t_score = 10 %}
+  {% assign ef_score = 10 %}
+
+  {% if t contains 'vermelho' %}{% assign t_score = 1 %}
+  {% elsif t contains 'laranja' %}{% assign t_score = 2 %}
+  {% elsif t contains 'amarelo' %}{% assign t_score = 3 %}
+  {% elsif t contains 'azul' %}{% assign t_score = 4 %}
+  {% endif %}
+
+  {% if est_fisico contains 'crítico' or est_fisico contains 'critico' %}{% assign ef_score = 1 %}
+  {% elsif est_fisico contains 'ferido' %}{% assign ef_score = 2 %}
+  {% elsif est_fisico contains 'vulnerável' or est_fisico contains 'vulneravel' %}{% assign ef_score = 3 %}
+  {% else %}{% assign ef_score = 4 %}
+  {% endif %}
+
+  {% assign sar_score = t_score | times: 100 | plus: ef_score %}
+  {% assign scored_post = sar_score | append: "___" | append: forloop.index0 %}
+  {% assign scored_posts = scored_posts | push: scored_post %}
+{% endfor %}
+
+{% assign sorted_scored = scored_posts | sort %}
+
+<div class="app-layout-wrapper mobile-view-list" id="appLayoutWrapper">
+  
+  <!-- LEFT WINDOW: Animal List / Gallery -->
+  <div class="app-left-panel" id="appLeftPanel">
+    <div class="panel-collapsible-content">
+      <div class="panel-header-bar" style="display: flex; align-items: center; gap: 6px; padding: 8px;">
+        <button class="panel-action-btn" onclick="toggleLeftPanel()" title="Recolher lista">◀</button>
+        <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar..." onkeyup="filterMapManifest()" style="flex: 1;">
+        <!-- Toggle button for Gallery / List View -->
+        <button class="panel-action-btn" id="galleryToggleBtn" onclick="toggleGalleryView()" title="Alternar Vista de Galeria">🖼️</button>
+      </div>
+
+      <div class="map-list-wrapper" id="mapManifestList">
+        {% for item in sorted_scored %}
+          {% assign parts = item | split: "___" %}
+          {% assign original_index = parts[1] | times: 1 %}
+          {% assign post = sorted_posts[original_index] %}
+
+          {% assign t = post.triagem | strip | downcase %}
+          {% assign est_fisico = post.estado_fisico | strip | downcase %}
+          {% assign est_caso = post.estado_caso | strip | downcase %}
+          
+          {% assign esp_lower = post.especie | downcase %}
+          {% assign species_key = "outro" %}
+          {% if esp_lower contains 'gato' or esp_lower contains 'felino' %}{% assign species_key = "felino" %}
+          {% elsif esp_lower contains 'cão' or esp_lower contains 'cao' or esp_lower contains 'canídeo' %}{% assign species_key = "canideo" %}
+          {% elsif esp_lower contains 'ave' or esp_lower contains 'pássaro' or esp_lower contains 'gaivota' %}{% assign species_key = "ave" %}
+          {% endif %}
+
+          {% assign badge_class = "badge-default" %}
+          {% assign color_key = "default" %}
+          {% if est_caso contains 'resolvido' %}
+            {% assign badge_class = "badge-azul" %}
+            {% assign color_key = "azul" %}
+          {% elsif t contains 'vermelho' or est_fisico contains 'ferido' or est_fisico contains 'crítico' or est_fisico contains 'critico' %}
+            {% assign badge_class = "badge-vermelho" %}
+            {% assign color_key = "vermelho" %}
+          {% elsif t contains 'laranja' or est_fisico contains 'urgente' %}
+            {% assign badge_class = "badge-laranja" %}
+            {% assign color_key = "laranja" %}
+          {% elsif t contains 'amarelo' %}
+            {% assign badge_class = "badge-amarelo" %}
+            {% assign color_key = "amarelo" %}
+          {% endif %}
+
+          <div class="map-card-item map-row" id="card-item-{{ post.slug }}"
+               onclick="handleListItemClick('{{ post.slug }}')"
+               data-color="{{ color_key }}"
+               data-species="{{ species_key }}"
+               data-priority="{{ parts[0] }}"
+               data-date="{{ post.date | date: '%s' | default: 0 }}"
+               data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ post.triagem }} {{ post.estado_fisico }}">
+            
+            <img src="{{ post.imagem | relative_url | default: 'https://raw.githubusercontent.com/ajudaanimal/alerta/main/_assets/img/animal.jpeg' }}" alt="" class="map-card-img" loading="lazy">
+            
+            <div class="map-card-body">
+              <div class="map-card-top-row">
+                <div class="map-card-title">{{ post.especie | default: "Animal" }}</div>
+                <div class="map-card-tags">
+                  <span class="map-badge {{ badge_class }}">{{ post.triagem | default: "N/D" }}</span>
+                </div>
+              </div>
+              <div class="map-card-details-row">
+                <span style="overflow:hidden; text-overflow:ellipsis;">🩺 {{ post.estado_fisico | default: "Estado N/D" }}</span>
+                <span style="overflow:hidden; text-overflow:ellipsis;">📍 {{ post.concelho | default: post.localidade | default: "N/D" }}</span>
+                <!-- Direct Link to Full Ficha Page -->
+                <a href="{{ post.url | relative_url }}" class="btn-open-ficha" style="padding: 6px 10px; background: var(--primary-color, #2563eb); color: #fff; text-decoration: none; border-radius: 6px; font-size: 11px; font-weight: 700; align-self: center; margin-right: 8px;">
+                Ver Ficha ↗
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <button class="collapsed-edge-bar" onclick="toggleLeftPanel()" title="Expandir Lista">
+      <span>▶ LISTA DE OCORRÊNCIAS</span>
+    </button>
+  </div>
+  
+  <!-- CENTER WINDOW: Map, Filters and Bottom Preview Card -->
+  <div class="app-center-panel">
+    <div class="map-top-filters">
+      <span style="font-size: 10px; font-weight: 800; color: var(--text-muted);">TRIAGEM:</span>
+      <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)"><span style="display:inline-block; width:10px; height:10px; background:#dc2626; border-radius:50%; margin-right:4px;"></span>Vermelho</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)"><span style="display:inline-block; width:10px; height:10px; background:#f97316; border-radius:50%; margin-right:4px;"></span>Laranja</button>
+      <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)"><span style="display:inline-block; width:10px; height:10px; background:#d97706; border-radius:50%; margin-right:4px;"></span>Amarelo</button>
+
+      <span style="font-size: 10px; font-weight: 800; color: var(--text-muted); margin-left: 6px;">ESPÉCIE:</span>
+      <button type="button" class="filter-pill active" onclick="filterMapBySpecies('all', this)">Todas</button>
+      <button type="button" class="filter-pill" onclick="filterMapBySpecies('felino', this)" style="padding: 4px 8px;">🐱</button>
+      <button type="button" class="filter-pill" onclick="filterMapBySpecies('canideo', this)" style="padding: 4px 8px;">🐶</button>
+      <button type="button" class="filter-pill" onclick="filterMapBySpecies('ave', this)" style="padding: 4px 8px;">🐦</button>
+    </div>
+    
+    <div class="map-container-wrapper">
+      <div id="full-map"></div>
+
+      <!-- Floating Map Preview Card -->
+      <div class="map-preview-card" id="mapPreviewCard" onclick="openActiveFicha()">
+        <img id="mapPreviewImg" src="" alt="Animal">
+        <div class="map-preview-info">
+          <div class="map-preview-title">
+            <span id="mapPreviewSpecies">Animal</span>
+            <span id="mapPreviewBadge" class="map-badge badge-default">N/D</span>
+          </div>
+          <div class="map-preview-loc" id="mapPreviewLocality">📍 Localidade</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT WINDOW: Rich Details Sheet -->
+  <div class="app-right-panel" id="appRightPanel">
+    <div class="panel-collapsible-content">
+      <div class="panel-header-bar" style="justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="panel-action-btn mobile-back-btn" onclick="switchMobileTab('map')" title="Voltar ao Mapa" style="display: none;">↩</button>
+          <span style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Ficha de Ocorrência</span>
+        </div>
+        <button class="panel-action-btn" onclick="toggleRightPanel()" title="Recolher painel">▶</button>
+      </div>
+      
+      <div class="app-right-panel-inner" id="appRightPanelInner">
+        <div class="ficha-placeholder">
+          <span style="font-size: 28px;">🐾</span>
+          <strong>Selecione uma ocorrência</strong>
+          <p style="margin: 0; font-size: 11px;">Clique num registo da lista ou num marcador no mapa para inspecionar os detalhes.</p>
+        </div>
+      </div>
+    </div>
+    <button class="collapsed-edge-bar" onclick="toggleRightPanel()" title="Expandir Painel de Detalhes">
+      <span>◀ FICHA DO ANIMAL</span>
+    </button>
+  </div>
+
+</div>
+
+<!-- Mobile Bottom Navigation Bar -->
+<div class="app-bottom-nav" id="appBottomNav">
+  <button class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
+    <span class="tab-icon">📋</span>
+    <span>Lista</span>
+  </button>
+  <button class="nav-tab-btn" id="navBtnMap" onclick="switchMobileTab('map')">
+    <span class="tab-icon">🗺️</span>
+    <span>Mapa</span>
+  </button>
+  <button class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
+    <span class="tab-icon">🐾</span>
+    <span>Ficha</span>
+  </button>
+</div>
+
+<script>
+  {% include scripts.js %}
+
+  function toggleGalleryView() {
+    const listWrapper = document.getElementById('mapManifestList');
+    const btn = document.getElementById('galleryToggleBtn');
+    listWrapper.classList.toggle('gallery-mode');
+    
+    if (listWrapper.classList.contains('gallery-mode')) {
+      btn.textContent = '📋';
+      btn.title = 'Alternar Vista de Lista';
+    } else {
+      btn.textContent = '🖼️';
+      btn.title = 'Alternar Vista de Galeria';
+    }
+  }
+</script>---
+layout: default
+title: "Alerta Animal — Painel de Ocorrências"
+description: "Plataforma de monitorização e alerta de ocorrências de animais"
+---
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<style>
+  {% include styles.css %}
+  
   /* Optimized Layout: Fixed side panels with a massive, dominant map in the center */
   .app-layout-wrapper {
     display: grid;

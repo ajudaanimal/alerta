@@ -15,7 +15,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 <script src="https://unpkg.com/topojson-client@3"></script>
 <!-- ====================================================================== -->
-<!-- 2. ESTILOS CSS CONSOLIDADOS E MODULARES                                -->
+<!-- 2. ESTILOS CSS CONSOLIDADOS E MODULARES (REESCRITO DO ZERO)           -->
 <!-- ====================================================================== -->
 <style>
   /* ----------------------------------------------------------------------
@@ -43,7 +43,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --box-bg: #1f2937;
   }
 
-  /* Reset Universal & Prevenção de Overflow Horizontal */
+  /* Reset Universal Base */
   *, *::before, *::after {
     box-sizing: border-box;
   }
@@ -53,6 +53,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     overflow-x: hidden !important;
     margin: 0;
     padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
 
   .site-main-content {
@@ -65,47 +66,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /* ----------------------------------------------------------------------
-     2.2. LAYOUT DESKTOP EM 3 COLUNAS (30% LISTA | 40% MAPA | 30% FICHA)
+     2.2. ESTRUTURA BASE DOS PAINÉIS E ELEMENTOS COMUNS
      ---------------------------------------------------------------------- */
-  .app-layout-wrapper {
-    display: grid;
-    grid-template-columns: 30% 40% 30%;
-    height: calc(100vh - 48px);
-    width: 100%;
-    background: var(--bg-main);
-    box-sizing: border-box;
-    overflow: hidden;
-    transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    flex: 1;
-  }
-
-  .app-layout-wrapper.hide-left { grid-template-columns: 44px 57% 43%; }
-  .app-layout-wrapper.hide-right { grid-template-columns: 43% 57% 44px; }
-
-  /* ----------------------------------------------------------------------
-     2.3. PAINÉIS LATERAIS E CABEÇALHOS
-     ---------------------------------------------------------------------- */
-  .app-left-panel, .app-right-panel {
-    background: var(--card-bg);
-    height: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    transition: all 0.3s ease;
-  }
-
-  .app-left-panel { border-right: 1px solid var(--border-color); }
-  .app-right-panel { border-left: 1px solid var(--border-color); }
-
-  .panel-collapsible-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-  }
-
   .panel-header-bar {
     padding: 8px 12px;
     background: var(--header-bg);
@@ -158,7 +120,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /* ----------------------------------------------------------------------
-     2.4. CARTÕES DE OCORRÊNCIA E BADGES (LISTA & GALERIA)
+     2.3. CARTÕES DA LISTA DE OCORRÊNCIA E BADGES
      ---------------------------------------------------------------------- */
   .map-card-item {
     display: flex;
@@ -228,7 +190,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     background: rgba(2, 132, 199, 0.08);
   }
 
-  /* Badges de Triagem e Estado */
+  /* Badges de Triagem */
   .map-badge {
     font-size: 10px;
     font-weight: 800;
@@ -244,7 +206,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-azul { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
   .badge-default { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
-  /* Vista de Galeria (Grelha 3 colunas) */
+  /* Modo Galeria (3 Colunas na Lista) */
   .map-list-wrapper.gallery-mode {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr);
@@ -268,17 +230,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /* ----------------------------------------------------------------------
-     2.5. PAINEL CENTRAL (MAPA, FILTROS E PINOS)
+     2.4. PAINEL CENTRAL (MAPA, FILTROS E MARCADORES)
      ---------------------------------------------------------------------- */
-  .app-center-panel {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background: var(--bg-main);
-    position: relative;
-    min-width: 0;
-  }
-
   .map-top-filters {
     background: var(--header-bg);
     border-bottom: 1px solid var(--border-color);
@@ -314,16 +267,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-color: var(--primary-color);
   }
 
-  .map-container-wrapper {
-    position: relative;
-    flex: 1;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  #full-map { width: 100%; height: 100%; }
-
   .species-pin {
     width: 32px;
     height: 32px;
@@ -338,7 +281,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /* ----------------------------------------------------------------------
-     2.6. PAINEL DIREITO (FICHA COMPACTA DE DETALHES)
+     2.5. PAINEL DIREITO (FICHA SIMPLIFICADA DE DETALHES)
      ---------------------------------------------------------------------- */
   .app-right-panel-inner {
     padding: 14px;
@@ -366,6 +309,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 12px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .ficha-card-header {
@@ -452,9 +397,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     margin: 0;
   }
 
-  /* ----------------------------------------------------------------------
-     2.7. MODAL LIGHTBOX
-     ---------------------------------------------------------------------- */
+  /* Modal Lightbox */
   .image-lightbox-modal {
     display: none;
     position: fixed;
@@ -468,10 +411,79 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .image-lightbox-modal img { max-width: 90%; max-height: 90%; object-fit: contain; }
 
   /* ====================================================================== */
-  /* 2.8. REGRAS EXCLUSIVAS PARA MOBILE (STACK VERTICAL DA PÁGINA)          */
+  /* 2.6. REGRAS EXCLUSIVAS PARA DESKTOP (> 992px)                          */
+  /* ====================================================================== */
+  @media (min-width: 993px) {
+    .app-bottom-nav,
+    .mini-map-banner,
+    .map-preview-card {
+      display: none !important;
+    }
+
+    .app-layout-wrapper {
+      display: grid !important;
+      grid-template-columns: 30% 40% 30% !important;
+      height: calc(100vh - 48px) !important;
+      width: 100% !important;
+      background: var(--bg-main);
+      box-sizing: border-box;
+      overflow: hidden !important;
+      flex: 1;
+    }
+
+    .app-left-panel {
+      border-right: 1px solid var(--border-color);
+      height: 100% !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      position: relative !important;
+    }
+
+    .app-center-panel {
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+      background: var(--bg-main);
+      position: relative !important;
+      min-width: 0 !important;
+      overflow: hidden !important;
+    }
+
+    .map-container-wrapper {
+      position: relative !important;
+      flex: 1 !important;
+      width: 100% !important;
+      height: calc(100% - 52px) !important;
+      min-height: 0 !important;
+    }
+
+    #full-map {
+      width: 100% !important;
+      height: 100% !important;
+      position: absolute !important;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 1;
+    }
+
+    .app-right-panel {
+      border-left: 1px solid var(--border-color);
+      height: 100% !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      position: relative !important;
+    }
+  }
+
+  /* ====================================================================== */
+  /* 2.7. REGRAS EXCLUSIVAS PARA MOBILE (<= 992px - STACK VERTICAL)         */
   /* ====================================================================== */
   @media (max-width: 992px) {
-    /* Transforma a grelha desktop num container vertical contínuo */
+    .app-bottom-nav {
+      display: none !important; /* Desativada em favor do scroll vertical */
+    }
+
     .app-layout-wrapper {
       display: flex !important;
       flex-direction: column !important;
@@ -481,7 +493,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       width: 100vw !important;
     }
 
-    /* Liberta os painéis do layout absoluto e redefine alturas */
     .app-left-panel, .app-center-panel, .app-right-panel {
       position: relative !important;
       width: 100% !important;
@@ -492,24 +503,34 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       border-bottom: 1px solid var(--border-color) !important;
     }
 
-    /* Ordem 1: Mapa Fixo no topo do ecrã móvel */
+    /* Ordem 1: Mapa no Topo */
     .app-center-panel {
       height: 320px !important;
       order: 1;
       flex-shrink: 0;
     }
 
-    /* Ordem 2: Lista / Galeria de cartões no meio */
+    .map-container-wrapper {
+      height: calc(320px - 52px) !important;
+      position: relative !important;
+    }
+
+    #full-map {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* Ordem 2: Lista no Meio */
     .app-left-panel {
       order: 2;
     }
 
     .map-list-wrapper {
-      max-height: 420px !important;
+      max-height: 400px !important;
       overflow-y: auto !important;
     }
 
-    /* Ordem 3: Ficha de Detalhes no fundo da página */
+    /* Ordem 3: Ficha Simplificada no Fundo */
     .app-right-panel {
       order: 3;
     }

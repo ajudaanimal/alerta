@@ -192,7 +192,7 @@ function criarMarcador(lat, lon, item) {
 function handleListItemClick(slug) {
   selectOccurrence(slug, true);
   if (window.innerWidth <= 992) {
-    switchMobileTab('map');
+    switchMobileTab('map'); // Centers on map and brings map view into focus on mobile
   }
 }
 
@@ -228,57 +228,61 @@ function selectOccurrence(slug, updateHash = true) {
   }
 
   const previewCard = document.getElementById('mapPreviewCard');
-  document.getElementById('mapPreviewImg').src = item.imagem;
-  document.getElementById('mapPreviewSpecies').textContent = item.especie;
-  document.getElementById('mapPreviewLocality').textContent = '📍 ' + (item.concelho || item.distrito || '');
+  if (document.getElementById('mapPreviewImg')) document.getElementById('mapPreviewImg').src = item.imagem;
+  if (document.getElementById('mapPreviewSpecies')) document.getElementById('mapPreviewSpecies').textContent = item.especie;
+  if (document.getElementById('mapPreviewLocality')) document.getElementById('mapPreviewLocality').textContent = '📍 ' + (item.concelho || item.distrito || '');
   
   const badgeEl = document.getElementById('mapPreviewBadge');
-  badgeEl.className = 'map-badge ' + item.badgeClass;
-  badgeEl.textContent = item.triagem;
+  if (badgeEl) {
+    badgeEl.className = 'map-badge ' + item.badgeClass;
+    badgeEl.textContent = item.triagem;
+  }
   
-  previewCard.style.display = 'flex';
+  if (previewCard) previewCard.style.display = 'flex';
 
   const rightPanelInner = document.getElementById('appRightPanelInner');
-  rightPanelInner.innerHTML = `
-    <div class="ficha-wrapper">
-      <header class="report-header" style="background-color: ${item.color};">
-        <div>
-          <h1>${item.especie}</h1>
-          <div style="font-size:10.5px; opacity:0.9;">📍 ${item.concelho || item.distrito || ''}</div>
+  if (rightPanelInner) {
+    rightPanelInner.innerHTML = `
+      <div class="ficha-wrapper">
+        <header class="report-header" style="background-color: ${item.color};">
+          <div>
+            <h1>${item.especie}</h1>
+            <div style="font-size:10.5px; opacity:0.9;">📍 ${item.concelho || item.distrito || ''}</div>
+          </div>
+          <div style="text-align:right; font-size:10.5px;">
+            <div>${item.data}</div>
+            <strong>ID: ${item.id}</strong>
+          </div>
+        </header>
+
+        <div class="status-banner ${item.bannerClass}">
+          ${item.triagem} — ${item.estado_fisico}
         </div>
-        <div style="text-align:right; font-size:10.5px;">
-          <div>${item.data}</div>
-          <strong>ID: ${item.id}</strong>
+
+        <div class="ficha-img-container">
+          <img src="${item.imagem}" alt="Fotografia do animal">
         </div>
-      </header>
 
-      <div class="status-banner ${item.bannerClass}">
-        ${item.triagem} — ${item.estado_fisico}
-      </div>
+        <div class="details-grid">
+          <div class="detail-item"><strong>Localidade</strong><span>${item.freguesia || 'Não indicada'}</span></div>
+          <div class="detail-item"><strong>Concelho</strong><span>${item.concelho || 'Não indicado'}</span></div>
+          <div class="detail-item"><strong>Distrito</strong><span>${item.distrito || 'Não indicado'}</span></div>
+          <div class="detail-item"><strong>Idade</strong><span>${item.idade}</span></div>
+          <div class="detail-item"><strong>Situação</strong><span>${item.situacao}</span></div>
+          <div class="detail-item"><strong>Estado Caso</strong><span>${item.estado_caso}</span></div>
+        </div>
 
-      <div class="ficha-img-container">
-        <img src="${item.imagem}" alt="Fotografia do animal">
-      </div>
+        <h2 class="section-title">🩺 Observações</h2>
+        <div class="content-box">
+          ${item.observacoes}
+        </div>
 
-      <div class="details-grid">
-        <div class="detail-item"><strong>Localidade</strong><span>${item.freguesia || 'Não indicada'}</span></div>
-        <div class="detail-item"><strong>Concelho</strong><span>${item.concelho || 'Não indicado'}</span></div>
-        <div class="detail-item"><strong>Distrito</strong><span>${item.distrito || 'Não indicado'}</span></div>
-        <div class="detail-item"><strong>Idade</strong><span>${item.idade}</span></div>
-        <div class="detail-item"><strong>Situação</strong><span>${item.situacao}</span></div>
-        <div class="detail-item"><strong>Estado Caso</strong><span>${item.estado_caso}</span></div>
+        <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
+          <a href="${item.url}" class="btn-open-ficha">Abrir Ficha Completa ↗</a>
+        </div>
       </div>
-
-      <h2 class="section-title">🩺 Observações</h2>
-      <div class="content-box">
-        ${item.observacoes}
-      </div>
-
-      <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
-        <a href="${item.url}" target="_blank" style="background: ${item.color}; color: #ffffff; padding: 7px 12px; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-block; font-size: 11px;">Abrir Ficha Completa ↗</a>
-      </div>
-    </div>
-  `;
+    `;
+  }
 
   if (window.innerWidth > 992) {
     document.getElementById('appLayoutWrapper').classList.remove('hide-right');
@@ -328,13 +332,14 @@ function toggleRightPanel() {
 
 function switchMobileTab(tabName) {
   const wrapper = document.getElementById('appLayoutWrapper');
+  if (!wrapper) return;
   wrapper.classList.remove('mobile-view-list', 'mobile-view-map', 'mobile-view-ficha');
   wrapper.classList.add('mobile-view-' + tabName);
 
   document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-  if (tabName === 'list') document.getElementById('navBtnList').classList.add('active');
+  if (tabName === 'list') document.getElementById('navBtnList')?.classList.add('active');
   if (tabName === 'map') {
-    document.getElementById('navBtnMap').classList.add('active');
+    document.getElementById('navBtnMap')?.classList.add('active');
     if (mapInstance) {
       setTimeout(() => {
         mapInstance.invalidateSize();
@@ -344,7 +349,7 @@ function switchMobileTab(tabName) {
       }, 200);
     }
   }
-  if (tabName === 'ficha') document.getElementById('navBtnFicha').classList.add('active');
+  if (tabName === 'ficha') document.getElementById('navBtnFicha')?.classList.add('active');
 }
 
 function filterMapByColor(colorKey, btnElement) {

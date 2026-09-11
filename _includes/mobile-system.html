@@ -1,11 +1,11 @@
 <!-- ========================================================== -->
-<!-- SISTEMA MOBILE INTEGRADO: MAPA NO TOPO (30% H), LISTA ABAIXO -->
+<!-- SISTEMA MOBILE OTIMIZADO: MAPA NO TOPO (30%), LISTA ABAIXO -->
 <!-- ========================================================== -->
 
 <!-- 1. Barra de Navegação Inferior para Mobile -->
 <nav class="app-bottom-nav" id="appBottomNav">
   <button type="button" class="nav-tab-btn active" id="navBtnMain" onclick="switchMobileMode('split')">
-    <span class="tab-icon">🗺️📋</span>
+    <span class="tab-icon">🗺️</span>
     <span>Mapa & Lista</span>
   </button>
   <button type="button" class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileMode('ficha')">
@@ -14,19 +14,22 @@
   </button>
 </nav>
 
-<!-- 2. CSS Exclusivo do Mobile (Stack Vertical, Mapa 30%, Sem Sidebar Direita) -->
+<!-- 2. CSS Modernizado e Fluido para Mobile -->
 <style>
   .app-bottom-nav {
     display: none;
     position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 52px;
-    background: var(--card-bg);
-    border-top: 1px solid var(--border-color);
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    height: calc(56px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--card-bg, #ffffff);
+    border-top: 1px solid var(--border-color, #cbd5e1);
     z-index: 1500;
     justify-content: space-around;
     align-items: center;
-    box-shadow: -4px 0 10px rgba(0,0,0,0.05);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
   }
 
   .nav-tab-btn {
@@ -38,34 +41,57 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 9.5px;
+    font-size: 10px;
     font-weight: 700;
-    color: var(--text-muted);
+    color: var(--text-muted, #64748b);
     cursor: pointer;
-    gap: 2px;
+    gap: 3px;
     text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    position: relative;
   }
-  .nav-tab-btn span.tab-icon { font-size: 16px; }
-  .nav-tab-btn.active { color: var(--primary-color, #2563eb); }
+
+  .nav-tab-btn span.tab-icon { 
+    font-size: 18px; 
+    line-height: 1;
+  }
+
+  .nav-tab-btn.active { 
+    color: var(--primary-color, #2563eb); 
+  }
+
+  /* Indicador visual ativo no topo do botão */
+  .nav-tab-btn.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 3px;
+    background-color: var(--primary-color, #2563eb);
+    border-radius: 0 0 3px 3px;
+  }
 
   @media screen and (max-width: 992px) {
-    /* Eliminar completamente a barra lateral direita */
+    /* Ocultar barra lateral direita em ecrãs móveis */
     .app-right-panel {
       display: none !important;
     }
 
-    /* Transformar o wrapper principal num contentor vertical fluido */
+    /* Contentor principal em grelha vertical fluida usando dvh para evitar bugs de scroll */
     .app-layout-wrapper {
       display: flex !important;
       flex-direction: column !important;
-      height: calc(100vh - 52px) !important;
+      height: 100dvh !important;
       position: relative !important;
       overflow: hidden !important;
       margin: 0 !important;
       padding: 0 !important;
     }
 
-    /* Painel do Mapa no Topo: exatamente 30% da altura do ecrã */
+    /* Mapa no Topo: exatamente 30% da altura */
     .app-center-panel {
       display: flex !important;
       position: relative !important;
@@ -78,7 +104,7 @@
       z-index: 1000 !important;
     }
 
-    /* Painel da Lista / Conteúdo Principal: ocupa o restante espaço abaixo do mapa (70vh) */
+    /* Painel da Lista: ocupa os restantes 70% */
     .app-left-panel {
       display: flex !important;
       position: relative !important;
@@ -92,12 +118,12 @@
       background: var(--bg-color, #f1f5f9);
     }
 
-    /* Ativar barra inferior em mobile */
+    /* Ativar a barra inferior no mobile */
     .app-bottom-nav { 
       display: flex !important; 
     }
 
-    /* Se o utilizador alternar para o modo 'ficha' via tab inferior */
+    /* Comportamento ao alternar para o modo Ficha / Detalhes */
     .app-layout-wrapper.mobile-mode-ficha .app-center-panel,
     .app-layout-wrapper.mobile-mode-ficha .app-left-panel {
       display: none !important;
@@ -108,10 +134,10 @@
       position: absolute !important;
       inset: 0 !important;
       width: 100% !important;
-      height: 100% !important;
+      height: calc(100dvh - 56px - env(safe-area-inset-bottom)) !important;
       z-index: 1200 !important;
-      padding-bottom: 60px !important;
       overflow-y: auto !important;
+      background: var(--card-bg, #ffffff);
     }
   }
 </style>
@@ -128,7 +154,7 @@
       wrapper.classList.remove('mobile-mode-ficha');
       document.getElementById('navBtnMain')?.classList.add('active');
       
-      // Corrigir redimensionamento do Leaflet map ao voltar ao topo
+      // Forçar atualização do mapa Leaflet para preencher o espaço corretamente
       if (typeof mapInstance !== 'undefined' && mapInstance) {
         setTimeout(() => {
           mapInstance.invalidateSize();

@@ -124,6 +124,40 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     box-sizing: border-box;
     font-size: 8px !important;
   }
+
+  /* Image Lightbox Modal for Right Panel */
+  #appRightPanelInner img {
+    cursor: zoom-in;
+    transition: opacity 0.2s ease;
+  }
+  #appRightPanelInner img:hover {
+    opacity: 0.9;
+  }
+  .image-lightbox-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    cursor: zoom-out;
+  }
+  .image-lightbox-modal.active {
+    display: flex;
+  }
+  .image-lightbox-modal img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
 </style>
 
 {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
@@ -309,6 +343,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   </button>
 </div>
 
+<!-- Lightbox Modal for Image Expansion -->
+<div class="image-lightbox-modal" id="imageLightboxModal" onclick="closeImageModal()">
+  <img id="lightboxModalImg" src="" alt="Imagem Ampliada">
+</div>
+
 <script>
   {% include scripts.js %}
 
@@ -325,5 +364,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       btn.textContent = '🖼️';
       btn.title = 'Alternar Vista de Galeria';
     }
+  }
+
+  // Right Panel Image Lightbox handlers
+  document.addEventListener('click', function(e) {
+    const rightPanelInner = document.getElementById('appRightPanelInner');
+    if (rightPanelInner && rightPanelInner.contains(e.target) && e.target.tagName === 'IMG') {
+      const modal = document.getElementById('imageLightboxModal');
+      const modalImg = document.getElementById('lightboxModalImg');
+      modalImg.src = e.target.src;
+      modal.classList.add('active');
+    }
+  });
+
+  function closeImageModal() {
+    const modal = document.getElementById('imageLightboxModal');
+    modal.classList.remove('active');
   }
 </script>

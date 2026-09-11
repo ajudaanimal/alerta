@@ -74,54 +74,55 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-color: var(--primary-color);
   }
 
-  /* Gallery View Mode: Compact 2-Column Grid inside 30% Left Panel */
+  /* Gallery View Mode: Compact 3-Column Grid with Square Images inside 30% Left Panel */
   .map-list-wrapper.gallery-mode {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 8px;
     align-content: start;
     box-sizing: border-box;
   }
   .map-list-wrapper.gallery-mode .map-card-item {
     flex-direction: column !important;
     align-items: stretch !important;
-    padding: 6px !important;
+    padding: 4px !important;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 6px;
     background: var(--card-bg);
-    gap: 4px !important;
+    gap: 3px !important;
   }
   .map-list-wrapper.gallery-mode .map-card-img {
     width: 100% !important;
-    height: 85px !important;
-    border-radius: 6px;
+    aspect-ratio: 1 / 1 !important;
+    height: auto !important;
+    border-radius: 4px;
     flex-shrink: 0;
     object-fit: cover;
   }
   .map-list-wrapper.gallery-mode .map-card-body {
     flex: 1;
     min-width: 0;
-    gap: 2px !important;
-    margin-top: 2px !important;
+    gap: 1px !important;
+    margin-top: 1px !important;
   }
   .map-list-wrapper.gallery-mode .map-card-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
   }
   .map-list-wrapper.gallery-mode .map-card-details-row {
-    font-size: 10px;
+    font-size: 9px;
     flex-direction: column !important;
     align-items: flex-start !important;
-    gap: 2px !important;
+    gap: 1px !important;
   }
   .map-list-wrapper.gallery-mode .btn-open-ficha {
     width: 100%;
     text-align: center;
     margin-right: 0 !important;
-    padding: 3px 4px !important;
+    padding: 2px 3px !important;
     box-sizing: border-box;
-    font-size: 9px !important;
+    font-size: 8px !important;
   }
 </style>
 

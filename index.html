@@ -160,6 +160,144 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-radius: 6px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
   }
+
+  /* ========================================================== */
+  /* RESPONSIVE MOBILE ADAPTATIONS (<= 992px)                    */
+  /* ========================================================== */
+  @media screen and (max-width: 992px) {
+    .app-layout-wrapper {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      height: 100dvh !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+      z-index: 1000 !important;
+    }
+
+    /* Ocultar todos os painéis por defeito no mobile, controlados por classe */
+    .app-left-panel,
+    .app-center-panel,
+    .app-right-panel {
+      display: none !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    /* Estado ativo: Modo Lista */
+    .app-layout-wrapper.mobile-mode-list .app-left-panel {
+      display: flex !important;
+      flex-direction: column !important;
+      position: absolute !important;
+      inset: 0 !important;
+      height: calc(100dvh - 56px - env(safe-area-inset-bottom)) !important;
+      overflow-y: auto !important;
+      background: var(--bg-color, #f1f5f9);
+      padding-bottom: calc(56px + env(safe-area-inset-bottom)) !important;
+      z-index: 1100 !important;
+    }
+
+    /* Estado ativo: Modo Mapa */
+    .app-layout-wrapper.mobile-mode-map .app-center-panel {
+      display: flex !important;
+      flex-direction: column !important;
+      position: absolute !important;
+      inset: 0 !important;
+      height: calc(100dvh - 56px - env(safe-area-inset-bottom)) !important;
+      z-index: 1100 !important;
+    }
+    .app-layout-wrapper.mobile-mode-map .map-container-wrapper {
+      flex: 1 !important;
+      height: auto !important;
+    }
+
+    /* Estado ativo: Modo Ficha */
+    .app-layout-wrapper.mobile-mode-ficha .app-right-panel {
+      display: flex !important;
+      flex-direction: column !important;
+      position: absolute !important;
+      inset: 0 !important;
+      height: calc(100dvh - 56px - env(safe-area-inset-bottom)) !important;
+      overflow-y: auto !important;
+      background: var(--card-bg, #ffffff);
+      padding-bottom: calc(56px + env(safe-area-inset-bottom)) !important;
+      z-index: 1200 !important;
+    }
+
+    /* Barra de navegação inferior mobile */
+    .app-bottom-nav {
+      display: flex !important;
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      height: calc(56px + env(safe-area-inset-bottom)) !important;
+      padding-bottom: env(safe-area-inset-bottom) !important;
+      background: var(--card-bg, #ffffff);
+      border-top: 1px solid var(--border-color, #cbd5e1);
+      z-index: 1500 !important;
+      justify-content: space-around !important;
+      align-items: center !important;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+      box-sizing: border-box !important;
+    }
+
+    .nav-tab-btn {
+      flex: 1;
+      height: 100%;
+      background: transparent;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted, #64748b);
+      cursor: pointer;
+      gap: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      position: relative;
+    }
+
+    .nav-tab-btn span.tab-icon { 
+      font-size: 18px; 
+      line-height: 1;
+    }
+
+    .nav-tab-btn.active { 
+      color: var(--primary-color, #2563eb); 
+    }
+
+    .nav-tab-btn.active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 3px;
+      background-color: var(--primary-color, #2563eb);
+      border-radius: 0 0 3px 3px;
+    }
+  }
+
+  /* Desktop: Garantir que a barra inferior fica sempre oculta em ecrãs grandes */
+  @media screen and (min-width: 993px) {
+    .app-bottom-nav {
+      display: none !important;
+    }
+  }
 </style>
 
 {% assign sorted_posts = site.ocorrencias | sort: 'date' | reverse %}
@@ -190,7 +328,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 {% assign sorted_scored = scored_posts | sort %}
 
-<div class="app-layout-wrapper mobile-view-list" id="appLayoutWrapper">
+<div class="app-layout-wrapper mobile-mode-list" id="appLayoutWrapper">
   
   <!-- LEFT WINDOW: Animal List / Gallery -->
   <div class="app-left-panel" id="appLeftPanel">
@@ -308,7 +446,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     <div class="panel-collapsible-content">
       <div class="panel-header-bar" style="justify-content: space-between;">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="panel-action-btn mobile-back-btn" onclick="switchMobileTab('map')" title="Voltar ao Mapa" style="display: none;">↩</button>
+          <button class="panel-action-btn mobile-back-btn" onclick="switchMobileTab('list')" title="Voltar à Lista" style="display: none;">↩</button>
           <span style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Ficha de Ocorrência</span>
         </div>
         <div style="display: flex; align-items: center; gap: 4px;">
@@ -339,15 +477,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 <!-- Mobile Bottom Navigation Bar -->
 <div class="app-bottom-nav" id="appBottomNav">
-  <button class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
+  <button type="button" class="nav-tab-btn active" id="navBtnList" onclick="switchMobileTab('list')">
     <span class="tab-icon">📋</span>
     <span>Lista</span>
   </button>
-  <button class="nav-tab-btn" id="navBtnMap" onclick="switchMobileTab('map')">
+  <button type="button" class="nav-tab-btn" id="navBtnMap" onclick="switchMobileTab('map')">
     <span class="tab-icon">🗺️</span>
     <span>Mapa</span>
   </button>
-  <button class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
+  <button type="button" class="nav-tab-btn" id="navBtnFicha" onclick="switchMobileTab('ficha')">
     <span class="tab-icon">🐾</span>
     <span>Ficha</span>
   </button>
@@ -368,6 +506,29 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       originalHandler(slug);
       window.currentActiveSlug = slug;
     };
+  }
+
+  // Mobile Tab Switching Logic
+  function switchMobileTab(tab) {
+    const wrapper = document.getElementById('appLayoutWrapper');
+    if (!wrapper) return;
+
+    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+    wrapper.classList.remove('mobile-mode-list', 'mobile-mode-map', 'mobile-mode-ficha');
+
+    if (tab === 'list') {
+      wrapper.classList.add('mobile-mode-list');
+      document.getElementById('navBtnList')?.classList.add('active');
+    } else if (tab === 'map') {
+      wrapper.classList.add('mobile-mode-map');
+      document.getElementById('navBtnMap')?.classList.add('active');
+      if (typeof mapInstance !== 'undefined' && mapInstance) {
+        setTimeout(() => { mapInstance.invalidateSize(); }, 100);
+      }
+    } else if (tab === 'ficha') {
+      wrapper.classList.add('mobile-mode-ficha');
+      document.getElementById('navBtnFicha')?.classList.add('active');
+    }
   }
 
   const observer = new MutationObserver(() => {

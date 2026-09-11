@@ -196,7 +196,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     flex-shrink: 0;
   }
 
-  /* MODO GALERIA (3 QUADRADOS POR LINHA) */
+  /* MODO GALERIA (3 QUADRADOS FORMATADOS EM DESKTOP E MOBILE) */
   .map-list-wrapper.grid-view {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
@@ -216,15 +216,26 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     color: inherit;
     overflow: hidden;
     min-width: 0;
+    height: auto;
   }
 
   .map-list-wrapper.grid-view .map-card-img {
     width: 100%;
-    height: 65px;
+    aspect-ratio: 1 / 1; /* IMAGEM QUADRADA FLEXÍVEL */
     object-fit: cover;
     border-radius: 4px;
     margin-bottom: 4px;
     border: 1px solid var(--border-color);
+  }
+
+  .map-list-wrapper.grid-view .map-card-inline-info {
+    font-size: 8.5px;
+    line-height: 1.2;
+  }
+
+  .map-list-wrapper.grid-view .map-card-loc {
+    font-size: 8px;
+    line-height: 1.2;
   }
 
   .map-card-item:hover, .map-card-item.selected {
@@ -759,7 +770,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  /* LÓGICA DE COLAPSO E EXPANSÃO AUTOMÁTICA AO FAZER SCROLL */
   function initScrollCollapseHandler() {
     window.addEventListener('scroll', function() {
       if (window.innerWidth > 992) return;
@@ -965,7 +975,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function selectOcorrencia(item, openPopup = true) {
-    // DESCOLAPSA O MAPA SUAVEMENTE SEM FAZER SCROLL DA PÁGINA
     if (window.innerWidth <= 992) {
       const mapPanel = document.getElementById('mapContainerPanel');
       if (mapPanel && mapPanel.classList.contains('collapsed')) {

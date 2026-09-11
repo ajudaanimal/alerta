@@ -649,8 +649,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
       mapInstance.fitBounds(portugalBounds);
 
-      /* URL Limpo do CARTO Voyager */
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      /* CARTO Voyager Tile Layer com Chave de API Restaurada */
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3494_1_8eeb09fcfa7dbb0a9063b727', {
         maxZoom: 19,
         subdomains: 'abcd',
         updateWhenIdle: true,
@@ -678,7 +678,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         }
       });
 
-      /* Recálculo de dimensões com temporizador para garantir renderização a 50vh */
       setTimeout(function() {
         if (mapInstance) mapInstance.invalidateSize();
       }, 200);
@@ -697,7 +696,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           concelhosGeoJSON = topojson.feature(topoData, topoData.objects[key]);
         }
       })
-      .catch(() => {});
+      .catch(err => console.error("Erro ao carregar dados dos concelhos:", err));
   }
 
   function criarMarcador(lat, lon, item) {
@@ -764,6 +763,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   function highlightConcelho(concelhoName) {
     if (!mapInstance) return;
+
     if (concelhoOutlineLayer) {
       mapInstance.removeLayer(concelhoOutlineLayer);
       concelhoOutlineLayer = null;
@@ -772,9 +772,19 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     if (!concelhosGeoJSON || !concelhoName) return;
 
     const normName = normalizeText(concelhoName);
+    if (!normName) return;
+
     const matchFeature = concelhosGeoJSON.features.find(f => {
-      const pName = normalizeText(f.properties.NAME_2 || f.properties.name || '');
-      return pName && (pName.includes(normName) || normName.includes(pName));
+      const props = f.properties || {};
+      const pName2 = normalizeText(props.NAME_2 || '');
+      const pName1 = normalizeText(props.NAME_1 || '');
+      const pName = normalizeText(props.name || props.NAME || props.concelho || props.municipality || '');
+
+      return (
+        (pName2 && (pName2.includes(normName) || normName.includes(pName2))) ||
+        (pName && (pName.includes(normName) || normName.includes(pName))) ||
+        (pName1 && (pName1.includes(normName) || normName.includes(pName1)))
+      );
     });
 
     if (matchFeature) {
@@ -783,7 +793,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           color: '#0284c7',
           weight: 3,
           fillColor: '#38bdf8',
-          fillOpacity: 0.15
+          fillOpacity: 0.18
         }
       }).addTo(mapInstance);
     }

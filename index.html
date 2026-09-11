@@ -885,13 +885,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   if (rightPanelInner) {
     const urlFichaCompleta = item.url || ('/ocorrencias/' + item.slug);
     
-    // Nível de alerta e estado físico formatados
     const nivelAlerta = item.nivel_alerta || item.triagem || 'ALERTA';
     const estadoFisico = item.estado_fisico || 'Não especificado';
 
     rightPanelInner.innerHTML = `
       <div class="ficha-wrapper">
-        <!-- Cabeçalho legível sem ID -->
+        <!-- Cabeçalho Legível sem ID -->
         <header class="report-header" style="background-color: ${item.color || 'var(--primary-color)'};">
           <div>
             <h1>${item.especie}</h1>
@@ -902,6 +901,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           </div>
         </header>
 
+        <!-- Botão em Destaque para Expandir Ficha Completa -->
         <a href="${urlFichaCompleta}" target="_blank" class="btn-expand-ficha">
           <span>VER FICHA COMPLETA</span>
           <span>↗</span>
@@ -912,43 +912,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           ${nivelAlerta} — ${estadoFisico}
         </div>
 
-        <!-- Contentor de Imagem com enquadramento proporcional (3:4 / 4:3) -->
+        <!-- Imagem Adaptável -->
         <div class="ficha-img-container">
           <img src="${item.imagem}" alt="Fotografia de ${item.especie}" onclick="openLightbox('${item.imagem}')">
-        </div>
-
-        <!-- Lista Limpa sem Caixas -->
-        <div class="clean-details-list">
-          <div class="clean-detail-row">
-            <span class="detail-label">Localidade</span>
-            <span class="detail-val">${item.freguesia || 'Não indicada'}</span>
-          </div>
-          <div class="clean-detail-row">
-            <span class="detail-label">Concelho</span>
-            <span class="detail-val">${item.concelho || 'Não indicado'}</span>
-          </div>
-          <div class="clean-detail-row">
-            <span class="detail-label">Distrito</span>
-            <span class="detail-val">${item.distrito || 'Não indicado'}</span>
-          </div>
-          <div class="clean-detail-row">
-            <span class="detail-label">Idade</span>
-            <span class="detail-val">${item.idade || 'Não indicada'}</span>
-          </div>
-          <div class="clean-detail-row">
-            <span class="detail-label">Situação</span>
-            <span class="detail-val">${item.situacao || 'Não indicada'}</span>
-          </div>
-          <div class="clean-detail-row">
-            <span class="detail-label">Estado Caso</span>
-            <span class="detail-val">${item.estado_caso || 'Ativo'}</span>
-          </div>
-        </div>
-
-        <!-- Observações sem moldura -->
-        <div class="clean-obs-section">
-          <span class="detail-label">OBSERVAÇÕES</span>
-          <p class="clean-obs-text">${item.observacoes || 'Sem observações registadas.'}</p>
         </div>
       </div>
     `;

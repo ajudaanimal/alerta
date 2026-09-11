@@ -73,14 +73,83 @@ const ocorrenciasData = [
 
 document.addEventListener("DOMContentLoaded", function() {
   initMap();
-  handleHashOnLoad();
-  window.addEventListener('hashchange', handleHashOnLoad);
+  handleInitialRoute();
+  
+  window.addEventListener('popstate', function() {
+    handleInitialRoute();
+  });
   
   if (window.innerWidth <= 992) {
     const backBtn = document.querySelector('.mobile-back-btn');
     if (backBtn) backBtn.style.display = 'flex';
   }
 });
+
+// SPA Router Handler for seamless transitions between main page and ficha pages
+document.addEventListener('click', function(e) {
+  const link = e.target.closest('a');
+  if (link && link.href && link.href.startsWith(window.location.origin)) {
+    // Check if it's an occurrence ficha link
+    if (link.classList.contains('btn-open-ficha') || link.dataset.spa === "true" || link.pathname.includes('/ocorrencias/')) {
+      e.preventDefault();
+      navigateToSpaUrl(link.href);
+    }
+  }
+});
+
+function navigateToSpaUrl(url) {
+  history.pushState({ path: url }, '', url);
+  loadContentViaSpa(url, true);
+}
+
+function loadContentViaSpa(url, pushHistory = false) {
+  const wrapper = document.getElementById('appLayoutWrapper');
+  if (!wrapper) {
+    window.location.href = url;
+    return;
+  }
+
+  // Smooth fade indicator or loading state
+  wrapper.style.opacity = '0.7';
+
+  fetch(url)
+    .then(response => response.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      
+      // Look for the main content container in the destination page
+      const newMainContent = doc.querySelector('#appLayoutWrapper') || doc.querySelector('main');
+      
+      if (newMainContent) {
+        wrapper.innerHTML = newMainContent.innerHTML;
+        wrapper.style.opacity = '1';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Re-initialize map or components if needed depending on destination structure
+        if (document.getElementById('full-map')) {
+          mapInstance = null;
+          initMap();
+          handleHashOnLoad();
+        }
+      } else {
+        window.location.href = url;
+      }
+    })
+    .catch(err => {
+      console.warn('SPA navigation error, falling back:', err);
+      window.location.href = url;
+    });
+}
+
+function handleInitialRoute() {
+  const path = window.location.pathname;
+  const hash = window.location.hash.replace('#', '');
+  
+  if (hash && ocorrenciasData.some(i => i.slug === hash)) {
+    selectOccurrence(hash, false);
+  }
+}
 
 window.addEventListener('resize', function() {
   const backBtn = document.querySelector('.mobile-back-btn');
@@ -107,6 +176,8 @@ function getSpeciesCategory(especieStr) {
 
 function initMap() {
   if (mapInstance) return;
+  const mapElement = document.getElementById('full-map');
+  if (!mapElement) return;
 
   mapInstance = L.map('full-map', { 
     attributionControl: false,
@@ -192,7 +263,7 @@ function criarMarcador(lat, lon, item) {
 function handleListItemClick(slug) {
   selectOccurrence(slug, true);
   if (window.innerWidth <= 992) {
-    switchMobileTab('map'); // Centers on map and brings map view into focus on mobile
+    switchMobileTab('map');
   }
 }
 
@@ -227,23 +298,34 @@ function selectOccurrence(slug, updateHash = true) {
     mapInstance.setView(latLng, 14, { animate: true });
   }
 
+  // Update Preview Card with top Expand button and close/unexpand capability
   const previewCard = document.getElementById('mapPreviewCard');
-  if (document.getElementById('mapPreviewImg')) document.getElementById('mapPreviewImg').src = item.imagem;
-  if (document.getElementById('mapPreviewSpecies')) document.getElementById('mapPreviewSpecies').textContent = item.especie;
-  if (document.getElementById('mapPreviewLocality')) document.getElementById('mapPreviewLocality').textContent = '📍 ' + (item.concelho || item.distrito || '');
-  
-  const badgeEl = document.getElementById('mapPreviewBadge');
-  if (badgeEl) {
-    badgeEl.className = 'map-badge ' + item.badgeClass;
-    badgeEl.textContent = item.triagem;
+  if (previewCard) {
+    previewCard.innerHTML = `
+      <div style="position: absolute; top: 4px; right: 6px; z-index: 5;">
+        <a href="${item.url}" class="btn-open-ficha" title="Expandir para Ficha Completa" style="background: var(--primary-color, #2563eb); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-decoration: none;">🔍 Expandir ↗</a>
+      </div>
+      <img id="mapPreviewImg" src="${item.imagem}" alt="Animal">
+      <div class="map-preview-info" style="padding-top: 14px;">
+        <div class="map-preview-title">
+          <span id="mapPreviewSpecies">${item.especie}</span>
+          <span id="mapPreviewBadge" class="map-badge ${item.badgeClass}">${item.triagem}</span>
+        </div>
+        <div class="map-preview-loc" id="mapPreviewLocality">📍 ${item.concelho || item.distrito || ''}</div>
+      </div>
+    `;
+    previewCard.style.display = 'flex';
   }
-  
-  if (previewCard) previewCard.style.display = 'flex';
 
   const rightPanelInner = document.getElementById('appRightPanelInner');
   if (rightPanelInner) {
     rightPanelInner.innerHTML = `
       <div class="ficha-wrapper">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <button onclick="unexpandOccurrence()" style="background: var(--border-color); border: none; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer;">← Voltar ao Início</button>
+          <a href="${item.url}" class="btn-open-ficha" style="background: var(--primary-color); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-decoration: none;">Expandir Ficha ↗</a>
+        </div>
+
         <header class="report-header" style="background-color: ${item.color};">
           <div>
             <h1>${item.especie}</h1>
@@ -276,10 +358,6 @@ function selectOccurrence(slug, updateHash = true) {
         <div class="content-box">
           ${item.observacoes}
         </div>
-
-        <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
-          <a href="${item.url}" class="btn-open-ficha">Abrir Ficha Completa ↗</a>
-        </div>
       </div>
     `;
   }
@@ -290,16 +368,28 @@ function selectOccurrence(slug, updateHash = true) {
   }
 }
 
-function openActiveFicha() {
-  if (currentSelectedSlug) {
-    if (window.innerWidth <= 992) {
-      switchMobileTab('ficha');
-    } else {
-      const wrapper = document.getElementById('appLayoutWrapper');
-      wrapper.classList.remove('hide-right');
-      if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
-    }
+function unexpandOccurrence() {
+  history.pushState(null, null, window.location.pathname);
+  if (currentActiveCircle && mapInstance && mapInstance.hasLayer(currentActiveCircle)) {
+    mapInstance.removeLayer(currentActiveCircle);
   }
+  const previewCard = document.getElementById('mapPreviewCard');
+  if (previewCard) previewCard.style.display = 'none';
+  
+  document.querySelectorAll('.map-card-item').forEach(el => el.classList.remove('selected'));
+  currentSelectedSlug = null;
+  
+  const rightPanelInner = document.getElementById('appRightPanelInner');
+  if (rightPanelInner) {
+    rightPanelInner.innerHTML = `
+      <div class="ficha-placeholder">
+        <span style="font-size: 28px;">🐾</span>
+        <strong>Selecione uma ocorrência</strong>
+        <p style="margin: 0; font-size: 11px;">Clique num registo da lista ou num marcador no mapa para inspecionar os detalhes.</p>
+      </div>
+    `;
+  }
+  if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
 }
 
 function handleHashOnLoad() {
@@ -319,13 +409,7 @@ function toggleRightPanel() {
   const wrapper = document.getElementById('appLayoutWrapper');
   wrapper.classList.toggle('hide-right');
   if (wrapper.classList.contains('hide-right')) {
-    history.pushState(null, null, window.location.pathname);
-    if (currentActiveCircle && mapInstance && mapInstance.hasLayer(currentActiveCircle)) {
-      mapInstance.removeLayer(currentActiveCircle);
-    }
-    const previewCard = document.getElementById('mapPreviewCard');
-    if (previewCard) previewCard.style.display = 'none';
-    currentSelectedSlug = null;
+    unexpandOccurrence();
   }
   if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 300);
 }
@@ -376,27 +460,8 @@ function filterMapBySpecies(speciesKey, btnElement) {
   applyCombinedFilters();
 }
 
-function sortManifestList() {
-  const sortBy = document.getElementById('listSortSelect').value;
-  const listContainer = document.getElementById('mapManifestList');
-  const rows = Array.from(listContainer.querySelectorAll('.map-card-item'));
-
-  rows.sort(function(a, b) {
-    if (sortBy === 'priority') {
-      return parseInt(a.getAttribute('data-priority')) - parseInt(b.getAttribute('data-priority'));
-    } else if (sortBy === 'date-desc') {
-      return parseInt(b.getAttribute('data-date')) - parseInt(a.getAttribute('data-date'));
-    } else if (sortBy === 'date-asc') {
-      return parseInt(a.getAttribute('data-date')) - parseInt(b.getAttribute('data-date'));
-    }
-    return 0;
-  });
-
-  rows.forEach(row => listContainer.appendChild(row));
-}
-
 function applyCombinedFilters() {
-  var searchQuery = normalizeText(document.getElementById('mapSearchInput').value);
+  var searchQuery = normalizeText(document.getElementById('mapSearchInput') ? document.getElementById('mapSearchInput').value : '');
   
   if (mapInstance && allMarkersLayerGroup) {
     allMarkersLayerGroup.clearLayers();

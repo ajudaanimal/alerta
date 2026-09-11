@@ -27,6 +27,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --border-color: #cbd5e1;
     --header-bg: #f1f5f9;
     --primary-color: #0284c7;
+    --selected-bg: rgba(2, 132, 199, 0.12);
   }
 
   html.dark-mode, body.dark-mode, [data-theme="dark"] {
@@ -37,6 +38,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --border-color: #1f2937;
     --header-bg: #1f2937;
     --primary-color: #38bdf8;
+    --selected-bg: rgba(56, 189, 248, 0.18);
   }
 
   *, *::before, *::after {
@@ -218,6 +220,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     background: var(--bg-main);
   }
 
+  /* DESTAQUE DE SELEÇÃO E HOVER SUAVE (SEM LINHAS AZUIS) */
+  .map-card-item {
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .map-card-item:hover {
+    background-color: var(--header-bg) !important;
+  }
+
+  .map-card-item.selected {
+    background-color: var(--selected-bg) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: none !important;
+  }
+
   /* MODO LISTA */
   .map-list-wrapper.list-view {
     display: flex;
@@ -253,7 +270,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border: 1px solid var(--border-color);
   }
 
-  /* Oculta o selo sobreposto na imagem na vista em lista */
   .map-list-wrapper.list-view .card-badge-top-left {
     display: none !important;
   }
@@ -286,12 +302,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     text-overflow: ellipsis;
   }
 
-  /* MODO GALERIA (QUADRADOS 1:1) */
+  /* MODO GALERIA (QUADRADOS 1:1) COM ESPAÇAMENTO ADEQUADO */
   .map-list-wrapper.grid-view {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 6px !important;
-    padding: 6px !important;
+    gap: 10px !important;
+    padding: 10px !important;
   }
 
   .map-list-wrapper.grid-view .map-card-item {
@@ -306,6 +322,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     text-decoration: none;
     display: block !important;
     user-select: none;
+    box-sizing: border-box !important;
   }
 
   .map-list-wrapper.grid-view .card-badge-top-left {
@@ -367,11 +384,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     text-overflow: ellipsis;
   }
 
-  .map-card-item:hover, .map-card-item.selected {
-    border-color: var(--primary-color) !important;
-    box-shadow: 0 0 0 2px var(--primary-color);
-  }
-
   .species-pin {
     width: 28px;
     height: 28px;
@@ -385,73 +397,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     font-size: 13px;
   }
 
-  /* BARRA MINI-PREVIEW (PASSO 1 DE CLIQUE NO MAPA) */
-  .map-mini-preview {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    z-index: 1000;
-    background: rgba(15, 23, 42, 0.92);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    padding: 8px 12px;
-    color: #ffffff;
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.2s ease;
-  }
-
-  .map-mini-preview.active {
-    display: flex;
-  }
-
-  .map-mini-preview .mini-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    overflow: hidden;
-  }
-
-  .map-mini-preview .mini-title {
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .map-mini-preview .mini-sub {
-    font-size: 11px;
-    color: #cbd5e1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .map-mini-preview .mini-hint {
-    font-size: 10.5px;
-    font-weight: 700;
-    background: var(--primary-color);
-    padding: 4px 8px;
-    border-radius: 6px;
-    white-space: nowrap;
-    margin-left: 8px;
-    flex-shrink: 0;
-  }
-
-  /* POPUP COMPLETO DO MAPA (COMPACTO PARA MOBILE) */
+  /* POPUP COMPLETO DO MAPA */
   .leaflet-popup-content-wrapper {
     border-radius: 10px !important;
     padding: 0 !important;
     overflow: hidden !important;
     box-shadow: 0 4px 16px rgba(0,0,0,0.35) !important;
     width: 170px !important;
+    background: #000000 !important;
   }
 
   .leaflet-popup-content {
@@ -466,6 +419,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     height: 170px;
     overflow: hidden;
     background: #000000;
+  }
+
+  .popup-card-container .card-badge-top-left {
+    position: absolute !important;
+    top: 6px !important;
+    left: 6px !important;
+    z-index: 10 !important;
+    display: inline-block !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   }
 
   .popup-card-img {
@@ -531,6 +493,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     gap: 4px;
   }
 
+  .mobile-map-header {
+    display: none;
+  }
+
   /* DESKTOP LAYOUT */
   @media (min-width: 993px) {
     .app-layout-wrapper {
@@ -580,7 +546,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  /* MOBILE LAYOUT COM MAPA DESTAQUE */
+  /* MOBILE LAYOUT COM MAPA COLAPSÁVEL & GALERIA EM 2 COLUNAS */
   @media (max-width: 992px) {
     .app-layout-wrapper {
       display: flex !important;
@@ -588,8 +554,25 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       min-height: 100vh !important;
     }
 
+    .mobile-map-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      user-select: none;
+      z-index: 1001;
+    }
+
     .app-center-panel {
-      position: relative !important;
+      position: sticky !important;
+      top: 0;
+      z-index: 100;
       width: 100% !important;
       height: 42vh !important;
       min-height: 240px !important;
@@ -597,11 +580,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       background: var(--card-bg);
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: height 0.25s ease, min-height 0.25s ease;
+    }
+
+    .app-center-panel.collapsed {
+      height: 36px !important;
+      min-height: 36px !important;
+    }
+
+    .app-center-panel.collapsed .map-container-wrapper {
+      display: none !important;
     }
 
     .map-container-wrapper {
       width: 100% !important;
-      height: 100% !important;
+      height: calc(100% - 36px) !important;
       position: relative !important;
     }
 
@@ -614,6 +607,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       width: 100% !important;
       background: var(--bg-main);
       flex: 1;
+    }
+
+    /* GALERIA EM 2 COLUNAS NO MOBILE */
+    .map-list-wrapper.grid-view {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 8px !important;
+      padding: 8px !important;
     }
   }
 </style>
@@ -656,18 +656,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
   <!-- PAINEL DO MAPA -->
   <div class="app-center-panel" id="mapContainerPanel">
+    <div class="mobile-map-header" onclick="toggleMobileMap()">
+      <span>🗺️ Mapa de Ocorrências</span>
+      <span id="mobileMapToggleIcon">▲ Encolher</span>
+    </div>
     <div class="map-container-wrapper">
       <div id="full-map"></div>
-
-      <!-- BARRA MINI-PREVIEW (Passo 1 de seleção do marcador) -->
-      <div class="map-mini-preview" id="mapMiniPreview" onclick="handleMiniPreviewClick()">
-        <div class="mini-info">
-          <div class="mini-title" id="miniTitle">Animal</div>
-          <div class="mini-sub" id="miniSub">📍 Localização</div>
-        </div>
-        <div class="mini-hint">Expandir 🔍</div>
-      </div>
-
     </div>
   </div>
 
@@ -747,10 +741,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
              data-species="{{ species_key }}"
              data-url="{{ post.url | relative_url }}"
              data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ display_alerta }} {{ post.estado_fisico }}"
-             onclick="handleCardClick(event, '{{ post.slug }}', '{{ post.url | relative_url }}')"
-             ontouchstart="handleTouchStart('{{ post.url | relative_url }}')"
-             ontouchmove="handleTouchEnd()"
-             ontouchend="handleTouchEnd()">
+             onclick="handleCardClick(event, '{{ post.slug }}', '{{ post.url | relative_url }}')">
 
           <!-- ETIQUETA SOBREPOSTA (EXCLUSIVA MODO GALERIA) -->
           <span class="map-badge {{ badge_class }} card-badge-top-left">{{ display_alerta }}</span>
@@ -796,7 +787,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   let activeColorFilter = 'all';
   let activeSpeciesFilter = 'all';
   let clickTimer = null;
-  let touchTimer = null;
   let currentlySelectedSlug = null;
   const portugalBounds = [[36.95, -9.56], [42.15, -6.19]];
 
@@ -896,9 +886,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
       mapInstance.addLayer(allMarkersLayerGroup);
 
-      // Limpar mini-preview e seleção ao clicar no mapa em área vazia
       mapInstance.on('click', function() {
-        hideMiniPreview();
         currentlySelectedSlug = null;
       });
 
@@ -939,8 +927,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  /* LÓGICA DE NAVEGAÇÃO / CLIQUE MULTI-PASSO */
+  /* NAVEGAÇÃO: NO MOBILE VAI LOGO PARA A FICHA, NO DESKTOP FOCA NO MAPA */
   function handleCardClick(event, slug, url) {
+    const isMobile = window.innerWidth <= 992;
+    if (isMobile) {
+      window.location.href = url;
+      return;
+    }
+
     if (clickTimer == null) {
       clickTimer = setTimeout(function() {
         clickTimer = null;
@@ -953,37 +947,36 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  function handleTouchStart(url) {
-    touchTimer = setTimeout(function() {
-      window.location.href = url;
-    }, 400);
-  }
+  function toggleMobileMap(forceExpand) {
+    const mapPanel = document.getElementById('mapContainerPanel');
+    const icon = document.getElementById('mobileMapToggleIcon');
+    if (!mapPanel) return;
 
-  function handleTouchEnd() {
-    if (touchTimer) clearTimeout(touchTimer);
+    const isCollapsed = mapPanel.classList.contains('collapsed');
+    const shouldExpand = (forceExpand !== undefined) ? forceExpand : isCollapsed;
+
+    if (shouldExpand) {
+      mapPanel.classList.remove('collapsed');
+      if (icon) icon.textContent = '▲ Encolher';
+      if (mapInstance) {
+        setTimeout(() => mapInstance.invalidateSize(), 250);
+      }
+    } else {
+      mapPanel.classList.add('collapsed');
+      if (icon) icon.textContent = '▼ Expandir';
+    }
   }
 
   function focusOnMap(slug) {
     const item = ocorrenciasData.find(o => o.slug === slug);
     if (!item) return;
 
-    if (currentlySelectedSlug === slug) {
-      // 2.º Clique: expande o popup completo
-      expandFullPopup(item);
-    } else {
-      // 1.º Clique: apenas centra no mapa e mostra mini preview sem abrir popup
-      selectOcorrencia(item, false);
-      showMiniPreview(item);
+    if (window.innerWidth <= 992) {
+      toggleMobileMap(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    if (window.innerWidth <= 992) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (mapInstance) {
-        setTimeout(function() {
-          mapInstance.invalidateSize();
-        }, 300);
-      }
-    }
+    selectOcorrencia(item, true);
   }
 
   function toggleFilterDrawer() {
@@ -1130,14 +1123,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
     marker.on('click', function(e) {
       L.DomEvent.stopPropagation(e);
-      if (currentlySelectedSlug === item.slug) {
-        // 2.º Clique no mesmo marcador -> Expande o Popup Completo
-        expandFullPopup(item);
-      } else {
-        // 1.º Clique -> Apenas Centra e mostra a Mini Barra sem abrir popup
-        selectOcorrencia(item, false);
-        showMiniPreview(item);
-      }
+      selectOcorrencia(item, true);
     });
 
     const mapObj = {
@@ -1151,7 +1137,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     allMarkersLayerGroup.addLayer(marker);
   }
 
-  function selectOcorrencia(item, openPopup = false) {
+  function selectOcorrencia(item, openPopup = true) {
     currentlySelectedSlug = item.slug;
     const lat = item.adjustedLat || parseFloat(item.lat);
     const lon = item.adjustedLon || parseFloat(item.lon);
@@ -1171,7 +1157,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function expandFullPopup(item) {
-    hideMiniPreview();
     const matchObj = allMarkersData.find(m => m.slug === item.slug);
     if (matchObj && matchObj.marker) {
       if (typeof allMarkersLayerGroup.zoomToShowLayer === 'function') {
@@ -1181,30 +1166,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       } else {
         matchObj.marker.openPopup();
       }
-    }
-  }
-
-  function showMiniPreview(item) {
-    const mini = document.getElementById('mapMiniPreview');
-    const title = document.getElementById('miniTitle');
-    const sub = document.getElementById('miniSub');
-    
-    if (mini && title && sub) {
-      title.textContent = `${item.especie} • ${item.nivelAlerta}`;
-      sub.textContent = `📍 ${item.concelho} (${item.estadoFisico})`;
-      mini.classList.add('active');
-    }
-  }
-
-  function hideMiniPreview() {
-    const mini = document.getElementById('mapMiniPreview');
-    if (mini) mini.classList.remove('active');
-  }
-
-  function handleMiniPreviewClick() {
-    if (currentlySelectedSlug) {
-      const item = ocorrenciasData.find(o => o.slug === currentlySelectedSlug);
-      if (item) expandFullPopup(item);
     }
   }
 

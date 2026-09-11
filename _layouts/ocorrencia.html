@@ -413,10 +413,11 @@ layout: default
     {% assign display_loc = raw_localizacao %}
 {% endif %}
 
-<!-- Opções de navegação subtis fora da ficha (visíveis no site, ocultas na impressão) -->
-<nav class="site-nav-bar">
-    <a href="{{ '/' | relative_url }}">← Voltar à Lista</a>
-    <a href="{{ '/mapa.html' | relative_url }}">🗺️ Ver Mapa Geral</a>
+<!-- Opções de navegação (visíveis no site, ocultas na impressão) -->
+<nav class="site-nav-bar hide-on-print" style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color, #e2e8f0);">
+    <a href="{{ '/' | relative_url }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #cbd5e1); border-radius: 6px; text-decoration: none; color: var(--text-main, #334155); font-size: 13px; font-weight: 700; transition: all 0.2s;">
+        <span>←</span> Voltar ao Painel Geral
+    </a>
 </nav>
 
 <div class="page-wrapper" style="--theme-color: {{ theme_color }};">

@@ -132,9 +132,11 @@
     .app-layout-wrapper.mobile-mode-ficha .app-right-panel {
       display: flex !important;
       position: absolute !important;
-      inset: 0 !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: calc(56px + env(safe-area-inset-bottom)) !important;
       width: 100% !important;
-      height: calc(100dvh - 56px - env(safe-area-inset-bottom)) !important;
       z-index: 1200 !important;
       overflow-y: auto !important;
       background: var(--card-bg, #ffffff);
@@ -154,7 +156,6 @@
       wrapper.classList.remove('mobile-mode-ficha');
       document.getElementById('navBtnMain')?.classList.add('active');
       
-      // Forçar atualização do mapa Leaflet para preencher o espaço corretamente
       if (typeof mapInstance !== 'undefined' && mapInstance) {
         setTimeout(() => {
           mapInstance.invalidateSize();
@@ -164,5 +165,16 @@
       wrapper.classList.add('mobile-mode-ficha');
       document.getElementById('navBtnFicha')?.classList.add('active');
     }
+  }
+
+  // Integrar handlers existentes para alternar automaticamente para a ficha no mobile ao selecionar um animal
+  if (typeof window.handleListItemClick === 'function') {
+    const originalListItemHandler = window.handleListItemClick;
+    window.handleListItemClick = function(slug) {
+      originalListItemHandler(slug);
+      if (window.innerWidth <= 992) {
+        switchMobileMode('ficha');
+      }
+    };
   }
 </script>

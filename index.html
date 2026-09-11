@@ -311,7 +311,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           <button class="panel-action-btn mobile-back-btn" onclick="switchMobileTab('map')" title="Voltar ao Mapa" style="display: none;">↩</button>
           <span style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Ficha de Ocorrência</span>
         </div>
-        <button class="panel-action-btn" onclick="toggleRightPanel()" title="Recolher painel">▶</button>
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <a id="panelHeaderExpandBtn" href="#" class="panel-action-btn" title="Expandir Ficha" style="display: none; background: var(--primary-color, #2563eb); color: #ffffff; border-color: var(--primary-color, #2563eb); text-decoration: none; align-items: center; justify-content: center;">↗</a>
+          <button class="panel-action-btn" onclick="toggleRightPanel()" title="Recolher painel">▶</button>
+        </div>
       </div>
       
       <div class="app-right-panel-inner" id="appRightPanelInner">
@@ -352,6 +355,40 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
 <script>
   {% include scripts.js %}
+
+  const occurrenceUrls = {
+    {% for post in sorted_posts %}
+      "{{ post.slug }}": "{{ post.url | relative_url }}",
+    {% endfor %}
+  };
+
+  if (typeof window.handleListItemClick === 'function') {
+    const originalHandler = window.handleListItemClick;
+    window.handleListItemClick = function(slug) {
+      originalHandler(slug);
+      window.currentActiveSlug = slug;
+    };
+  }
+
+  const observer = new MutationObserver(() => {
+    const inner = document.getElementById('appRightPanelInner');
+    const expandBtn = document.getElementById('panelHeaderExpandBtn');
+    if (!inner || !expandBtn) return;
+    
+    const isPlaceholder = inner.querySelector('.ficha-placeholder');
+    if (isPlaceholder) {
+      expandBtn.style.display = 'none';
+    } else {
+      expandBtn.style.display = 'inline-flex';
+      const link = inner.querySelector('a[href*="ocorrencias"], a[href*="ficha"]');
+      if (link) {
+        expandBtn.href = link.href;
+      } else if (window.currentActiveSlug && occurrenceUrls[window.currentActiveSlug]) {
+        expandBtn.href = occurrenceUrls[window.currentActiveSlug];
+      }
+    }
+  });
+  observer.observe(document.getElementById('appRightPanelInner'), { childList: true, subtree: true });
 
   function toggleGalleryView() {
     const listWrapper = document.getElementById('mapManifestList');

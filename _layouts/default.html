@@ -16,7 +16,7 @@
     <meta property="og:url" content="{{ page.url | absolute_url }}">
     
     {% if page.image %}
-    <meta property="og:image" content="{{ page.image }}">
+    <meta property="og:image" content="{{ page.image | absolute_url }}">
     {% endif %}
 
     <!-- Script para carregar o modo escuro sem piscar a página -->
@@ -159,7 +159,7 @@
             padding: 0 !important;
             margin: 0 !important;
             width: 100% !important;
-            height: calc(100vh - 48px) !important;
+            height: calc(100dvh - 48px) !important;
             flex: none !important;
         }
 
@@ -208,7 +208,7 @@
                 display: none !important;
             }
             body.layout-fullscreen .site-main-content {
-                height: calc(100vh - 48px - 60px) !important;
+                height: calc(100dvh - 48px) !important;
             }
             .footer-container {
                 flex-direction: column;

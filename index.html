@@ -690,13 +690,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, concelho, estado..." onkeyup="filterMapManifest()">
       </div>
       <div class="map-top-filters">
-        <button type="button" class="filter-pill active" onclick="filterMapByColor('all', this)">Todos</button>
+        <button type="button" class="filter-pill active" id="color-pill-all" onclick="filterMapByColor('all', this)">Todos</button>
         <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)"><span style="display:inline-block; width:6px; height:6px; background:#dc2626; border-radius:50%; margin-right:4px;"></span>Vermelho</button>
         <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)"><span style="display:inline-block; width:6px; height:6px; background:#f97316; border-radius:50%; margin-right:4px;"></span>Laranja</button>
         <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)"><span style="display:inline-block; width:6px; height:6px; background:#d97706; border-radius:50%; margin-right:4px;"></span>Amarelo</button>
 
         <span style="border-left: 1px solid var(--border-color); height: 14px; margin: 0 2px;"></span>
-        <button type="button" class="filter-pill active" onclick="filterMapBySpecies('all', this)">Todas</button>
+        <button type="button" class="filter-pill active" id="species-pill-all" onclick="filterMapBySpecies('all', this)">Todas</button>
         <button type="button" class="filter-pill" onclick="filterMapBySpecies('felino', this)">🐱 Gatos</button>
         <button type="button" class="filter-pill" onclick="filterMapBySpecies('canideo', this)">🐶 Cães</button>
         <button type="button" class="filter-pill" onclick="filterMapBySpecies('ave', this)">🐦 Aves</button>
@@ -749,6 +749,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
              data-search-tags="{{ post.id }} {{ post.slug }} {{ post.especie }} {{ post.concelho }} {{ post.localidade }} {{ post.distrito }} {{ display_alerta }} {{ post.estado_fisico }}"
              onclick="handleCardClick(event, '{{ post.slug }}', '{{ post.url | relative_url }}')"
              ontouchstart="handleTouchStart('{{ post.url | relative_url }}')"
+             ontouchmove="handleTouchEnd()"
              ontouchend="handleTouchEnd()">
 
           <!-- ETIQUETA SOBREPOSTA (EXCLUSIVA MODO GALERIA) -->
@@ -953,7 +954,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function handleTouchStart(url) {
-    // Reduzido para 400ms para resposta mais rápida do clique longo
     touchTimer = setTimeout(function() {
       window.location.href = url;
     }, 400);
@@ -1013,6 +1013,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       if (label) label.textContent = 'Galeria';
       if (btn) btn.classList.remove('active');
     }
+
+    filterMapManifest();
   }
 
   function loadConcelhoBoundary(concelhoName, targetLatLng = null) {
@@ -1223,13 +1225,16 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function filterMapByColor(colorKey, btnElement) {
-    if (btnElement.classList.contains('active')) {
-      btnElement.classList.remove('active');
+    const allColorPills = document.querySelectorAll('.map-top-filters .filter-pill');
+    allColorPills.forEach(p => {
+      if (!p.getAttribute('onclick')?.includes('Species')) p.classList.remove('active');
+    });
+
+    if (colorKey === 'all' || btnElement.classList.contains('active')) {
       activeColorFilter = 'all';
+      const defaultPill = document.getElementById('color-pill-all');
+      if (defaultPill) defaultPill.classList.add('active');
     } else {
-      document.querySelectorAll('.filter-pill').forEach(p => {
-        if (!p.getAttribute('onclick')?.includes('Species')) p.classList.remove('active');
-      });
       btnElement.classList.add('active');
       activeColorFilter = colorKey;
     }
@@ -1237,13 +1242,16 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   function filterMapBySpecies(speciesKey, btnElement) {
-    if (btnElement.classList.contains('active')) {
-      btnElement.classList.remove('active');
+    const allSpeciesPills = document.querySelectorAll('.map-top-filters .filter-pill');
+    allSpeciesPills.forEach(p => {
+      if (p.getAttribute('onclick')?.includes('Species')) p.classList.remove('active');
+    });
+
+    if (speciesKey === 'all' || btnElement.classList.contains('active')) {
       activeSpeciesFilter = 'all';
+      const defaultPill = document.getElementById('species-pill-all');
+      if (defaultPill) defaultPill.classList.add('active');
     } else {
-      document.querySelectorAll('.filter-pill').forEach(p => {
-        if (p.getAttribute('onclick')?.includes('Species')) p.classList.remove('active');
-      });
       btnElement.classList.add('active');
       activeSpeciesFilter = speciesKey;
     }
@@ -1279,7 +1287,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       const matchesSearch = tags.includes(searchQuery);
 
       if (matchesColor && matchesSpecies && matchesSearch) {
-        row.style.display = row.classList.contains('grid-view') ? 'block' : 'flex';
+        row.style.display = '';
       } else {
         row.style.display = 'none';
       }

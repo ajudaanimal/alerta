@@ -350,16 +350,8 @@
     }
     if (!concelhoName) return;
 
-    const renderConcelho = (topodata) => {
-      if (typeof topojson === 'undefined') {
-        console.error('Biblioteca TopoJSON não carregada no HTML!');
-        return;
-      }
-
-      const objectKey = Object.keys(topodata.objects)[0];
-      const geojson = topojson.feature(topodata, topodata.objects[objectKey]);
+    const renderConcelhoFeature = (geojson) => {
       const searchName = normalizeText(concelhoName);
-
       const feature = geojson.features.find(f => {
         if (!f.properties) return false;
         return Object.values(f.properties).some(val => {
@@ -379,23 +371,40 @@
           }
         }).addTo(mapInstance);
       } else {
-        console.warn('Concelho não encontrado no TopoJSON:', concelhoName);
+        console.warn('Concelho não encontrado:', concelhoName);
       }
     };
 
+    const processData = (data) => {
+      let geojson;
+      if (data.type === 'Topology') {
+        if (typeof topojson === 'undefined') {
+          console.error('Biblioteca TopoJSON não carregada!');
+          return;
+        }
+        const objectKey = Object.keys(data.objects)[0];
+        geojson = topojson.feature(data, data.objects[objectKey]);
+      } else if (data.type === 'FeatureCollection') {
+        geojson = data;
+      } else {
+        geojson = { type: 'FeatureCollection', features: [data] };
+      }
+      renderConcelhoFeature(geojson);
+    };
+
     if (concelhosTopoData) {
-      renderConcelho(concelhosTopoData);
+      processData(concelhosTopoData);
       return;
     }
 
     fetch('{{ "/_assets/data/concelhos.topo.json" | relative_url }}')
       .then(response => {
-        if (!response.ok) throw new Error('Ficheiro TopoJSON não encontrado');
+        if (!response.ok) throw new Error('Ficheiro não encontrado');
         return response.json();
       })
       .then(data => {
         concelhosTopoData = data;
-        renderConcelho(data);
+        processData(data);
       })
       .catch(err => console.warn('Erro ao carregar dados dos concelhos:', err));
   }

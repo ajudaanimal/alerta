@@ -120,115 +120,99 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /* ----------------------------------------------------------------------
-     2.3. CARTÕES DA LISTA DE OCORRÊNCIA E BADGES (PAINEL ESQUERDO)
-     ---------------------------------------------------------------------- */
-  .map-card-item {
-    display: flex;
-    gap: 12px;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border-color);
-    background: var(--card-bg);
-    transition: background 0.15s ease;
-    align-items: center;
-    cursor: pointer;
-  }
+   2.3. CARTÕES DA LISTA DE OCORRÊNCIA (PAINEL ESQUERDO REORGANIZADO)
+   ---------------------------------------------------------------------- */
+.map-card-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--card-bg);
+  transition: background 0.15s ease, border-color 0.15s ease;
+  align-items: center;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
 
-  .map-card-item:hover, .map-card-item.selected {
-    background: var(--header-bg);
-  }
+.map-card-item:hover {
+  background: var(--header-bg);
+}
 
-  .map-card-img {
-    width: 64px;
-    height: 64px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    flex-shrink: 0;
-  }
+.map-card-item.selected {
+  background: var(--header-bg);
+  border-left-color: var(--primary-color, #0284c7);
+}
 
-  .map-card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex: 1;
-    min-width: 0;
-  }
+.map-card-img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
 
-  .map-card-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-  }
+.map-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
 
-  .map-card-title {
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--text-main);
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.map-card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
 
-  .map-card-details-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    color: var(--text-muted);
-    gap: 6px;
-  }
+.map-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  .btn-compact-ficha {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--primary-color);
-    text-decoration: none;
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: rgba(2, 132, 199, 0.08);
-  }
+.map-card-sub {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  /* Badges de Triagem */
-  .map-badge {
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding: 3px 6px;
-    border-radius: 4px;
-    white-space: nowrap;
-  }
+.map-card-loc {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  .badge-vermelho { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-  .badge-laranja { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
-  .badge-amarelo { background: rgba(217, 119, 6, 0.2); color: #d97706; }
-  .badge-azul { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
-  .badge-default { background: rgba(100, 116, 139, 0.15); color: #64748b; }
+/* Badges de Triagem / Alerta */
+.map-badge {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
 
-  /* Modo Galeria (3 Colunas na Lista) */
-  .map-list-wrapper.gallery-mode {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    padding: 8px;
-    align-content: start;
-  }
+.badge-vermelho, .badge-red { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+.badge-laranja, .badge-orange { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
+.badge-amarelo, .badge-yellow { background: rgba(217, 119, 6, 0.2); color: #d97706; }
+.badge-azul, .badge-blue { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+.badge-verde, .badge-green { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
 
-  .map-list-wrapper.gallery-mode .map-card-item {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    padding: 4px !important;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-  }
-
-  .map-list-wrapper.gallery-mode .map-card-img {
-    width: 100% !important;
-    aspect-ratio: 1 / 1 !important;
-    height: auto !important;
-  }
-
+  
   /* ----------------------------------------------------------------------
      2.4. PAINEL CENTRAL (MAPA, FILTROS E MARCADORES)
      ---------------------------------------------------------------------- */

@@ -68,7 +68,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   .app-layout-wrapper {
-    width: 100vw !important;
+    width: 100% !important;
     max-width: 100vw !important;
     overflow-x: hidden !important;
   }
@@ -195,12 +195,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   /* 05. BOTÕES DE AÇÃO DOS CARTÕES                                     */
   /* ------------------------------------------------------------------ */
   .card-action-btns {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    z-index: 10;
     display: flex;
+    align-items: center;
     gap: 4px;
+    flex-shrink: 0;
   }
 
   .btn-card-action {
@@ -265,12 +263,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     box-shadow: none !important;
   }
 
-  /* MODO LISTA COMPACTO E FLUIDO (OTIMIZADO PARA MOBILE ~10 ITENS) */
+  /* MODO LISTA PADRÃO (DESKTOP: ~10 ITENS VISÍVEIS, IMAGEM À ESQUERDA, AÇÕES À DIREITA) */
   .map-list-wrapper.list-view {
     display: flex;
     flex-direction: column;
-    gap: 2px !important;
-    padding: 4px !important;
   }
 
   .map-list-wrapper.list-view .map-card-item {
@@ -278,23 +274,20 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    padding: 4px 6px !important;
-    margin-right: 0 !important;
+    gap: 12px;
+    padding: 8px 12px;
     border-bottom: 1px solid var(--border-color);
-    border-radius: 4px;
     background: var(--card-bg);
     cursor: pointer;
     text-decoration: none;
     color: inherit;
     user-select: none;
-    min-height: 48px;
   }
 
   .map-list-wrapper.list-view .map-img-container {
     position: relative;
-    width: 40px !important;
-    height: 40px !important;
+    width: 52px;
+    height: 52px;
     flex-shrink: 0;
   }
 
@@ -302,7 +295,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid var(--border-color);
   }
 
@@ -313,15 +306,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-list-wrapper.list-view .map-card-body {
     display: flex;
     flex-direction: column;
-    gap: 1px !important;
+    gap: 3px;
     flex: 1;
     min-width: 0;
-    margin: 0 4px !important;
     justify-content: center;
   }
 
   .map-list-wrapper.list-view .map-card-inline-info {
-    font-size: 11px !important;
+    font-size: 12px;
     font-weight: 700;
     color: var(--text-main);
     white-space: nowrap;
@@ -329,11 +321,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     text-overflow: ellipsis;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
   }
 
   .map-list-wrapper.list-view .map-card-loc {
-    font-size: 9.5px !important;
+    font-size: 11px;
     color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
@@ -341,22 +333,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   .map-list-wrapper.list-view .card-action-btns {
-    position: relative !important;
-    top: auto !important;
-    right: auto !important;
     display: flex;
     align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-    margin-right: 0 !important;
-  }
-
-  .map-list-wrapper.list-view .btn-card-action {
-    height: 24px !important;
-    font-size: 10px !important;
-    padding: 0 6px !important;
-    border-radius: 4px !important;
-    width: auto !important;
+    gap: 6px;
+    margin-left: auto;
   }
 
   /* MODO GALERIA (GRID 3 COLUNAS NO DESKTOP) */
@@ -670,6 +650,37 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       z-index: 1;
     }
 
+    /* MODO LISTA MAIS COMPACTO NO MOBILE (~10 ITENS, BOTÕES À DIREITA) */
+    .map-list-wrapper.list-view .map-card-item {
+      padding: 6px 8px !important;
+      gap: 8px !important;
+    }
+
+    .map-list-wrapper.list-view .map-img-container {
+      width: 44px !important;
+      height: 44px !important;
+    }
+
+    .map-list-wrapper.list-view .map-card-inline-info {
+      font-size: 11px !important;
+    }
+
+    .map-list-wrapper.list-view .map-card-loc {
+      font-size: 10px !important;
+    }
+
+    .map-list-wrapper.list-view .card-action-btns {
+      margin-left: auto !important;
+      gap: 4px !important;
+    }
+
+    .map-list-wrapper.list-view .btn-card-action {
+      height: 24px !important;
+      font-size: 10px !important;
+      padding: 0 6px !important;
+      width: auto !important;
+    }
+
     /* MODO GALERIA MAIS COMPACTO NO MOBILE (2 COLUNAS) */
     .map-list-wrapper.grid-view {
       grid-template-columns: repeat(2, 1fr) !important;
@@ -844,8 +855,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
           <!-- BOTÕES DE AÇÃO: 🗺️ e 📝 -->
           <div class="card-action-btns">
-            <button type="button" class="btn-card-action" title="Ver no Mapa" onclick="event.stopPropagation(); focusOnMap('{{ post.slug }}');">🗺️</button>
-            <a href="{{ post.url | relative_url }}" class="btn-card-action btn-saber-mais" title="SABER MAIS" onclick="event.stopPropagation();">SABER MAIS</a>
+            <button type="button" class="btn-card-action" title="Ver no Mapa" onclick="event.stopPropagation(); focusOnMap('{{ post.slug }}');">📍🗺️</button>
+            <a href="{{ post.url | relative_url }}" class="btn-card-action btn-saber-mais" title="SABER MAIS" onclick="event.stopPropagation();">+ⓘ</a>
           </div>
 
           <div class="map-img-container">

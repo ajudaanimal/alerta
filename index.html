@@ -214,6 +214,21 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     transform: scale(1.08);
   }
 
+  .btn-saber-mais {
+    width: auto !important;
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    background: var(--primary-color, #0284c7) !important;
+    color: #ffffff !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
   /* LISTA / GALERIA DE OCORRÊNCIAS */
   .map-list-wrapper {
     width: 100%;
@@ -672,7 +687,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         🔍 <span>Filtros e Pesquisa</span>
       </button>
       <button type="button" class="tool-btn" id="toggleViewBtn" onclick="toggleViewMode()">
-        🔲 <span id="viewBtnLabel">Galeria</span>
+        🖼️ <span id="viewBtnLabel">Galeria</span>
       </button>
     </div>
 
@@ -747,7 +762,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
           <!-- BOTÕES DE AÇÃO: 🗺️ e 📝 -->
           <div class="card-action-btns">
             <button type="button" class="btn-card-action" title="Ver no Mapa" onclick="event.stopPropagation(); focusOnMap('{{ post.slug }}');">🗺️</button>
-            <a href="{{ post.url | relative_url }}" class="btn-card-action" title="Abrir Ficha" onclick="event.stopPropagation();">📝</a>
+            <a href="{{ post.url | relative_url }}" class="btn-card-action btn-saber-mais" title="SABER MAIS" onclick="event.stopPropagation();">SABER MAIS</a>
           </div>
 
           <div class="map-img-container">

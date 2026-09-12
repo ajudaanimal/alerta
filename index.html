@@ -235,6 +235,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     background: var(--bg-main);
   }
 
+  
   /* DESTAQUE DE SELEÇÃO E HOVER SUAVE (SEM LINHAS AZUIS) */
   .map-card-item {
     transition: background-color 0.2s ease, opacity 0.2s ease;
@@ -259,11 +260,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-list-wrapper.list-view .map-card-item {
     position: relative;
     display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 12px;
     padding: 10px 12px;
+    margin-right: 8px;
     border-bottom: 1px solid var(--border-color);
     background: var(--card-bg);
-    align-items: center;
     cursor: pointer;
     text-decoration: none;
     color: inherit;
@@ -295,6 +298,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     gap: 4px;
     flex: 1;
     min-width: 0;
+    margin: 0 12px;
+    justify-content: center;
   }
 
   .map-list-wrapper.list-view .map-card-inline-info {
@@ -317,6 +322,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     text-overflow: ellipsis;
   }
 
+  .map-list-wrapper.list-view .card-action-btns {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 4px;
+  }
+  
   /* MODO GALERIA DESKTOP (3 COLUNAS, 1:1) */
   .map-list-wrapper.grid-view {
     display: grid !important;

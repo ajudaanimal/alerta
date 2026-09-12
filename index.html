@@ -855,8 +855,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 
           <!-- BOTÕES DE AÇÃO: 🗺️ e 📝 -->
           <div class="card-action-btns">
-            <button type="button" class="btn-card-action" title="Ver no Mapa" onclick="event.stopPropagation(); focusOnMap('{{ post.slug }}');">📍🗺️</button>
-            <a href="{{ post.url | relative_url }}" class="btn-card-action btn-saber-mais" title="SABER MAIS" onclick="event.stopPropagation();">+ⓘ</a>
+            <button type="button" class="btn-card-action" title="Ver no Mapa" onclick="event.stopPropagation(); focusOnMap('{{ post.slug }}');">📍</button>
+            <a href="{{ post.url | relative_url }}" class="btn-card-action btn-saber-mais" title="SABER MAIS" onclick="event.stopPropagation();">Ver Alerta</a>
           </div>
 
           <div class="map-img-container">

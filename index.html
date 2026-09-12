@@ -329,10 +329,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     margin-right: 4px;
   }
   
-  /* MODO GALERIA 4:3 COM TEXTO ABAIXO DA IMAGEM (2 COLUNAS) */
+  /* MODO GALERIA 4:3 COM TEXTO ABAIXO DA IMAGEM (3 COLUNAS NO DESKTOP) */
   .map-list-wrapper.grid-view {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
     gap: 12px !important;
     padding: 12px !important;
   }
@@ -1105,7 +1105,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       <div class="popup-simple-container">
         <div class="popup-header-row">
           <span class="map-badge ${item.badgeClass}">${item.nivelAlerta}</span>
-          <div class="popup-line-1">${item.especie} • ${item.estadoFisico}</div>
+          <div class="popup-line-1">${item.especie}</div>
         </div>
         <div class="popup-line-2">📍 ${item.concelho}</div>
         <div class="popup-actions-row">

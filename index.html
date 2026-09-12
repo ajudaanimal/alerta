@@ -19,6 +19,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
 <!-- 2. ESTILOS CSS CONSOLIDADOS E MODULARES                                -->
 <!-- ====================================================================== -->
 <style>
+  /* ------------------------------------------------------------------ */
+  /* 01. VARIÁVEIS DE TEMA (LIGHT / DARK)                               */
+  /* ------------------------------------------------------------------ */
   :root {
     --bg-main: #f8fafc;
     --card-bg: #ffffff;
@@ -41,6 +44,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     --selected-bg: rgba(56, 189, 248, 0.18);
   }
 
+  /* ------------------------------------------------------------------ */
+  /* 02. RESET GLOBAL E ESTRUTURA BASE                                  */
+  /* ------------------------------------------------------------------ */
   *, *::before, *::after {
     box-sizing: border-box;
   }
@@ -67,7 +73,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     overflow-x: hidden !important;
   }
 
-  /* BARRA DE AÇÕES COMPACTA */
+  /* ------------------------------------------------------------------ */
+  /* 03. BARRA DE AÇÕES, FILTROS E PESQUISA                             */
+  /* ------------------------------------------------------------------ */
   .mobile-toolbar {
     display: flex;
     align-items: center;
@@ -165,6 +173,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     border-color: var(--primary-color);
   }
 
+  /* ------------------------------------------------------------------ */
+  /* 04. BADGES E ESTADOS DE GRAVIDADE                                  */
+  /* ------------------------------------------------------------------ */
   .map-badge {
     font-size: 10px;
     font-weight: 800;
@@ -180,7 +191,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .badge-amarelo, .badge-yellow { background: #eab308; color: #000000; }
   .badge-azul, .badge-blue { background: #3b82f6; color: #ffffff; }
 
-  /* BOTÕES DE AÇÃO ADAPTADOS AO TEMA (🗺️ e 📝) */
+  /* ------------------------------------------------------------------ */
+  /* 05. BOTÕES DE AÇÃO DOS CARTÕES                                     */
+  /* ------------------------------------------------------------------ */
   .card-action-btns {
     position: absolute;
     top: 6px;
@@ -230,13 +243,14 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     height: 28px !important;
   }
 
-  /* LISTA / GALERIA DE OCORRÊNCIAS */
+  /* ------------------------------------------------------------------ */
+  /* 06. LISTA E GALERIA DE OCORRÊNCIAS (ESTADOS DE EXIBIÇÃO)            */
+  /* ------------------------------------------------------------------ */
   .map-list-wrapper {
     width: 100%;
     background: var(--bg-main);
   }
 
-  /* DESTAQUE DE SELEÇÃO E HOVER SUAVE (SEM LINHAS AZUIS) */
   .map-card-item {
     transition: background-color 0.2s ease, opacity 0.2s ease;
   }
@@ -251,10 +265,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     box-shadow: none !important;
   }
 
-  /* MODO LISTA */
+  /* MODO LISTA COMPACTO E FLUIDO (OTIMIZADO PARA MOBILE ~10 ITENS) */
   .map-list-wrapper.list-view {
     display: flex;
     flex-direction: column;
+    gap: 2px !important;
+    padding: 4px !important;
   }
 
   .map-list-wrapper.list-view .map-card-item {
@@ -262,21 +278,23 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 10px 12px;
-    margin-right: 8px;
+    gap: 8px;
+    padding: 4px 6px !important;
+    margin-right: 0 !important;
     border-bottom: 1px solid var(--border-color);
+    border-radius: 4px;
     background: var(--card-bg);
     cursor: pointer;
     text-decoration: none;
     color: inherit;
     user-select: none;
+    min-height: 48px;
   }
 
   .map-list-wrapper.list-view .map-img-container {
     position: relative;
-    width: 60px;
-    height: 60px;
+    width: 40px !important;
+    height: 40px !important;
     flex-shrink: 0;
   }
 
@@ -284,7 +302,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: 4px;
     border: 1px solid var(--border-color);
   }
 
@@ -295,15 +313,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   .map-list-wrapper.list-view .map-card-body {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 1px !important;
     flex: 1;
     min-width: 0;
-    margin: 0 12px;
+    margin: 0 4px !important;
     justify-content: center;
   }
 
   .map-list-wrapper.list-view .map-card-inline-info {
-    font-size: 12.5px;
+    font-size: 11px !important;
     font-weight: 700;
     color: var(--text-main);
     white-space: nowrap;
@@ -311,11 +329,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     text-overflow: ellipsis;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
   }
 
   .map-list-wrapper.list-view .map-card-loc {
-    font-size: 11.5px;
+    font-size: 9.5px !important;
     color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
@@ -323,13 +341,25 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   .map-list-wrapper.list-view .card-action-btns {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-right: 4px;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-right: 0 !important;
   }
-  
-  /* MODO GALERIA 4:3 COM TEXTO ABAIXO DA IMAGEM (3 COLUNAS NO DESKTOP) */
+
+  .map-list-wrapper.list-view .btn-card-action {
+    height: 24px !important;
+    font-size: 10px !important;
+    padding: 0 6px !important;
+    border-radius: 4px !important;
+    width: auto !important;
+  }
+
+  /* MODO GALERIA (GRID 3 COLUNAS NO DESKTOP) */
   .map-list-wrapper.grid-view {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
@@ -415,7 +445,10 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
+  /* ------------------------------------------------------------------ */
+  /* 07. MAPAS, PINOS E POPUPS LEAFLET                                  */
+  /* ------------------------------------------------------------------ */
   .species-pin {
     width: 28px;
     height: 28px;
@@ -429,7 +462,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     font-size: 13px;
   }
 
-  /* POPUP TEXTUAL SIMPLES E RÁPIDO */
   .leaflet-popup-content-wrapper {
     border-radius: 8px !important;
     padding: 0 !important;
@@ -505,7 +537,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     display: none;
   }
 
-  /* DESKTOP LAYOUT */
+  /* ------------------------------------------------------------------ */
+  /* 08. RESPONSIVIDADE: DESKTOP (MIN-WIDTH: 993PX)                      */
+  /* ------------------------------------------------------------------ */
   @media (min-width: 993px) {
     .app-layout-wrapper {
       display: grid !important;
@@ -553,7 +587,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
-  /* MOBILE LAYOUT COM MAPA COLAPSÁVEL & GALERIA EM 2 COLUNAS */
+  /* ------------------------------------------------------------------ */
+  /* 09. RESPONSIVIDADE: MOBILE (MAX-WIDTH: 992PX)                       */
+  /* ------------------------------------------------------------------ */
   @media (max-width: 992px) {
     html, body {
       overflow-y: auto !important;
@@ -634,7 +670,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       z-index: 1;
     }
 
-    /* MODO GALERIA MAIS COMPACTO NO MOBILE (2 COLUNAS, ~10 ITENS NA TELA) */
+    /* MODO GALERIA MAIS COMPACTO NO MOBILE (2 COLUNAS) */
     .map-list-wrapper.grid-view {
       grid-template-columns: repeat(2, 1fr) !important;
       gap: 6px !important;
@@ -647,7 +683,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
 
     .map-list-wrapper.grid-view .map-img-container {
-      aspect-ratio: 16 / 9 !important; /* Altura menor para caber mais itens verticalmente */
+      aspect-ratio: 16 / 9 !important;
     }
 
     .map-list-wrapper.grid-view .map-card-body {
@@ -663,13 +699,13 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       font-size: 9.5px !important;
     }
 
-    .card-action-btns {
+    .map-list-wrapper.grid-view .card-action-btns {
       top: 4px !important;
       right: 4px !important;
       gap: 3px !important;
     }
 
-    .btn-card-action {
+    .map-list-wrapper.grid-view .btn-card-action {
       height: 24px !important;
       font-size: 10.5px !important;
       padding: 0 6px !important;

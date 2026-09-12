@@ -263,7 +263,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     box-shadow: none !important;
   }
 
-  /* MODO LISTA PADRÃO (DESKTOP: IMAGEM ESQ, TEXTO CENTRO, BOTÕES DIREITA) */
+  /* MODO LISTA PADRÃO (DESKTOP E MOBILE) */
   .map-list-wrapper.list-view {
     display: flex;
     flex-direction: column;
@@ -334,12 +334,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     text-overflow: ellipsis;
   }
 
+  /* Distintivo de alerta posicionado imediatamente à esquerda dos botões de ação */
+  .map-list-wrapper.list-view .list-badge-inline {
+    order: 3;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
   .map-list-wrapper.list-view .card-action-btns {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-left: auto;
-    order: 3;
+    order: 4;
     flex-shrink: 0;
   }
 
@@ -801,11 +807,12 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       <div class="panel-header-bar">
         <input type="text" id="mapSearchInput" class="map-search-input" placeholder="🔍 Pesquisar por espécie, concelho, estado..." onkeyup="filterMapManifest()">
       </div>
+      
       <div class="map-top-filters">
         <button type="button" class="filter-pill active" id="color-pill-all" onclick="filterMapByColor('all', this)">Todos</button>
-        <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)"><span style="display:inline-block; width:6px; height:6px; background:#dc2626; border-radius:50%; margin-right:4px;"></span>Vermelho</button>
-        <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)"><span style="display:inline-block; width:6px; height:6px; background:#f97316; border-radius:50%; margin-right:4px;"></span>Laranja</button>
-        <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)"><span style="display:inline-block; width:6px; height:6px; background:#d97706; border-radius:50%; margin-right:4px;"></span>Amarelo</button>
+        <button type="button" class="filter-pill" onclick="filterMapByColor('vermelho', this)" title="Vermelho"><span style="display:inline-block; width:10px; height:10px; background:#dc2626; border-radius:50%;"></span></button>
+        <button type="button" class="filter-pill" onclick="filterMapByColor('laranja', this)" title="Laranja"><span style="display:inline-block; width:10px; height:10px; background:#f97316; border-radius:50%;"></span></button>
+        <button type="button" class="filter-pill" onclick="filterMapByColor('amarelo', this)" title="Amarelo"><span style="display:inline-block; width:10px; height:10px; background:#d97706; border-radius:50%;"></span></button>
 
         <span style="border-left: 1px solid var(--border-color); height: 14px; margin: 0 2px;"></span>
         <button type="button" class="filter-pill active" id="species-pill-all" onclick="filterMapBySpecies('all', this)">Todas</button>
@@ -1045,6 +1052,33 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     }
   }
 
+  function renderListItem(item) {
+  return `
+    <div class="map-card-item" onclick="selectOccurrence('${item.id}')">
+      <div class="map-img-container">
+        <img src="${item.imagem}" alt="${item.especie}" class="map-card-img">
+      </div>
+      
+      <div class="map-card-body">
+        <div class="map-card-inline-info">
+          ${item.especie} &bull; ${item.estado_fisico}
+        </div>
+        <div class="map-card-loc">
+          📍 ${item.concelho} &bull; ${item.data_ocorrencia}
+        </div>
+      </div>
+
+      <div class="list-badge-inline">
+        <span class="map-badge badge-${item.nivel_alerta}">${item.nivel_alerta_texto}</span>
+      </div>
+
+      <div class="card-action-btns">
+        <a href="?id=${item.id}" class="btn-card-action btn-saber-mais" onclick="event.stopPropagation();">Saber Mais</a>
+      </div>
+    </div>
+  `;
+  }
+  
   /* NAVEGAÇÃO: NO MOBILE VAI LOGO PARA A FICHA, NO DESKTOP FOCA NO MAPA */
   function handleCardClick(event, slug, url) {
     const isMobile = window.innerWidth <= 992;

@@ -1303,16 +1303,23 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     const lon = item.adjustedLon || parseFloat(item.lon);
     const targetLatLng = (!isNaN(lat) && !isNaN(lon)) ? [lat, lon] : null;
 
+    if (targetLatLng && typeof fullMap !== 'undefined') {
+        fullMap.setView(targetLatLng, Math.max(fullMap.getZoom(), 14), {
+            animate: true,
+            duration: 0.4
+        });
+    }
+
     loadConcelhoBoundary(item.concelho, targetLatLng);
 
     document.querySelectorAll('.map-card-item').forEach(c => c.classList.remove('selected'));
     const activeCard = document.getElementById(`card-item-${item.slug}`);
     if (activeCard) {
-      activeCard.classList.add('selected');
+        activeCard.classList.add('selected');
     }
 
     if (openPopup) {
-      expandFullPopup(item);
+        expandFullPopup(item);
     }
   }
 

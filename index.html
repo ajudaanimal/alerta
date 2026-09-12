@@ -1304,7 +1304,9 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     const targetLatLng = (!isNaN(lat) && !isNaN(lon)) ? [lat, lon] : null;
 
     if (targetLatLng && typeof fullMap !== 'undefined') {
-        fullMap.setView(targetLatLng, Math.max(fullMap.getZoom(), 14), {
+        fullMap.closePopup();
+        fullMap.invalidateSize();
+        fullMap.setView(targetLatLng, 15, {
             animate: true,
             duration: 0.4
         });
@@ -1316,6 +1318,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     const activeCard = document.getElementById(`card-item-${item.slug}`);
     if (activeCard) {
         activeCard.classList.add('selected');
+        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     if (openPopup) {

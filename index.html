@@ -1068,16 +1068,17 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
         </div>
       </div>
 
-      <div class="list-badge-inline">
-        <span class="map-badge badge-${item.nivel_alerta}">${item.nivel_alerta_texto}</span>
-      </div>
-
-      <div class="card-action-btns">
-        <a href="?id=${item.id}" class="btn-card-action btn-saber-mais" onclick="event.stopPropagation();">Saber Mais</a>
+      <div class="map-card-right-group">
+        <div class="list-badge-inline">
+          <span class="map-badge badge-${item.nivel_alerta}">${item.nivel_alerta_texto}</span>
+        </div>
+        <div class="card-action-btns">
+          <a href="?id=${item.id}" class="btn-card-action btn-saber-mais" onclick="event.stopPropagation();">Saber Mais</a>
+        </div>
       </div>
     </div>
   `;
-  }
+}
   
   /* NAVEGAÇÃO: NO MOBILE VAI LOGO PARA A FICHA, NO DESKTOP FOCA NO MAPA */
   function handleCardClick(event, slug, url) {

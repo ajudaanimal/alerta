@@ -580,6 +580,8 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       transition: height 0.25s ease, min-height 0.25s ease;
+      display: flex !important;
+      flex-direction: column !important;
     }
 
     .app-center-panel.collapsed {
@@ -591,9 +593,32 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       display: none !important;
     }
 
+    .mobile-map-header {
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+      height: 36px;
+      padding: 0 12px;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .mobile-map-toggle-btn {
+      background: none;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+
     .map-container-wrapper {
       width: 100% !important;
-      height: calc(100% - 40px) !important;
+      flex: 1 !important;
       position: relative !important;
     }
 
@@ -608,6 +633,11 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       position: relative;
       z-index: 1;
     }
+
+    .map-list-wrapper.grid-view {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
 
     /* GALERIA EM 2 COLUNAS NO MOBILE */
     .map-list-wrapper.grid-view {
@@ -664,7 +694,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
       <div id="full-map"></div>
     </div>
   </div>
-
+  
   <!-- PAINEL DA LISTA/GALERIA DE OCORRÊNCIAS -->
   <div class="app-left-panel" id="appLeftPanel">
 

@@ -283,7 +283,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     color: inherit;
     user-select: none;
   }
-
+  
   .map-list-wrapper.list-view .map-img-container {
     position: relative;
     width: 60px;
@@ -335,10 +335,18 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
   }
 
   /* Distintivo de alerta posicionado imediatamente à esquerda dos botões de ação */
-  .map-list-wrapper.list-view .list-badge-inline {
-    order: 3;
-    flex-shrink: 0;
+  .map-list-wrapper.list-view .map-card-right-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-left: auto;
+    flex-shrink: 0;
+  }
+  
+  .map-list-wrapper.list-view .list-badge-inline {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
   }
 
   .map-list-wrapper.list-view .card-action-btns {

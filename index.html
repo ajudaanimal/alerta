@@ -227,6 +227,7 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     align-items: center !important;
     justify-content: center !important;
     white-space: nowrap !important;
+    height: 28px !important;
   }
 
   /* LISTA / GALERIA DE OCORRÊNCIAS */
@@ -235,7 +236,6 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     background: var(--bg-main);
   }
 
-  
   /* DESTAQUE DE SELEÇÃO E HOVER SUAVE (SEM LINHAS AZUIS) */
   .map-card-item {
     transition: background-color 0.2s ease, opacity 0.2s ease;
@@ -358,6 +358,15 @@ description: "Plataforma de monitorização e alerta de ocorrências de animais"
     z-index: 10 !important;
     display: inline-block !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  .map-list-wrapper.grid-view .card-action-btns {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    z-index: 10 !important;
+    display: flex !important;
+    gap: 4px !important;
   }
 
   .map-list-wrapper.grid-view .list-badge-inline {
